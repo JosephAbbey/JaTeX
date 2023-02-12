@@ -48,7 +48,7 @@ jobs:
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@v3
         with:
-          find: /import\(.*\)\./
+          find: 'import\(.*\)\.'
           replace: ' '
           include: './src/**'
           regex: true
