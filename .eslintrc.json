@@ -1,0 +1,32 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "overrides": [],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "impliedStrict": true,
+      "arrowFunctions": true,
+      "modules": true,
+      "defaultParams": true,
+      "classes": true,
+      "destructuring": true,
+      "spread": true,
+      "generators": true
+    }
+  },
+  "rules": {
+    "require-jsdoc": "error",
+    "require-yield": "warn",
+    "accessor-pairs": "warn",
+    "block-scoped-var": "warn",
+    "capitalized-comments": "warn",
+    "constructor-super": "error",
+    "default-case": "error",
+    "eol-last": "warn",
+    "getter-return": "error"
+  }
+}

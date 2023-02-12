@@ -1,0 +1,499 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage[margin=1.5in]{geometry}
+
+\title{Simple Oscillations}
+\author{Benjamin Jones}
+\date{\today}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Pendulums}
+
+A pendulum is a mass connected at the end of an arm of constant length which is allowed to pivot about a fixed point. We shall find that they produce oscillatory or almost oscillatory behaviour depending on whether or not air resistance is taken into account.
+
+We shall first define a cartesian coordinate system with the aforementioned fixed point at the origin. We will define $r$ to be the length of the pendulum's arm and $\theta(t)$ to be the angle counterclockwise from the y-axis of our coordinate plane to the arm of the pendulum at any time $t$.
+
+We can now define the position of the mass at any time $t$ by using the constant distance from the origin and the angle function $\theta(t)$ to construct a right angle triangle. Using the sine and cosine functions we find that the position of the mass at time $t$ is $(r\sin[\theta(t)], -r\cos[\theta(t)])$.
+
+We now analyse the forces at work on the mass of the pendulum at any time $t$. This is where our work diverges into two separate cases depending on whether or not we deem the contributions of air resistance to be negligible. We shall start with the far simpler case assuming that it does not have a noticeable impact before investigating what difficulties arise from including contributions of air resistance.
+
+\subsection{Assuming air resistance is negligible}
+
+If we assume the contributions of air resistance to the resultant force on the mass to be negligible, we have only two forces acting on our mass: gravity and the centripetal force. Gravity acts downwards with a magnitude proportional to the mass $m$ where the constant of proportionality is $g \approx 9.81\textnormal{ms}^{-2}$. The centripetal force is the force keeping the mass attached to the pendulum's arm and it arises due to Newton's third law of motion (every action has an equal and opposite reaction). Therefore, we know it will be equal in magnitude but opposite in direction to the component of the force of gravity $\vec{g}$ in the direction from the fixed pivot point to the mass. As we placed the origin at the fixed point, the vector from the fixed point to the mass is the position vector of the mass, $r[\sin[\theta(t)], -\cos[\theta(t)]]$. The distance from the fixed point to the mass is defined to be $r$ and hence by dividing by this we find the unit vector $\vec{d} = [\sin[\theta(t)], -\cos[\theta(t)]]$. We therefore may find the centripetal force $\vec{c}$ via an application of the dot product as follows
+
+\begin{align*}
+	-\vec{c} &= \left(\frac{\vec{g}\cdot\vec{d}}{|\vec{d}|}\right)\vec{d}, \\
+	&= mg\cos[\theta(t)]\vec{d}, \\
+	\vec{c} &= -mg
+	\begin{bmatrix}
+		\cos[\theta(t)]\sin[\theta(t)] \\
+		-\cos^2[\theta(t)]
+	\end{bmatrix}
+	.
+\end{align*}
+
+We may finish our work on forces now by finding the resultant of these individual forces, the overall force acting on our mass at any instant.
+
+\begin{align*}
+	\vec{F} &= \vec{g} + \vec{c} \\
+	&= -mg\left(\vec{j} + 
+		\begin{bmatrix}
+			\cos[\theta(t)]\sin[\theta(t)] \\
+			-\cos^2[\theta(t)]
+		\end{bmatrix}
+		\right) \\
+	&= -mg
+		\begin{bmatrix}
+			\cos[\theta(t)]\sin[\theta(t)] \\
+			1 - \cos^2[\theta(t)]
+		\end{bmatrix} \\
+	&= -mg\sin[\theta(t)]
+		\begin{bmatrix}
+			\cos[\theta(t)] \\
+			\sin[\theta(t)]
+		\end{bmatrix}
+\end{align*}
+
+The arm's constant length confines our mass to the path $x^2 + y^2 = r^2$, this means we can take the component of the force in the direction perpendicular to the fixed arm (tangent to the circular path) and use this like a "signed magnitude" to give us a one-dimensional total force in the direction of motion. This perpendicular vector shall be called $\vec{n}$ and we may find by a simple use of the dot product that
+
+\begin{align*}
+	\vec{d}\cdot\vec{n} &= 0, \\
+	n_1\sin[\theta(t)] - n_2\cos[\theta(t)] &= 0, \\
+	n_1\sin[\theta(t)] &= n_2\cos[\theta(t)], \\
+	\frac{n_2}{n_1} &= \frac{\sin[\theta(t)]}{\cos[\theta(t)]}.
+\end{align*}
+
+Hence, we choose $n_1 = \cos[\theta(t)], n_2 = \sin[\theta(t)]$, meaning that $\vec{n} = [\cos[\theta(t)], \sin[\theta(t)]]$. Since this is a unit vector, we may find the component of $\vec{F}$ in the direction of this vector simply by taking their dot product.
+
+\begin{align*}
+	F &= \vec{F}\cdot\vec{n} \\
+	&= -mg\sin[\theta(t)](\cos^2[\theta(t)] + \sin^2[\theta(t)]) \\
+	&= -mg\sin[\theta(t)]
+\end{align*}
+
+We may now apply Newton's second law of motion, $F = ma$ to say that
+
+\begin{align}
+	F &= ma, \notag \\
+	-mg\sin[\theta(t)] &= ma, \notag \\
+	a &= -g\sin[\theta(t)].
+\end{align}
+
+We now seek a way other than force to relate our desired function $\theta(t)$ to acceleration. We start by considering the connection between a change in $\theta(t)$ and a change in displacement. For some change in angle $\Delta\theta$, we may use the formula for arc length given an angle in radians to find that the "signed magnitude" (in the direction tangential to the path of the mass) of our change in displacement $\Delta s = \Delta(\vec{s}\cdot\vec{n})$ is approximately equal to $r\Delta\theta$. The approximation here is introduced by the fact that the magnitude of our displacement measures a straight line from the mass's initial position to its new position while the arc length does not measure a straight line but instead an arc of the circle $x^2 + y^2 = r^2$. As we make our change in angle $\Delta\theta$ approach zero, the difference in these two values also approaches zero. Taking the limit, we arrive at the conclusion that
+
+\begin{align*}
+	rd\theta &= ds, \\
+	\frac{d\theta}{ds} &= \frac{1}{r}.
+\end{align*}
+
+We now use this newfound relationship between $\theta(t)$ and $s$ to relate the acceleration to the angle function by first relating the angle to the velocity. The signed magnitude of velocity $v = \vec{v}\cdot\vec{n}$ is the change in displacement over the change in time and hence we can make the following manipulations
+
+\begin{align}
+	v &= \frac{ds}{dt}, \notag \\
+	\frac{1}{r} v &= \frac{ds}{dt} \frac{d\theta}{ds}, \notag \\
+	v &= r \frac{d\theta}{dt}.
+\end{align}
+
+Differentiating this result with respect to $t$, we finally obtain the relation
+
+\begin{equation}
+	a = r \frac{d^2\theta}{dt^2}.
+\end{equation}
+
+We may therefore construct our differential equation combining this new relationship (3) and our application of Newton's second law of motion (1) to gain an equation in terms only of $\theta(t)$.
+
+\begin{align}
+	r \frac{d^2\theta}{dt^2} = -g\sin[\theta(t)], \notag \\
+	\ddot{\theta}(t) + \frac{g}{r}\sin[\theta(t)] = 0.
+\end{align}
+
+\subsection{Taking air resistance into account}
+
+We now consider a case in which we deem the contributions of air resistance to be of value and not negligible. Air resistance is usually proportional to either velocity or velocity squared; hence, we shall arrive at two differential equations for these separate cases. We shall give the constant of proportionality in both of these cases the name $k$. Hence our resultant force is altered by the addition of this new force which acts in the opposite direction to the velocity at any time. As the velocity may only act tangential to the path of the mass, the unit vector for this direction is clearly our normal vector from the previous section, $\vec{n} = [\cos[\theta(t)], \sin[\theta]]$. We will find it easier later if we break down the velocity's effect into two parts: its sign and its magnitude. Its sign, $\phi$, can be obtained by dividing the signed magnitude by the magnitude while its magnitude is simply obtained by taking the absolute value of it. Hence,
+
+\begin{align*}
+	\vec{A} = -k\phi|\nu(v)|\vec{n} &&& \left(\phi = \frac{v}{|v|} = \frac{\dot{\theta}}{|\dot{\theta}|}\right)
+\end{align*}
+
+where $\nu(v)$ is either $v$ or $v^2$ depending on which our application finds air resistance to be proportional to.
+
+This new force makes our resultant force $\vec{F}$ now equal to
+
+\begin{align*}
+	\vec{F} &= (\vec{g} + \vec{c}) + \vec{A}, \\
+	&= -mg\sin[\theta(t)]\vec{n} - k\phi|\nu(v)|\vec{n}, \\
+	&= -m(g\sin[\theta(t)] + \frac{k}{m}\phi|\nu(v)|)\vec{n}.
+\end{align*}
+
+We then find our signed magnitude as in the previous section by taking the component of this force in the direction tangential to the circular path of the mass.
+
+\begin{align*}
+	F &= \vec{F}\cdot\vec{n} \\
+	&= -m(g\sin[\theta(t)] + \frac{k}{m}\phi|\nu(v)|)(\vec{n}\cdot\vec{n}) \\
+	&= -m(g\sin[\theta(t)] + \frac{k}{m}\phi|\nu(v)|)
+\end{align*}
+
+We now apply Newton's second law of motion to obtain the equation
+
+\begin{align*}
+	F &= ma,  \\
+	a &= -\left(g\sin[\theta(t)] + \frac{k}{m}\phi|\nu(v)|\right),
+\end{align*}
+
+which we may then use (2) and (3) to convert into a differential equation solely of $\theta(t)$
+
+\begin{align*}
+	r \frac{d^2\theta}{dt^2} = -\left[g\sin[\theta(t)] + \frac{k}{m}\phi\left|\nu\left(r \frac{d\theta}{dt}\right)\right|\right], \\
+	\ddot{\theta}(t) + \frac{k}{rm}\phi|\nu(r\dot{\theta}(t))| + \frac{g}{r}\sin[\theta(t)] = 0.
+\end{align*}
+
+If we take $\nu(v)$ to be equal to $v$, we obtain the equation
+
+\begin{align}
+	\ddot{\theta}(t) + \frac{k}{m}\phi|\dot{\theta}(t)| + \frac{g}{r}\sin[\theta(t)] = 0, \notag \\
+	\ddot{\theta}(t) + \frac{k}{m}\frac{\dot{\theta}(t)}{|\dot{\theta}(t)|}|\dot{\theta}(t)| + \frac{g}{r}\sin[\theta(t)] = 0, \notag \\
+	\ddot{\theta}(t) + \frac{k}{m}\dot{\theta}(t) + \frac{g}{r}\sin[\theta(t)] = 0,
+\end{align}
+
+and if we take $\nu(v)$ to be equal to $v^2$, we obtain
+
+\begin{align}
+	\ddot{\theta}(t) + \frac{rk}{m}\phi|\dot{\theta}(t)^2| + \frac{g}{r}\sin[\theta(t)] = 0, \notag \\
+	\ddot{\theta}(t) + \frac{rk}{m}\frac{\dot{\theta}(t)}{|\dot{\theta}(t)|}|\dot{\theta}(t)|^2 + \frac{g}{r}\sin[\theta(t)] = 0, \notag \\
+	\ddot{\theta}(t) + \frac{rk}{m}\dot{\theta}(t)|\dot{\theta}(t)| + \frac{g}{r}\sin[\theta(t)] = 0.
+\end{align}
+
+\subsection{Analysing the differential equations}
+
+We have now found three differential equations for the motion of a pendulum over time. The first of these, (4), is a homogeneous linear second order ODE (See Appendix A) which we can easily solve approximately for small angles by substituting $\sin \theta \approx \theta$ to obtain the new differential equation
+
+\begin{equation}
+	\ddot{\theta}(t) + \frac{g}{r}\theta(t) = 0. \tag{4*}
+\end{equation}
+
+We may solve this by assuming that $\theta(t)$ will take the form $e^{\rho t}$. In this case, we find $\ddot{\theta}(t) = \rho^2e^{\rho t}$ and hence our differential equation (4*) becomes
+
+\begin{align*}
+	\rho^2e^{\rho t} + \frac{g}{r}e^{\rho t} &= 0, \\
+	e^{\rho t}\left(\rho^2 + \frac{g}{r}\right) &= 0, \\
+	\rho^2 &= -\frac{g}{r}, \\
+	\rho &= \pm i \sqrt{\frac{g}{r}}, \\
+	&= \pm i \sigma. &&& \left(\sigma = \frac{g}{r} \right)
+\end{align*}
+
+This yields the solution
+
+\begin{align*}
+	\theta(t) &= Ae^{i \sigma t} + Be^{-i \sigma t}, \\
+	&= A\left(\cos(\sigma t) + i \sin(\sigma t)\right) + B\left(\cos(\sigma t) - i \sin(\sigma t)\right), \\
+	&= C\cos(\sigma t) + D\sin(\sigma t). &&& \left(C = 2[A + B], D = 2[A - B]\right)
+\end{align*}
+
+Substituting $t = 0$ yields that $C = \theta_0$. We may also differentiate this result and compare with (2) to find D in terms of initial velocity $v_0$
+
+\begin{align*}
+	\dot{\theta}(t) &= \sigma \left(D\cos(\sigma t) - \theta_0\sin(\sigma t)\right), \\
+	\frac{v_0}{r} &= \sigma D, \\
+	D &= \frac{v_0}{r \sigma}.
+\end{align*}
+
+Hence we arrive at the conclusion that, when air resistance is neglected, the motion of a pendulum is approximately modelled for small angles by
+
+\begin{equation}
+	\theta(t) = \theta_0\cos\left(\sqrt{\frac{g}{r}} t\right) + \frac{v_0}{\sqrt{rg}}\sin\left(\sqrt{\frac{g}{r}} t\right).
+\end{equation}
+
+We can see from the fact that this is a periodic function (with a period of $2\pi\sqrt{\frac{r}{g}}\textnormal{s}$) that no energy is lost.
+
+We may apply a similar method to solve the first of the air resistance equations, (5). We begin again by making a small angle approximation
+
+\begin{equation}
+	\ddot{\theta}(t) + \frac{k}{m}\dot{\theta}(t) + \frac{g}{r}\theta(t) = 0. \tag{5*}
+\end{equation}
+
+Assuming again that our solution will take the form $\theta(t) = e^{\rho t}$, we find the auxiliary equation $\rho^2 + \frac{k}{m}\rho + \frac{g}{r} = 0$ which gives the values
+
+\begin{align*}
+	\rho &= \frac{-\frac{k}{m} \pm \sqrt{\frac{k^2}{m^2} - 4 \frac{g}{r}}}{2}, \\
+	&= -\frac{k}{2m} \pm \frac{\sqrt{k^2r-4m^2g}}{2m\sqrt{r}}, \\
+	&= -\sigma \pm \epsilon. &&& \left(\sigma = \frac{k}{2m}, \epsilon = \frac{\sqrt{k^2r-4m^2g}}{2m\sqrt{r}} \right)
+\end{align*}
+
+This yields the solution
+
+\begin{align*}
+	\theta(t) = Ae^{(\epsilon - \sigma)t} + Be^{-(\epsilon + \sigma)t}.
+\end{align*}
+
+Using the initial angle $\theta_0$ and initial velocity $v_0$, we may find a pair of simultaneous equations of the constants $A$ and $B$.
+
+\begin{align}
+	\theta_0 &= Ae^0 + Be^0 \notag \\
+	&= A + B
+\end{align}
+
+\begin{align}
+	v(t) &= r\dot{\theta}(t) = r\left[A(\epsilon - \sigma)e^{(\epsilon - \sigma)t)} - B(\epsilon + \sigma)e^{-(\epsilon + \sigma)t}\right] \notag \\
+	v_0 &= r[A(\epsilon - \sigma)e^0 - B(\epsilon + \sigma)e^0] \notag \\
+	\frac{v_0}{r} &= A(\epsilon - \sigma) - B(\epsilon + \sigma)
+\end{align}
+
+(8) and (9) reveal the values
+
+\begin{align*}
+	A &= \frac{1}{2\epsilon}\left[\theta_0(\epsilon + \sigma) + \frac{v_0}{r}\right], \\
+	B &= \frac{1}{2\epsilon}\left[\theta_0(\epsilon + \sigma) - \frac{v_0}{r}\right],
+\end{align*}
+
+which give
+
+\begin{align}
+	\theta(t) &= \frac{1}{\epsilon}\left[\frac{\theta_0}{2}(\epsilon + \sigma)\left(e^{(\epsilon - \sigma)t} + e^{-(\epsilon - \sigma)t}\right) + \frac{v_0}{2r}\left(e^{(\epsilon - \sigma)t} - e^{-(\epsilon - \sigma)t}\right)\right], \notag \\
+	&= \frac{1}{\epsilon}\left[e^{-\sigma t}\theta_0(\epsilon + \sigma)\cosh(\epsilon t) + e^{-\sigma t}\frac{v_0}{r}\sinh(\epsilon t)\right], \notag \\
+	&= \frac{e^{-\sigma t}}{\epsilon}\left[\theta_0(\epsilon + \sigma)\cosh(\epsilon t) + \frac{v_0}{r}\sinh(\epsilon t)\right].
+\end{align}
+
+We can see however that $\epsilon$ contains the square root of something which may not always be positive, $k^2r-4m^2g$. In the case where $k^2r < 4m^2g$, the discriminant is negative and $\epsilon = i\epsilon_i$. We find through manipulation of the inequality produced by the discriminant that $\epsilon$ is imaginary if and only if $\sigma < \sqrt{\frac{g}{r}}$ This makes our above equation (10) take the form
+
+\begin{align*}
+	\theta(t) &= \frac{e^{-\sigma t}}{i\epsilon_i}\left[\theta_0(i\epsilon_i + \sigma)\cosh(i\epsilon_it) + \frac{v_0}{r}\sinh(i\epsilon_it)\right], \\
+	&= -\frac{ie^{-\sigma t}}{\epsilon_i}\left[\theta_0(i\epsilon_i + \sigma)\cos(\epsilon_it) + i \frac{v_0}{r}\sin(\epsilon_it)\right], \\
+	&= \frac{e^{-\sigma t}}{\epsilon_i}\left[\theta_0(\epsilon_i - i\sigma)\cos(\epsilon_it) + \frac{v_0}{r}\sin(\epsilon_it)\right].
+\end{align*}
+
+As it only makes sense for our angle $\theta(t)$ to be real, we discard the imaginary part of the cosine function in this to finally yield the equation
+
+\begin{equation*}
+	\theta(t) = 
+	\Bigg\{
+		\begin{array}{lr}
+			\frac{e^{-\sigma t}}{\epsilon}\left[\theta_0(\epsilon + \sigma)\cosh(\epsilon t) + \frac{v_0}{r}\sinh(\epsilon t)\right], & \textnormal{if }  \sigma > \sqrt{\frac{g}{r}} \\
+			e^{-\sigma t}\left[\theta_0\cos(\epsilon_it) + \frac{v_0}{r\epsilon_i}\sin(\epsilon_it)\right], & \textnormal{if } \sigma < \sqrt{\frac{g}{r}}
+		\end{array}
+\end{equation*}
+
+where
+
+\begin{align*}
+	\sigma &= \frac{k}{2m}, \\
+	\epsilon &= \frac{\sqrt{k^2r-4m^2g}}{2m\sqrt{r}}, \\
+	\epsilon_i &= \frac{\epsilon}{i}. \\
+\end{align*}
+
+\section{Springs}
+
+Springs function similarly to pendulums in that they produce simple harmonic motion. We shall again consider both springs with and without negligible air resistance. Firstly, we shall define our model's inputs and outputs.
+
+\newpage
+
+\appendix
+
+\section{Solving second order homogeneous linear ODEs}
+
+In this paper, we frequently encounter second order ordinary differential equations (ODEs) which take a homogeneous linear form with constant coefficients ($\ddot{y} + p\dot{y} + qy = 0$). This appendix is dedicated to proofs which underlie our method for solving equations of this form. Firstly, we shall lead by proving that a linear combination of solutions to a second order homogeneous linear ODE is also a valid solution to that ODE.
+
+\newtheorem*{odeLinear}{Theorem}
+
+\begin{odeLinear}
+Given two valid solutions $y = \phi_1(t)$ and $y = \phi_2(t)$ to the differential equation $\alpha\ddot{y} + \beta\dot{y} + \gamma y = 0$, we can say that $y = \phi(t) = A\phi_1(t) + B\phi_2(t)$ is also a valid solution to the equation.
+\end{odeLinear}
+
+\begin{proof}
+	\begin{equation*}
+		\alpha\ddot{\phi_1} + \beta\dot{\phi_1} + \gamma\phi_1 = 0, \: \alpha\ddot{\phi_2} + \beta\dot{\phi_2} + \gamma\phi_2 = 0
+	\end{equation*}
+
+	\begin{align*}
+			\alpha\ddot{\phi} + \beta\dot{\phi} + \gamma\phi &= \alpha[A\phi_1(t) + B\phi_2(t)]'' + \beta[A\phi_1(t) + B\phi_2(t)]' + \gamma[A\phi_1(t) + B\phi_2(t)] \\
+			&= \alpha[A\ddot{\phi_1}(t) + B\ddot{\phi_2}(t)] + \beta[A\dot{\phi_1}(t) + B\dot{\phi_2}(t)] + \gamma[A\phi_1(t) + B\phi_2(t)] \\
+			&= A[\alpha\ddot{\phi_1} + \beta\dot{\phi_1} + \gamma\phi_1 ] + B[\alpha\ddot{\phi_2} + \beta\dot{\phi_2} + \gamma\phi_2] \\
+			&= A[0] + B[0] = 0 \\
+			& \therefore \phi(t) \textnormal{ is a valid solution.}
+	\end{align*}
+\end{proof}
+
+This proof shows how we may combine individual solutions to our ODEs to gain a more general solution which encompasses more initial conditions and behaviours. We shall now show how we may derive our two individual solutions to the ODE by creating an auxiliary equation whose roots yield the solutions.
+
+\newtheorem*{odeAux}{Theorem}
+
+\begin{odeAux}
+Given a differential equation $\alpha\ddot{y} + \beta\dot{y} + \gamma y = 0$, we may obtain two solutions of the form $\phi(t) = e^{\rho t}$ by finding the roots of the auxiliary quadratic $\alpha\rho^2 + \beta\rho + \gamma = 0$.
+\end{odeAux}
+
+\begin{proof}
+	We begin by assuming that the solutions to our ODE will take the form $e^{\rho t}$ as they do in first-order homogeneous linear ODEs with constant coefficients. We simply need to find what values of $\rho$ yield valid solutions. To do this, we substitute $\phi(t) = e^{\rho t}$ for $y$ in our ODE to find the following.
+
+	\begin{align*}
+		\alpha\ddot{y} + \beta\dot{y} + \gamma y &= 0 \\
+		\alpha\ddot{\phi} + \beta\dot{\phi} + \gamma \phi &= 0 \\
+		\alpha[e^{\rho t}]'' + \beta[e^{\rho t}]' + \gamma e^{\rho t} &= 0 \\
+		\alpha\rho^2 e^{\rho t} + \beta\rho e^{\rho t} + \gamma e^{\rho t} &= 0 \\
+		e^{\rho t}[\alpha\rho^2 + \beta\rho + \gamma] &= 0
+	\end{align*}
+
+	As $e^{\rho t}$ cannot be zero for any $t \in \mathbb{C}$, we may divide by it without introducing problems. This yields the equation
+
+	\begin{equation*}
+		\alpha\rho^2 + \beta\rho + \gamma = 0
+	\end{equation*}
+
+	the roots of which are the coefficients of $t$ in our solutions.
+\end{proof}
+
+\section{Behaviour of second order homogeneous linear ODEs}
+
+In this appendix, we shall investigate how we may categorise second order homogeneous linear ODEs by their coefficients in order to better understand their resultant properties and end behaviours. This shall have vast consequences in the analysis of different situations and how they may evolve over time. We may first split our ODEs into seven\footnote{\label{um... acshully}There are actually eight different forms if we include the form in which all coefficients are zero, but it is impossible for us to gleam any information from an equation of this form and as such it has been omitted.} broad categories based on which coefficients and, by extension, derivatives are included. Some of these categories will require subdivision while some which lack certain derivative orders will be incredibly simple in behaviour. Our initial values for each case will generally be
+
+\begin{align*}
+	y(0) &= y_0, \\
+	\dot{y}(0) &= \dot{y}_0.
+\end{align*}
+
+\subsection{Decay to non-differential equation ($\gamma y = 0$)}
+\label{Bexception1}
+
+It is obvious in this case that, by dividing throughout by $\gamma$, we have the solution $y(t) \equiv 0$.
+
+\subsection{Equation of the first derivative ($\beta\dot{y} = 0$)}
+\label{Bexception2}
+
+In this case, we may divide throughout by $\beta$ and integrate both sides with respect to $t$ to obtain the general solution $y(t) = c$. Using an initial condition of $y(0) = y_0$ gives the particular solution $y(t) = y_0$.
+This solution is constant and does not evolve over time. This behaviour can be derived directly from the differential equation as it defines the rate of change of the solution to be zero, hence the solution doesn't change.
+
+\subsection{Equation of the second derivative ($\alpha\ddot{y} = 0$)}
+
+We may derive the solution to this equation by a method similar to the one employed for the previous equation. We divide throughout by $\alpha$ and then integrate with respect to $t$ twice to obtain the following general solution.
+
+\begin{align}
+	\alpha\ddot{y} &= 0 \notag \\
+	\ddot{y} &= 0 \notag \\
+	\dot{y}(t) &= c \label{eq:sndDir1} \\
+	y(t) &= ct + k \label{eq:sndDir2}
+\end{align}
+
+We may now use our general set of initial conditions to find the particular solution of this differential equation. Using our two initial conditions and equations \eqref{eq:sndDir1} and \eqref{eq:sndDir2}, we find that $k = y_0$ and $c = \dot{y}_0$. Hence,
+
+\begin{align*}
+	y(t) = \dot{y}_0t + y_0. &&& (y(0) = y_0, \dot{y}(0) = \dot{y}_0)
+\end{align*}
+
+\subsection{Absence of the function itself ($\alpha\ddot{y} + \beta\dot{y} = 0$)}
+
+From a differential equation of the form $\alpha\ddot{y} + \beta\dot{y} = 0$, we obtain the auxiliary equation
+
+\begin{equation*}
+	\alpha\rho^2 + \beta\rho = 0.
+\end{equation*}
+
+Simple factorisation of this equation yields the two roots $0$ and $-\frac{\beta}{\alpha}$. Hence, our solution shall be of the general form
+
+\begin{equation*}
+	y(t) = A\exp\left(-\frac{\beta}{\alpha}t\right) + B, \: \dot{y}(t) = -A\frac{\beta}{\alpha}\exp\left(-\frac{\beta}{\alpha}t\right).
+\end{equation*}
+
+Using our initial values, we find that
+
+\begin{align*}
+	A &= -\dot{y}_0\frac{\alpha}{\beta}, \\
+	B &= y_0 + \dot{y}_0\frac{\alpha}{\beta}.
+\end{align*}
+
+Hence we arrive at the particular solution
+
+\begin{equation*}
+	y(t) = y_0 + \dot{y}_0\frac{\alpha}{\beta}\left[1 - \exp\left(-\frac{\beta}{\alpha}t\right)\right].
+\end{equation*}
+
+\subsection{Absence of the first derivative ($\alpha\ddot{y} + \gamma y = 0$)}
+\subsection{Absence of the second derivative ($\beta\dot{y} + \gamma y = 0$)}
+\subsection{Full linear second-order differential equation ($\alpha\ddot{y} + \beta\dot{y} + \gamma y = 0$)}
+
+\setlength{\tabcolsep}{0.15em}
+
+\begin{table}[h!]
+	\begin{center}
+		\caption{Forms of second-order homogeneous linear ODEs}
+		\label{tab:table1}
+		% \rotatebox{90}{
+		\makebox[\textwidth][c]{
+			\renewcommand{\arraystretch}{1.75}
+			\scriptsize
+			\begin{tabular}{c|c|c|c|l}
+				\toprule
+				\textbf{ODE} & \textbf{General solution} & \textbf{Particular solution} & \textbf{Conditions} & \textbf{Behaviour} \\
+				\midrule
+				$\gamma y = 0$ & $y(t) = 0$ & $y(t) = 0$ & - & Does not evolve over time \\
+				\hline
+				$\beta\dot{y} = 0$ & $y(t) = c$ & $y(t) = y_0$ & - & Does not evolve over time \\
+				\hline
+				$\alpha\ddot{y} = 0$ & $y(t) = ct + k$ & $y(t) = \dot{y}_0t + y_0$ & - & Linear over time \\
+				\hline
+				$\alpha\ddot{y} + \beta\dot{y} = 0$
+					& $y(t) = A\exp\left(-\frac{\beta}{\alpha}t\right) + B$
+						& $y(t) = y_0 + \dot{y}_0\frac{\alpha}{\beta}\left[1 - \exp\left(-\frac{\beta}{\alpha}t\right)\right]$
+							& $\dot{y}_0 = 0$ & Function decays to the constant $y_0$ \\
+					\cline{4-5}
+					& 	&	& $\alpha\beta > 0$ & Tends to $y_0 + \frac{\alpha}{\beta}\dot{y}_0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\alpha\beta < 0$ & Tends to $+\infty$ as $t \to \infty$ \\
+				\hline
+				$\alpha\ddot{y} + \gamma y = 0$
+					& $y(t) = A\exp\left(i \sqrt{\frac{\gamma}{\alpha}}t\right) +  B\exp\left(-i \sqrt{\frac{\gamma}{\alpha}}t\right)$
+						& $y(t) = y_0\cos\left(\sqrt{\frac{\gamma}{\alpha}}t\right) + \dot{y}_0\sqrt{\frac{\alpha}{\gamma}}\sin\left(\sqrt{\frac{\gamma}{\alpha}}t\right), \alpha\gamma > 0$ & - & Periodic with a period of $2\pi\sqrt{\frac{\alpha}{\gamma}}$ \\
+					\cline{3-5}
+					&	& $y(t) = y_0\cosh\left(\sqrt{-\frac{\gamma}{\alpha}}t\right) - \dot{y}_0\sqrt{-\frac{\alpha}{\gamma}}\sinh\left(\sqrt{-\frac{\gamma}{\alpha}}t\right), \alpha\gamma < 0$
+							& $y_0 > \dot{y}_0\sqrt{-\frac{\alpha}{\gamma}}$ & Tends to $+\infty$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $y_0 = \dot{y}_0\sqrt{-\frac{\alpha}{\gamma}}$ & Tends to $0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $y_0 < \dot{y}_0\sqrt{-\frac{\alpha}{\gamma}}$ & Tends to $-\infty$ as $t \to \infty$ \\
+				\hline
+				$\beta\dot{y} + \gamma y = 0$
+					& $y(t) = c\exp\left(-\frac{\gamma}{\beta}t\right)$
+						& $y(t) = y_0\exp\left(-\frac{\gamma}{\beta}t\right)$
+							& $\beta\gamma < 0, y_0 > 0$ & Tends to $+\infty$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\beta\gamma > 0$ & Tends to $0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\beta\gamma < 0, y_0 < 0$ & Tends to $-\infty$ as $t \to \infty$ \\
+				\hline
+				$\alpha\ddot{y} + \beta\dot{y} + \gamma y = 0$
+					& $y(t) = \exp(\sigma t)[A\exp(\epsilon t) + B\exp(-\epsilon t)]$
+						& $y(t) = y_0\exp\left(-\sqrt{\frac{\gamma}{\alpha}}t\right), \epsilon = 0$
+							& - & Tends to $0$ as $t \to \infty$ \\
+					\cline{3-5}
+					& $\left(\sigma := \frac{\beta}{2\alpha}, \; \epsilon := \frac{\sqrt{\beta^2 - 4\alpha\gamma}}{2\alpha}\right)$
+						& $y(t)= \exp(\sigma t)\left[y_0\cosh\left(\epsilon t\right) + \dot{y}_0\frac{1}{\sigma\epsilon}\sinh\left(\epsilon t\right)\right], \epsilon \in \mathbb{R}$
+							& $\sigma > \epsilon$ & Tends to $0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\sigma < \epsilon, y_0 > \dot{y}_0\frac{1}{\sigma\epsilon}$ & Tends to $+\infty$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\sigma < \epsilon, y_0 = \dot{y}_0\frac{1}{\sigma\epsilon}$ & Tends to $0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\sigma < \epsilon, y_0 < \dot{y}_0\frac{1}{\sigma\epsilon}$ & Tends to $-\infty$ as $t \to \infty$ \\
+					\cline{3-5}
+					&	& $y(t) = \exp(\sigma t)\left[y_0\cos\left(\frac{\epsilon}{i}t\right) + \dot{y}_0\frac{i}{\sigma\epsilon}\sin\left(\frac{\epsilon}{i}t\right)\right], \epsilon \notin \mathbb{R}$
+							& - & Semi-periodic with a period of $2\pi\frac{i}{\epsilon}$ \\
+					\cline{4-5}
+					&	&	& $\sigma > 0$ & Tends to $0$ as $t \to \infty$ \\
+					\cline{4-5}
+					&	&	& $\sigma < 0$ & No limit. Unbounded as $t \to \infty$ \\
+				\bottomrule
+			\end{tabular}
+		}
+	\end{center}
+\end{table}
+
+\end{document}

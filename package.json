@@ -1,0 +1,26 @@
+{
+  "name": "jatex",
+  "version": "1.0.0",
+  "description": "",
+  "directories": {
+    "doc": "docs/"
+  },
+  "source": "index.html",
+  "scripts": {
+    "lint": "eslint ./src/ -c ./.eslintrc.json",
+    "fix": "eslint ./src/ -c ./.eslintrc.json --fix",
+    "doc": "jsdoc --configure ./jsdoc.json --readme ./README.md",
+    "start": "serve",
+    "build": "parcel build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "parcel": "^2.8.3",
+    "eslint": "^8.33.0",
+    "jsdoc": "^4.0.0",
+    "tidy-jsdoc": "^1.4.1"
+  }
+}
