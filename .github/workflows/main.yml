@@ -45,6 +45,14 @@ jobs:
           node-version: 16.x
           cache: 'npm'
 
+      - name: Find and Replace
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: /import\(.*\)\./
+          replace: ''
+          include: './src/**'
+          regex: true
+
       - name: Build
         run: |
           npm install

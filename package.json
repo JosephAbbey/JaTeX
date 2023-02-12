@@ -19,7 +19,6 @@
   "devDependencies": {
     "eslint": "^8.33.0",
     "jsdoc": "^4.0.0",
-    "jsdoc-import-support": "^3.6.4",
     "jsdoc-plugin-intersection": "^1.0.4",
     "parcel": "^2.8.3",
     "serve": "^14.2.0",
