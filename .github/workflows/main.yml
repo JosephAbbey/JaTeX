@@ -3,10 +3,10 @@ name: Build, Docs & Deploy
 on:
   push:
     tags:
-    - 'v*'
+      - 'v*'
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
       - name: Build
         run: |
           npm install
-          npm run docs
+          npm run doc
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3.1.2
@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     name: Deploy to GitHub Pages
-    needs: build
+    needs: [build, docs]
     runs-on: ubuntu-latest
 
     outputs:
@@ -75,13 +75,13 @@ jobs:
     steps:
       - name: Setup Pages
         uses: actions/configure-pages@v2
-        
+
       - name: Download build
         uses: actions/download-artifact@v3.0.2
         with:
           name: build
           path: .
-        
+
       - name: Download docs
         uses: actions/download-artifact@v3.0.2
         with:
