@@ -6,7 +6,7 @@
  * @author Joseph Abbey
  * @date 05/02/2023
  * @constructor
- * @extends {Map<string,typeof Element>}
+ * @extends {Map<string, any>}
  *
  * @description Used to map element type names to element constructors for serialisation and deserialisation.
  */
@@ -468,7 +468,7 @@ export default class Element {
   /**
    * @author Joseph Abbey
    * @date 04/02/2023
-   * @type {Object<string,ElementEventListener<E>[]>}
+   * @type {Object<string,Array<ElementEventListener<E>>>}
    * @private
    *
    * @description Function to add an event listener to the element.
@@ -477,7 +477,7 @@ export default class Element {
   /**
    * @author Joseph Abbey
    * @date 04/02/2023
-   * @param {E["type"]} type
+   * @param {string} type
    * @param {ElementEventListener<E>} listener - Function to handle the event.
    * @returns {void}
    *
@@ -490,7 +490,7 @@ export default class Element {
   /**
    * @author Joseph Abbey
    * @date 04/02/2023
-   * @param {E["type"]} type
+   * @param {string} type
    * @param {ElementEventListener<E>} listener - Function to handle the event.
    * @returns {void}
    *

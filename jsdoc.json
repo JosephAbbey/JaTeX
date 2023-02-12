@@ -1,5 +1,9 @@
 {
-  "plugins": ["plugins/markdown", "plugins/summarize"],
+  "plugins": [
+    "plugins/markdown",
+    "plugins/summarize",
+    "jsdoc-plugin-intersection"
+  ],
   "recurseDepth": 10,
   "source": {
     "include": ["./src/"],

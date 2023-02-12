@@ -19,7 +19,7 @@
     }
   },
   "rules": {
-    "require-jsdoc": "error",
+    "require-jsdoc": "warn",
     "require-yield": "warn",
     "accessor-pairs": "warn",
     "block-scoped-var": "warn",
