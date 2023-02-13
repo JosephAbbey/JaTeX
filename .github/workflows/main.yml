@@ -2,8 +2,7 @@ name: Build, Docs & Deploy
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: ['main']
 
 concurrency:
   group: 'pages'
