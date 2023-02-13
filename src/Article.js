@@ -3,6 +3,7 @@
  */
 
 import Element, { ElementError, ElementEvent } from './Element.js';
+import MakeTitle from './MakeTitle.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
@@ -10,6 +11,14 @@ import Element, { ElementError, ElementEvent } from './Element.js';
 
 export class ArticleError extends ElementError {}
 
+/**
+ * @author Joseph Abbey
+ * @date 13/02/2023
+ * @constructor
+ * @extends {ElementEvent<Article,"editTitle">}
+ *
+ * @description Used to trigger article element specific events.
+ */
 export class ArticleEvent extends ElementEvent {}
 
 /**
@@ -149,13 +158,26 @@ export default class Article extends Element {
     this.packages = options.packages ?? [];
 
     if (!options.title) throw new ArticleError('A title must be provided.');
-    this.title = options.title;
+    this._title = options.title;
 
     if (!options.author) throw new ArticleError('An author must be provided.');
     this.author = options.author;
 
+    this.maketitles = [];
+
+    this.article = this;
+
     this.root.appendChild(this.dom);
   }
+
+  /**
+   * @author Joseph Abbey
+   * @date 13/02/2023
+   * @type {MakeTitle[]}
+   *
+   * @description The maketitle elements in the article.
+   */
+  maketitles;
 
   /**
    * @author Joseph Abbey
@@ -177,12 +199,37 @@ export default class Article extends Element {
 
   /**
    * @author Joseph Abbey
+   * @date 05/02/2023
+   * @protected
+   * @type {string}
+   * @see {@link title} instead.
+   *
+   * @description Internal dom cache, use `this.title` instead.
+   */
+  _title;
+  /**
+   * @author Joseph Abbey
    * @date 29/01/2023
    * @type {string}
    *
    * @description The title of the article. `\title{%}`
    */
-  title;
+  get title() {
+    return this._title;
+  }
+  set title(s) {
+    this._title = s;
+    // Update the dom.
+    this.maketitles.forEach(
+      (t) => t.dom.innerText != s && (t.dom.innerText = s)
+    );
+
+    this.dispatchEvent(
+      new ArticleEvent('editTitle', this, {
+        content: s,
+      })
+    );
+  }
 
   /**
    * @author Joseph Abbey
@@ -200,12 +247,12 @@ export default class Article extends Element {
         .map(
           (p) =>
             `\\usepackage${
-              p[1]
-                ? `[${Object.keys(p[1])
-                    .map((k) => `${k}=${p[1][k]}`)
+              p.options
+                ? `[${Object.keys(p.options)
+                    .map((k) => `${k}=${p.options[k]}`)
                     .join(',')}]`
                 : ''
-            }{${p[0]}}\n`
+            }{${p.name}}\n`
         )
         .join('') +
       '\n' +

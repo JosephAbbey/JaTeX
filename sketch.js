@@ -9,7 +9,10 @@ import {
   Equals,
   Function,
   InlineMaths,
+  MakeTitle,
+  NewPage,
   Number,
+  PageNumbering,
   Paragraph,
   Power,
   Section,
@@ -47,6 +50,20 @@ var article =
       new Document({
         id: 'article__document',
         children: [
+          new PageNumbering({
+            id: 'article__document__0',
+            numbering: 'gobble',
+          }),
+          new MakeTitle({
+            id: 'article__document__1',
+          }),
+          new NewPage({
+            id: 'article__document__2',
+          }),
+          new PageNumbering({
+            id: 'article__document__3',
+            numbering: 'arabic',
+          }),
           new Section({
             id: 'article__document__pendulums',
             title: 'Pendulums',
@@ -524,12 +541,17 @@ function beforeunload(e) {
   return 'Reload site?';
 }
 
-article.addEventListener('childEvent', (e) => {
+article.addEventListener('editTitle', (event) => {
+  document.title =
+    (document.title.startsWith('● ') ? '● ' : '') + event.data.content;
+});
+
+article.addEventListener('childEvent', (event) => {
   /**
    * @var
    * @type {ElementEvent}
    */
-  var c = e;
+  var c = event;
   while (c.type == 'childEvent') {
     c = c.data;
   }
@@ -542,12 +564,25 @@ article.addEventListener('childEvent', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey && e.key === 's') {
-    e.preventDefault();
-    localStorage.setItem('article', JSON.stringify(article.serialised));
-    if (document.title.startsWith('● ')) {
-      document.title = document.title.substring(2);
-      window.removeEventListener('beforeunload', beforeunload);
+  if (e.ctrlKey) {
+    switch (e.key) {
+      case 's':
+        e.preventDefault();
+        localStorage.setItem('article', JSON.stringify(article.serialised));
+        if (document.title.startsWith('● ')) {
+          document.title = document.title.substring(2);
+          window.removeEventListener('beforeunload', beforeunload);
+        }
+        break;
+      case 'e':
+        e.preventDefault();
+        console.log('s');
+        var w = window.open('about:blank', 'JaTeX', 'popup');
+        var p = document.createElement('pre');
+        p.innerText = article.tex;
+        if (w) w.document.body.appendChild(p);
+        break;
+      default:
     }
   }
 });

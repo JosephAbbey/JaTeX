@@ -30,6 +30,20 @@ export {
  */
 export { default as Font, FontError, FontEvent } from './Font.js';
 /**
+ * @typedef {import("./PageNumbering.js").PageNumberingOptions} PageNumberingOptions
+ * @typedef {import("./PageNumbering.js").PageNumberingSerialised} PageNumberingSerialised
+ */
+export {
+  default as PageNumbering,
+  PageNumberingError,
+  PageNumberingEvent,
+} from './PageNumbering.js';
+export {
+  default as MakeTitle,
+  MakeTitleError,
+  MakeTitleEvent,
+} from './MakeTitle.js';
+/**
  * @typedef {import("./Maths.js").BracketsOptions} BracketsOptions
  * @typedef {import("./Maths.js").BracketsSerialised} BracketsSerialised
  * @typedef {import("./Maths.js").FractionOptions} FractionOptions

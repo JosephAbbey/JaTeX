@@ -18,20 +18,20 @@
         counter-reset: sectionCount subsectionCount;
       }
 
-      h1 {
+      [data-type='Section'] > h2 {
         counter-increment: sectionCount 1;
         counter-reset: subsectionCount;
       }
 
-      h1:before {
+      [data-type='Section'] > h2:before {
         content: counter(sectionCount) ' ';
       }
 
-      h2 {
+      [data-type='SubSection'] > h3 {
         counter-increment: subsectionCount 1;
       }
 
-      h2:before {
+      [data-type='SubSection'] > h3:before {
         content: counter(sectionCount) '.' counter(subsectionCount) ' ';
       }
     </style>

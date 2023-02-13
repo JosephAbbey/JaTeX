@@ -10,6 +10,14 @@ import Element, { ElementError, ElementEvent } from './Element.js';
 
 export class SectionError extends ElementError {}
 
+/**
+ * @author Joseph Abbey
+ * @date 11/02/2023
+ * @constructor
+ * @extends {ElementEvent<Section,"editTitle">}
+ *
+ * @description Used to trigger section element specific events.
+ */
 export class SectionEvent extends ElementEvent {}
 
 /**
@@ -86,7 +94,7 @@ export default class Section extends Element {
    */
   get titleDom() {
     if (!this._titleDom) {
-      this._titleDom = document.createElement('h1');
+      this._titleDom = document.createElement('h2');
       this.updateTitleDom();
       this._titleDom.addEventListener('input', this.handleInput.bind(this));
     }
@@ -164,13 +172,13 @@ export default class Section extends Element {
 
     this.dispatchEvent(
       new SectionEvent('editTitle', this, {
-        content: this.titleDom.innerText,
+        content: s,
       })
     );
   }
 
   get tex() {
-    return `\\section{${this.title}}\n\n` + this.ctex;
+    return `\n\\section{${this.title}}\n` + this.ctex;
   }
 }
 

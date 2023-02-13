@@ -14,14 +14,14 @@ import Section from './Section.js';
  */
 export default class SubSection extends Section {
   get titleDom() {
-    this._titleDom = document.createElement('h2');
+    this._titleDom = document.createElement('h3');
     this.updateTitleDom();
     this._titleDom.addEventListener('input', this.handleInput.bind(this));
     return this._titleDom;
   }
 
   get tex() {
-    return `\\subsection{${this.title}}\n\n` + this.ctex;
+    return `\n\\subsection{${this.title}}\n` + this.ctex;
   }
 }
 

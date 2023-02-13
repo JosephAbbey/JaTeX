@@ -2,6 +2,8 @@
  * @module Element
  */
 
+import Article from './Article.js';
+
 /**
  * @author Joseph Abbey
  * @date 05/02/2023
@@ -271,6 +273,31 @@ export default class Element {
    */
   parent;
 
+  /**
+   * @author Joseph Abbey
+   * @date 13/02/2023
+   * @type {Article?}
+   * @private
+   *
+   * @description The internal cache of the article that contains this element.
+   */
+  _article;
+
+  /**
+   * @author Joseph Abbey
+   * @date 13/02/2023
+   * @type {Article?}
+   *
+   * @description The article that contains this element.
+   */
+  get article() {
+    return this._article;
+  }
+  set article(a) {
+    this._article = a;
+    this.children.forEach((c) => (c.article = a));
+  }
+
   delete() {
     this.parent?.removeChild(this);
     this.dispatchEvent(
@@ -290,6 +317,7 @@ export default class Element {
   appendChild(c) {
     this.children.push(c);
     c.parent = this;
+    c.article = this.article;
     this.updateDom();
     this.dispatchEvent(
       //@ts-expect-error
@@ -311,6 +339,7 @@ export default class Element {
     const index = this.children.findIndex((e) => e.id == o.id);
     if (index > -1) this.children.splice(index + 1, 0, c);
     c.parent = this;
+    c.article = this.article;
     this.updateDom();
     this.dispatchEvent(
       //@ts-expect-error
@@ -368,7 +397,7 @@ export default class Element {
         items,
       })
     );
-    r.forEach((c) => (c.parent = null));
+    r.forEach((c) => ((c.parent = null), (c.article = null)));
     return r;
   }
   /**

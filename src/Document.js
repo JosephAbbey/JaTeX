@@ -30,16 +30,7 @@ export default class Document extends Element {
   }
 
   get tex() {
-    return (
-      '\\begin{document}\n\n' +
-      '\\pagenumbering{gobble}\n' +
-      '\\maketitle\n' +
-      '\\newpage\n\n' +
-      '\\pagenumbering{arabic}\n\n' +
-      this.ctex +
-      '\n\n' +
-      '\\end{document}'
-    );
+    return '\\begin{document}\n\n' + this.ctex + '\n\n\\end{document}';
   }
 }
 

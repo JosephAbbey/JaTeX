@@ -166,7 +166,7 @@ export default class Text extends Element {
     else
       this.dispatchEvent(
         new TextEvent('edit', this, {
-          content: this.dom.innerText,
+          content: s,
         })
       );
   }
