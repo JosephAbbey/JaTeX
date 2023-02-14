@@ -1,0 +1,57 @@
+body, #navbar {
+  margin-top: 0;
+  background-color: #24292e;
+}
+
+button:has(.material-symbols-outlined) {
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: none;
+  color: white;
+  border-radius: 2px;
+}
+
+button:has(.material-symbols-outlined):hover {
+  background-color: #eefcfd11;
+}
+
+button.required > .material-symbols-outlined {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: rotate(5deg);
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: rotate(-5deg);
+  }
+  20%,
+  80% {
+    transform: rotate(10deg);
+  }
+  30%,
+  50%,
+  70% {
+    transform: rotate(-20deg);
+  }
+  40%,
+  60% {
+    transform: rotate(20deg);
+  }
+}
+
+#navbar {
+  border-bottom: 1px solid grey;
+  height: 1.7em;
+  padding-bottom: 0.1em;
+  margin-bottom: 1em;
+  position: sticky;
+  top: 0;
+  padding-top: .5rem;
+}
+
+#root {
+  max-width: 50rem;
+  margin-inline: auto;
+}

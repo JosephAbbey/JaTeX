@@ -14,9 +14,11 @@ import Section from './Section.js';
  */
 export default class SubSection extends Section {
   get titleDom() {
-    this._titleDom = document.createElement('h3');
-    this.updateTitleDom();
-    this._titleDom.addEventListener('input', this.handleInput.bind(this));
+    if (!this._titleDom) {
+      this._titleDom = document.createElement('h3');
+      this.updateTitleDom();
+      this._titleDom.addEventListener('input', this.handleInput.bind(this));
+    }
     return this._titleDom;
   }
 

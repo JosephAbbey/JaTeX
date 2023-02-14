@@ -321,7 +321,7 @@ export class Vector extends Variable {
       content: '\u2192';
       position: absolute;
       font-size: .65em;
-      transform: translateY(-0.5em);
+      transform: translate(-2.85em, -0.5em);
     }`;
     this._dom?.appendChild(style);
   }
@@ -456,7 +456,7 @@ export class Function extends Element {
     this._dom.id = this.id;
     this._dom.dataset.type = this.constructor.name;
     this._dom.style.fontFamily = 'math';
-    this._dom.style.marginLeft = '0.05em';
+    this._dom.style.marginLeft = '0.2em';
     this._dom.append(
       document.createTextNode(this.func + '['),
       ...this.cdom,
@@ -811,6 +811,74 @@ export class Fraction extends Element {
     return this.denominator.map((c) => c.tex).join('');
   }
 
+  /**
+   * @author Joseph Abbey
+   * @date 14/02/2023
+   * @type {HTMLDivElement}
+   * @see {@link NDom} instead.
+   *
+   * @description Internal dom cache, use `this.NDom` instead.
+   */
+  _NDom;
+  /**
+   * @protected
+   */
+  updateNDom() {
+    if (!this._NDom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateNDom`.'
+      );
+    this._NDom.append(...this.ndom);
+  }
+  /**
+   * @author Joseph Abbey
+   * @date 14/02/2023
+   * @type {HTMLDivElement}
+   *
+   * @description Gets or creates the HTMLDivElement linked with this instance's N.
+   */
+  get NDom() {
+    if (!this._NDom) {
+      this._NDom = document.createElement('div');
+      this.updateNDom();
+    }
+    return this._NDom;
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 14/02/2023
+   * @type {HTMLDivElement}
+   * @see {@link DDom} instead.
+   *
+   * @description Internal dom cache, use `this.DDom` instead.
+   */
+  _DDom;
+  /**
+   * @protected
+   */
+  updateDDom() {
+    if (!this._DDom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateDDom`.'
+      );
+    this._DDom.append(...this.ddom);
+  }
+  /**
+   * @author Joseph Abbey
+   * @date 14/02/2023
+   * @type {HTMLDivElement}
+   *
+   * @description Gets or creates the HTMLDivElement linked with this instance's N.
+   */
+  get DDom() {
+    if (!this._DDom) {
+      this._DDom = document.createElement('div');
+      this.updateDDom();
+    }
+    return this._DDom;
+  }
+
   updateDom() {
     if (!this._dom)
       throw new ElementError(
@@ -827,7 +895,7 @@ export class Fraction extends Element {
     hr.style.border = '1px solid #5e5e5e';
     hr.style.paddingInline = '6px';
     hr.style.paddingBlock = '0';
-    this._dom.append(...this.ndom, hr, ...this.ddom);
+    this._dom.append(this.NDom, hr, this.DDom);
   }
   createDom() {
     this._dom = document.createElement('span');

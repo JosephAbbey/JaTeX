@@ -133,7 +133,7 @@ export default class Element {
         performance.now &&
         performance.now() * 1000) ||
       0; // Time in microseconds since page-load or 0 if unsupported
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+    return 'exxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
       /[xy]/g,
       function (c) {
         var r = Math.random() * 16; // Random number between 0 and 16

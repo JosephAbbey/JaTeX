@@ -48,67 +48,67 @@ var article =
     ],
     children: [
       new Document({
-        id: 'article__document',
+        id: Element.uuid(),
         children: [
           new PageNumbering({
-            id: 'article__document__0',
+            id: Element.uuid(),
             numbering: 'gobble',
           }),
           new MakeTitle({
-            id: 'article__document__1',
+            id: Element.uuid(),
           }),
           new NewPage({
-            id: 'article__document__2',
+            id: Element.uuid(),
           }),
           new PageNumbering({
-            id: 'article__document__3',
+            id: Element.uuid(),
             numbering: 'arabic',
           }),
           new Section({
-            id: 'article__document__pendulums',
+            id: Element.uuid(),
             title: 'Pendulums',
             children: [
               new Paragraph({
-                id: 'article__document__pendulums__0',
+                id: Element.uuid(),
                 children: [
                   new Text({
-                    id: 'article__document__pendulums__0__0',
+                    id: Element.uuid(),
                     text: 'A pendulum is a mass connected at the end of an arm of constant length which is allowed to pivot about a fixed point. We shall find that they produce oscillatory or almost oscillatory behaviour depending on whether or not air resistance is taken into account.',
                   }),
                 ],
               }),
               new Paragraph({
-                id: 'article__document__pendulums__1',
+                id: Element.uuid(),
                 children: [
                   new Text({
-                    id: 'article__document__pendulums__1__0',
+                    id: Element.uuid(),
                     text: 'We shall first define a cartesian coordinate system with the aforementioned fixed point at the origin. We will define ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__1__1',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__1__1__0',
+                        id: Element.uuid(),
                         var: 'r',
                       }),
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__1__2',
+                    id: Element.uuid(),
                     text: " to be the length of the pendulum's arm and ",
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__1__3',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__1__3__0',
+                        id: Element.uuid(),
                         var: 'θ',
                       }),
                       new Brackets({
-                        id: 'article__document__pendulums__1__3__1',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__1__3__1_0',
+                            id: Element.uuid(),
                             var: 't',
                           }),
                         ],
@@ -116,56 +116,56 @@ var article =
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__1__4',
+                    id: Element.uuid(),
                     text: ' to be the angle counterclockwise from the y-axis of our coordinate plane to the arm of the pendulum at any time ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__1__5',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__1__5__0',
+                        id: Element.uuid(),
                         var: 't',
                       }),
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__1__6',
+                    id: Element.uuid(),
                     text: '.',
                   }),
                 ],
               }),
               new Paragraph({
-                id: 'article__document__pendulums__2',
+                id: Element.uuid(),
                 children: [
                   new Text({
-                    id: 'article__document__pendulums__2__0',
+                    id: Element.uuid(),
                     text: 'We can now define the position of the mass at any time ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__2__1',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__2__1__0',
+                        id: Element.uuid(),
                         var: 't',
                       }),
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__2__2',
+                    id: Element.uuid(),
                     text: ' by using the constant distance from the origin and the angle function ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__2__3',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__2__3__0',
+                        id: Element.uuid(),
                         var: 'θ',
                       }),
                       new Brackets({
-                        id: 'article__document__pendulums__2__3__1',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__2__3__1__0',
+                            id: Element.uuid(),
                             var: 't',
                           }),
                         ],
@@ -173,45 +173,45 @@ var article =
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__2__4',
+                    id: Element.uuid(),
                     text: ' to construct a right angle triangle. Using the sine and cosine functions we find that the position of the mass at time ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__2__5',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__2__5__0',
+                        id: Element.uuid(),
                         var: 't',
                       }),
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__2__6',
+                    id: Element.uuid(),
                     text: ' is ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__2__7',
+                    id: Element.uuid(),
                     children: [
                       new Brackets({
-                        id: 'article__document__pendulums__2__7__0',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__2__7__0__0',
+                            id: Element.uuid(),
                             var: 'r',
                           }),
                           new Function({
-                            id: 'article__document__pendulums__2__7__0__1',
+                            id: Element.uuid(),
                             func: 'sin',
                             children: [
                               new Variable({
-                                id: 'article__document__pendulums__2__7__0__1__0',
+                                id: Element.uuid(),
                                 var: 'θ',
                               }),
                               new Brackets({
-                                id: 'article__document__pendulums__2__7__0__1__1',
+                                id: Element.uuid(),
                                 children: [
                                   new Variable({
-                                    id: 'article__document__pendulums__2__7__0__1__1__0',
+                                    id: Element.uuid(),
                                     var: 't',
                                   }),
                                 ],
@@ -219,28 +219,28 @@ var article =
                             ],
                           }),
                           new Comma({
-                            id: 'article__document__pendulums__2__7__0__2',
+                            id: Element.uuid(),
                           }),
                           new UnaryMinus({
-                            id: 'article__document__pendulums__2__7__0__3',
+                            id: Element.uuid(),
                             children: [
                               new Variable({
-                                id: 'article__document__pendulums__2__7__0__3__0',
+                                id: Element.uuid(),
                                 var: 'r',
                               }),
                               new Function({
-                                id: 'article__document__pendulums__2__7__0__3__1',
+                                id: Element.uuid(),
                                 func: 'cos',
                                 children: [
                                   new Variable({
-                                    id: 'article__document__pendulums__2__7__0__3__1__0',
+                                    id: Element.uuid(),
                                     var: 'θ',
                                   }),
                                   new Brackets({
-                                    id: 'article__document__pendulums__2__7__0__3__1__1',
+                                    id: Element.uuid(),
                                     children: [
                                       new Variable({
-                                        id: 'article__document__pendulums__2__7__0__3__1__1__0',
+                                        id: Element.uuid(),
                                         var: 't',
                                       }),
                                     ],
@@ -254,83 +254,83 @@ var article =
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__2__8',
+                    id: Element.uuid(),
                     text: '.',
                   }),
                 ],
               }),
               new Paragraph({
-                id: 'article__document__pendulums__3',
+                id: Element.uuid(),
                 children: [
                   new Text({
-                    id: 'article__document__pendulums__3__0',
+                    id: Element.uuid(),
                     text: 'We now analyse the forces at work on the mass of the pendulum at any time ',
                   }),
                   new InlineMaths({
-                    id: 'article__document__pendulums__3__1',
+                    id: Element.uuid(),
                     children: [
                       new Variable({
-                        id: 'article__document__pendulums__3__1__0',
+                        id: Element.uuid(),
                         var: 't',
                       }),
                     ],
                   }),
                   new Text({
-                    id: 'article__document__pendulums__3__2',
+                    id: Element.uuid(),
                     text: '. This is where our work diverges into two separate cases depending on whether or not we deem the contributions of air resistance to be negligible. We shall start with the far simpler case assuming that it does not have a noticeable impact before investigating what difficulties arise from including contributions of air resistance.',
                   }),
                 ],
               }),
               new SubSection({
-                id: 'article__document__pendulums__assuming_air_resistance_is_negligible',
+                id: Element.uuid(),
                 title: 'Assuming air resistance is negligible',
                 children: [
                   new Paragraph({
-                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0',
+                    id: Element.uuid(),
                     children: [
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__0',
+                        id: Element.uuid(),
                         text: 'If we assume the contributions of air resistance to the resultant force on the mass to be negligible, we have only two forces acting on our mass: gravity and the centripetal force. Gravity acts downwards with a magnitude proportional to the mass ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__1',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__1__0',
+                            id: Element.uuid(),
                             var: 'm',
                           }),
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__2',
+                        id: Element.uuid(),
                         text: ' where the constant of proportionality is ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__0',
+                            id: Element.uuid(),
                             var: 'g',
                           }),
                           new Approx({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__1',
+                            id: Element.uuid(),
                           }),
                           new Number({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__2',
+                            id: Element.uuid(),
                             num: 9.81,
                           }),
                           new Text({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__3',
+                            id: Element.uuid(),
                             text: 'ms',
                           }),
                           new Power({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__4',
+                            id: Element.uuid(),
                             children: [
                               new UnaryMinus({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__4__0',
+                                id: Element.uuid(),
                                 children: [
                                   new Number({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__3__4__0__0',
+                                    id: Element.uuid(),
                                     num: 2,
                                   }),
                                 ],
@@ -340,45 +340,45 @@ var article =
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__4',
+                        id: Element.uuid(),
                         text: ". The centripetal force is the force keeping the mass attached to the pendulum's arm and it arises due to Newton's third law of motion (every action has an equal and opposite reaction). Therefore, we know it will be equal in magnitude but opposite in direction to the component of the force of gravity ",
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__5',
+                        id: Element.uuid(),
                         children: [
                           new Vector({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__5__0',
+                            id: Element.uuid(),
                             var: 'g',
                           }),
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__6',
+                        id: Element.uuid(),
                         text: ' in the direction from the fixed pivot point to the mass. As we placed the origin at the fixed point, the vector from the fixed point to the mass is the position vector of the mass, ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__0',
+                            id: Element.uuid(),
                             var: 'r',
                           }),
                           new Brackets({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0',
+                            id: Element.uuid(),
                             children: [
                               new Function({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__1',
+                                id: Element.uuid(),
                                 func: 'sin',
                                 children: [
                                   new Variable({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__1__0',
+                                    id: Element.uuid(),
                                     var: 'θ',
                                   }),
                                   new Brackets({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__1__1',
+                                    id: Element.uuid(),
                                     children: [
                                       new Variable({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__1__1__0',
+                                        id: Element.uuid(),
                                         var: 't',
                                       }),
                                     ],
@@ -386,24 +386,24 @@ var article =
                                 ],
                               }),
                               new Comma({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__2',
+                                id: Element.uuid(),
                               }),
                               new UnaryMinus({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__3',
+                                id: Element.uuid(),
                                 children: [
                                   new Function({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__3__1',
+                                    id: Element.uuid(),
                                     func: 'cos',
                                     children: [
                                       new Variable({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__3__1__0',
+                                        id: Element.uuid(),
                                         var: 'θ',
                                       }),
                                       new Brackets({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__3__1__1',
+                                        id: Element.uuid(),
                                         children: [
                                           new Variable({
-                                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__7__0__3__1__1__0',
+                                            id: Element.uuid(),
                                             var: 't',
                                           }),
                                         ],
@@ -417,49 +417,49 @@ var article =
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__8',
+                        id: Element.uuid(),
                         text: '. The distance from the fixed point to the mass is defined to be ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__9',
+                        id: Element.uuid(),
                         children: [
                           new Variable({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__9__0',
+                            id: Element.uuid(),
                             var: 'r',
                           }),
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__10',
+                        id: Element.uuid(),
                         text: ' and hence by dividing by this we find the unit vector ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11',
+                        id: Element.uuid(),
                         children: [
                           new Vector({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__0',
+                            id: Element.uuid(),
                             var: 'd',
                           }),
                           new Equals({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__1',
+                            id: Element.uuid(),
                           }),
                           new Brackets({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2',
+                            id: Element.uuid(),
                             square: true,
                             children: [
                               new Function({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__1',
+                                id: Element.uuid(),
                                 func: 'sin',
                                 children: [
                                   new Variable({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__1__0',
+                                    id: Element.uuid(),
                                     var: 'θ',
                                   }),
                                   new Brackets({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__1__1',
+                                    id: Element.uuid(),
                                     children: [
                                       new Variable({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__1__1__0',
+                                        id: Element.uuid(),
                                         var: 't',
                                       }),
                                     ],
@@ -467,24 +467,24 @@ var article =
                                 ],
                               }),
                               new Comma({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__2',
+                                id: Element.uuid(),
                               }),
                               new UnaryMinus({
-                                id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__3',
+                                id: Element.uuid(),
                                 children: [
                                   new Function({
-                                    id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__3__1',
+                                    id: Element.uuid(),
                                     func: 'cos',
                                     children: [
                                       new Variable({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__3__1__0',
+                                        id: Element.uuid(),
                                         var: 'θ',
                                       }),
                                       new Brackets({
-                                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__3__1__1',
+                                        id: Element.uuid(),
                                         children: [
                                           new Variable({
-                                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__11__2__3__1__1__0',
+                                            id: Element.uuid(),
                                             var: 't',
                                           }),
                                         ],
@@ -498,20 +498,20 @@ var article =
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__12',
+                        id: Element.uuid(),
                         text: '. We therefore may find the centripetal force ',
                       }),
                       new InlineMaths({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__13',
+                        id: Element.uuid(),
                         children: [
                           new Vector({
-                            id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__13__0',
+                            id: Element.uuid(),
                             var: 'c',
                           }),
                         ],
                       }),
                       new Text({
-                        id: 'article__document__pendulums__assuming_air_resistance_is_negligible__0__14',
+                        id: Element.uuid(),
                         text: ' via an application of the dot product as follows',
                       }),
                     ],
@@ -558,9 +558,52 @@ article.addEventListener('childEvent', (event) => {
   console.log(c, c.targetElement.serialised, article.serialised);
 
   if (!document.title.startsWith('● ')) {
+    document.querySelector('#save_btn')?.classList.add('required');
     document.title = '● ' + document.title;
     window.addEventListener('beforeunload', beforeunload);
   }
+});
+
+/**
+ * @description Saves the article to local storage.
+ */
+function save() {
+  localStorage.setItem('article', JSON.stringify(article.serialised));
+  if (document.title.startsWith('● ')) {
+    document.querySelector('#save_btn')?.classList.remove('required');
+    document.title = document.title.substring(2);
+    window.removeEventListener('beforeunload', beforeunload);
+  }
+}
+
+/**
+ * @description Deletes the article in local storage.
+ */
+function reset() {
+  localStorage.removeItem('article');
+  window.location.reload();
+}
+
+/**
+ * @description It opens a new window, with the LaTeX code of the article in.
+ */
+function showLaTeX() {
+  var w = window.open('about:blank', 'JaTeX', 'popup');
+  var p = document.createElement('pre');
+  p.innerText = article.tex;
+  if (w) w.document.body.appendChild(p);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('#save_btn')?.addEventListener('click', () => {
+    save();
+  });
+  document.querySelector('#reset_btn')?.addEventListener('click', () => {
+    reset();
+  });
+  document.querySelector('#print_btn')?.addEventListener('click', () => {
+    print();
+  });
 });
 
 document.addEventListener('keydown', (e) => {
@@ -568,19 +611,15 @@ document.addEventListener('keydown', (e) => {
     switch (e.key) {
       case 's':
         e.preventDefault();
-        localStorage.setItem('article', JSON.stringify(article.serialised));
-        if (document.title.startsWith('● ')) {
-          document.title = document.title.substring(2);
-          window.removeEventListener('beforeunload', beforeunload);
-        }
+        save();
         break;
       case 'e':
         e.preventDefault();
-        console.log('s');
-        var w = window.open('about:blank', 'JaTeX', 'popup');
-        var p = document.createElement('pre');
-        p.innerText = article.tex;
-        if (w) w.document.body.appendChild(p);
+        showLaTeX();
+        break;
+      case 'd':
+        e.preventDefault();
+        reset();
         break;
       default:
     }

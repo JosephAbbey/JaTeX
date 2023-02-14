@@ -4,39 +4,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JaTeX</title>
-    <style>
-      #root {
-        max-width: 800;
-        margin-inline: auto;
-      }
-
-      [contenteditable] {
-        outline: 0px solid transparent;
-      }
-
-      body {
-        counter-reset: sectionCount subsectionCount;
-      }
-
-      [data-type='Section'] > h2 {
-        counter-increment: sectionCount 1;
-        counter-reset: subsectionCount;
-      }
-
-      [data-type='Section'] > h2:before {
-        content: counter(sectionCount) ' ';
-      }
-
-      [data-type='SubSection'] > h3 {
-        counter-increment: subsectionCount 1;
-      }
-
-      [data-type='SubSection'] > h3:before {
-        content: counter(sectionCount) '.' counter(subsectionCount) ' ';
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="./style.css" rel="stylesheet" />
+    <style type="text/css" media="print">
+      body > :not(#root) {
+        display: none;
       }
     </style>
   </head>
   <body>
+    <div id="navbar">
+      <div style="float: right; margin-right: 1em">
+        <button id="save_btn" aria-label="Save" title="Save ctrl+s">
+          <span class="material-symbols-outlined">save</span>
+        </button>
+        <button id="print_btn" aria-label="Print" title="Print ctrl+p">
+          <span class="material-symbols-outlined">print</span>
+        </button>
+        <button id="reset_btn" aria-label="Reset" title="Reset ctrl+d">
+          <span class="material-symbols-outlined">delete</span>
+        </button>
+      </div>
+    </div>
     <div id="root"></div>
     <script src="./sketch.js" type="module"></script>
   </body>
