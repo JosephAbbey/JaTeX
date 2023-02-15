@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/web-manifest-combined.json",
+  "short_name": "JaTeX",
+  "name": "JaTeX: Online LaTeX editor",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "https://via.placeholder.com/192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://via.placeholder.com/512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "id": "/?source=pwa",
+  "start_url": "/?source=pwa",
+  "background_color": "#24292e",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#24292e",
+  "shortcuts": [
+    {
+      "name": "New Document",
+      "short_name": "New",
+      "description": "Create a new LaTeX document",
+      "url": "/new?source=pwa",
+      "icons": [
+        {
+          "src": "./images/new.svg",
+          "type": "image/svg+xml",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Recent Documents",
+      "short_name": "Recent",
+      "description": "View recently edited documents",
+      "url": "/recent?source=pwa",
+      "icons": [
+        {
+          "src": "./images/recent.svg",
+          "type": "image/svg+xml",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "description": "An open-source web-based LaTeX editor.",
+  "screenshots": []
+}

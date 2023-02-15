@@ -188,7 +188,7 @@ export class Number extends Element {
   constructor(options) {
     super(options);
 
-    if (!options.num) throw new MathsError('A number name must be provided.');
+    if (!options.num) throw new MathsError('A number must be provided.');
     this.num = options.num;
   }
 
