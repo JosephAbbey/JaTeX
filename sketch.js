@@ -588,15 +588,23 @@ function reset() {
  * @description It opens a new window, with the LaTeX code of the article in.
  */
 function showLaTeX() {
-  var w = window.open('about:blank', 'JaTeX', 'popup');
-  var p = document.createElement('pre');
-  p.innerText = article.tex;
-  if (w) w.document.body.appendChild(p);
+  /** @type {HTMLDialogElement?} */
+  var dialog = document.querySelector('#latex');
+  if (dialog) {
+    dialog.innerHTML = '';
+    var p = document.createElement('div');
+    p.innerText = article.tex;
+    dialog.appendChild(p);
+    dialog.showModal();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#save_btn')?.addEventListener('click', () => {
     save();
+  });
+  document.querySelector('#show_latex_btn')?.addEventListener('click', () => {
+    showLaTeX();
   });
   document.querySelector('#reset_btn')?.addEventListener('click', () => {
     reset();

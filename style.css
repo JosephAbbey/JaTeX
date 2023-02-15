@@ -1,3 +1,8 @@
+:root {
+  color-scheme: dark;
+  accent-color: #24292e;
+}
+
 body, #navbar {
   margin-top: 0;
   background-color: #24292e;
@@ -10,6 +15,7 @@ button:has(.material-symbols-outlined) {
   border: none;
   color: white;
   border-radius: 2px;
+  outline: none;
 }
 
 button:has(.material-symbols-outlined):hover {
@@ -54,4 +60,32 @@ button.required > .material-symbols-outlined {
 #root {
   max-width: 50rem;
   margin-inline: auto;
+  color-scheme: light;
+  color: black;
+}
+
+:modal {
+  background-color: #24292e;
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 0 5px #111;
+  overflow: auto;
+}
+
+:modal::backdrop {
+  backdrop-filter: blur(2px);
+}
+
+#latex:modal > div {
+  border: 1px solid #111;
+  background-color: #1112;
+  border-radius: .5em 0 0 .5em;
+  padding: .5em;
+  width: calc(100vw - 5.5em);
+  height: calc(100vh - 5.5em);
+  max-width: 1200px;
+  max-height: 700px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  overflow-y: scroll;
 }

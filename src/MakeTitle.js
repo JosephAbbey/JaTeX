@@ -50,7 +50,7 @@ export default class MakeTitle extends Element {
       this.article?.maketitles.findIndex((e) => e.id == this.id) ?? -1;
     if (index > -1) this.article?.maketitles.splice(index, 1);
     super.article = a;
-    this.article?.maketitles.push(this);
+    this.article?.maketitles?.push(this);
   }
 
   updateDom() {
