@@ -23,6 +23,7 @@
     "jsdoc": "^4.0.0",
     "jsdoc-plugin-intersection": "^1.0.4",
     "parcel": "^2.8.3",
+    "parcel-config-precache-manifest": "^0.0.4",
     "serve": "^14.2.0",
     "tidy-jsdoc": "^1.4.1"
   }

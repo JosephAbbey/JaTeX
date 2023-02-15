@@ -670,7 +670,7 @@ if (install) {
     deferredPrompt = e;
     // Update UI to notify the user they can add to home screen
     //@ts-expect-error
-    install.style.display = 'block';
+    install.style.display = 'inline-block';
 
     install.addEventListener('click', (e) => {
       // Hide our user interface that shows our A2HS button

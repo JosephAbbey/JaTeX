@@ -4,17 +4,12 @@
   "name": "JaTeX: Online LaTeX editor",
   "icons": [
     {
-      "src": "https://via.placeholder.com/512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    },
-    {
-      "src": "https://via.placeholder.com/192.png",
+      "src": "./images/192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://via.placeholder.com/512.png",
+      "src": "./images/512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -54,5 +49,6 @@
     }
   ],
   "description": "An open-source web-based LaTeX editor.",
-  "screenshots": []
+  "screenshots": [],
+  "prefer_related_applications": false
 }
