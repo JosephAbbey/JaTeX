@@ -5,7 +5,11 @@
   "directories": {
     "doc": "docs/"
   },
-  "source": "index.html",
+  "source": [
+    "index.html",
+    "recent.html",
+    "new.html"
+  ],
   "scripts": {
     "lint": "eslint ./src/ -c ./.eslintrc.json",
     "fix": "eslint ./src/ -c ./.eslintrc.json --fix",
