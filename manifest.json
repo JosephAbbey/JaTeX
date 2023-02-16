@@ -25,7 +25,7 @@
       "name": "New Document",
       "short_name": "New",
       "description": "Create a new LaTeX document",
-      "url": "/new?source=pwa",
+      "url": "/new.html?source=pwa",
       "icons": [
         {
           "src": "./images/new.svg",
@@ -38,7 +38,7 @@
       "name": "Recent Documents",
       "short_name": "Recent",
       "description": "View recently edited documents",
-      "url": "/recent?source=pwa",
+      "url": "/recent.html?source=pwa",
       "icons": [
         {
           "src": "./images/recent.svg",

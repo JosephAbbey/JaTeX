@@ -1,0 +1,28 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#24292E" />
+    <title>New</title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="./manifest.json" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <link href="./style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <script type="module">
+      import { Element } from './src/index.js';
+      import { open } from './index.js';
+
+      var id = Element.uuid();
+      localStorage.setItem(
+        'article.' + id,
+        `{"class":"Article","id":"${id}","children":[{"class":"Document","id":"${Element.uuid()}","children":[{"class":"PageNumbering","id":"${Element.uuid()}","children":[],"numbering":"gobble"},{"class":"MakeTitle","id":"${Element.uuid()}","children":[]},{"class":"NewPage","id":"${Element.uuid()}","children":[]},{"class":"PageNumbering","id":"${Element.uuid()}","children":[],"numbering":"arabic"}]}],"root":"html>body>div:nth-of-type(2)","packages":[{"name":"amsmath"},{"name":"amsthm"},{"name":"amssymb"},{"name":"booktabs"},{"name":"graphicx"},{"name":"array"},{"name":"geometry","options":{"margin":"1.5in"}}],"author":"You","title":"New Article"}`
+      );
+      open(id);
+    </script>
+  </body>
+</html>
