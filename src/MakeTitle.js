@@ -30,6 +30,8 @@ export class MakeTitleEvent extends ElementEvent {}
  * @description An element representing a LaTeX MakeTitle.
  */
 export default class MakeTitle extends Element {
+  static type = 'MakeTitle';
+
   /**
    * @author Joseph Abbey
    * @date 13/02/2023
@@ -58,8 +60,8 @@ export default class MakeTitle extends Element {
       throw new ElementError(
         'Please create a DOM node before you call `updateDom`.'
       );
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.innerText = this.article?.title ?? 'Unknown';
     this._dom.contentEditable = 'true';
   }

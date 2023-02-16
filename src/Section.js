@@ -39,6 +39,8 @@ export class SectionEvent extends ElementEvent {}
  * @description An element representing a LaTeX section.
  */
 export default class Section extends Element {
+  static type = 'Section';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -107,8 +109,8 @@ export default class Section extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
 
     this._dom.append(this.titleDom, ...this.cdom);
   }

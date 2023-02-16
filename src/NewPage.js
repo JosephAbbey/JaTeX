@@ -20,6 +20,8 @@ export class NewPageEvent extends ElementEvent {}
  * @description An element representing a LaTeX newpage.
  */
 export default class NewPage extends Element {
+  static type = 'NewPage';
+
   /**
    * @author Joseph Abbey
    * @date 28/01/2023
@@ -36,8 +38,8 @@ export default class NewPage extends Element {
       );
     this._dom.innerHTML = '';
     this._dom.style.pageBreakAfter = 'always';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
   }
   createDom() {
     this._dom = document.createElement('div');

@@ -20,6 +20,8 @@ export class ParagraphEvent extends ElementEvent {}
  * @description An element representing a LaTeX paragraph.
  */
 export default class Paragraph extends Element {
+  static type = 'Paragraph';
+
   /**
    * @author Joseph Abbey
    * @date 28/01/2023

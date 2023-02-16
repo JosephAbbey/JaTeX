@@ -31,6 +31,8 @@ export class FontEvent extends ElementEvent {}
  * @description An element representing a LaTeX font.
  */
 export default class Font extends Element {
+  static type = 'Font';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -72,8 +74,8 @@ export default class Font extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = {
       mathrm: 'roman',
       mathsf: 'sans serif',

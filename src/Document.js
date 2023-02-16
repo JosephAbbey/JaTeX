@@ -20,6 +20,8 @@ export class DocumentEvent extends ElementEvent {}
  * @description An element representing a LaTeX document.
  */
 export default class Document extends Element {
+  static type = 'Document';
+
   /**
    * @author Joseph Abbey
    * @date 28/01/2023
@@ -36,7 +38,8 @@ export default class Document extends Element {
       );
     this._dom.innerHTML = '';
     this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     var style = document.createElement('style');
     style.innerHTML = `
     #${this.id} [contenteditable] {

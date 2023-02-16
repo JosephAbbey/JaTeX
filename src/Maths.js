@@ -33,6 +33,8 @@ export class MathsEvent extends ElementEvent {}
  * @description An element representing a LaTeX maths environment.
  */
 export default class Maths extends Element {
+  static type = 'Maths';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -69,8 +71,8 @@ export default class Maths extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.overflowWrap = 'none';
     var s = document.createElement('style');
@@ -122,8 +124,8 @@ export class InlineMaths extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.whiteSpace = 'nowrap';
     var s = document.createElement('style');
@@ -198,8 +200,8 @@ export class Number extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = this.num.toString();
   }
@@ -274,8 +276,8 @@ export class Variable extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = this.var;
   }
@@ -313,6 +315,8 @@ Variable.register();
  * @description An element representing a vector in a LaTeX maths environment.
  */
 export class Vector extends Variable {
+  static type = 'Vector';
+
   updateDom() {
     super.updateDom();
     var style = document.createElement('style');
@@ -379,8 +383,8 @@ export class Brackets extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.append(
       document.createTextNode(this.square ? '[' : '('),
@@ -453,8 +457,8 @@ export class Function extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.marginLeft = '0.2em';
     this._dom.append(
@@ -500,8 +504,8 @@ export class Comma extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ', ';
   }
@@ -542,8 +546,8 @@ export class CDot extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' ● ';
   }
@@ -584,8 +588,8 @@ export class Equals extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' = ';
   }
@@ -626,8 +630,8 @@ export class Approx extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' ≈ ';
   }
@@ -668,8 +672,8 @@ export class UnaryMinus extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.append(document.createTextNode('-'), ...this.cdom);
   }
@@ -885,8 +889,8 @@ export class Fraction extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.display = 'inline-block';
     var hr = document.createElement('hr');

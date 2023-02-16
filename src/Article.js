@@ -58,6 +58,7 @@ function getSelector(context) {
   let pathSelector = '';
   while (context.tagName) {
     pathSelector = context.localName + (pathSelector ? '>' + pathSelector : '');
+
     //@ts-expect-error
     context =
       context.parentNode ??
@@ -108,6 +109,8 @@ function getSelectorIndex(node) {
  * @description An element representing a LaTeX article.
  */
 export default class Article extends Element {
+  static type = 'Article';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023

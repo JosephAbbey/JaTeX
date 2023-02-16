@@ -13,6 +13,8 @@ import Section from './Section.js';
  * @description An element representing a LaTeX subsection.
  */
 export default class SubSection extends Section {
+  static type = 'SubSection';
+
   get titleDom() {
     if (!this._titleDom) {
       this._titleDom = document.createElement('h3');

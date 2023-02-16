@@ -31,6 +31,8 @@ export class PageNumberingEvent extends ElementEvent {}
  * @description An element representing a LaTeX page numbering element.
  */
 export default class PageNumbering extends Element {
+  static type = 'PageNumbering';
+
   /**
    * @author Joseph Abbey
    * @date 13/02/2023

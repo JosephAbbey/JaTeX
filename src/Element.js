@@ -125,6 +125,8 @@ export class ElementEvent extends Event {
  * @description Base class for elements. Never directly instantiated.
  */
 export default class Element {
+  static type = 'Element';
+
   static uuid() {
     // Public Domain/MIT
     var d = new Date().getTime(); // Timestamp
@@ -160,7 +162,8 @@ export default class Element {
    */
   get serialised() {
     return {
-      class: this.constructor.name,
+      // @ts-expect-error
+      class: this.constructor.type,
       id: this.id,
       children: this.children.map((child) => child.serialised),
     };
@@ -178,12 +181,13 @@ export default class Element {
   static get registry() {
     //@ts-expect-error
     if (window._iElementRegistry) return window._iElementRegistry;
+
     //@ts-expect-error
     return (window._iElementRegistry = new ElementRegistry());
   }
 
   static register() {
-    Element.registry.set(this.name, this);
+    Element.registry.set(this.type, this);
   }
 
   /**
@@ -196,6 +200,7 @@ export default class Element {
   static get map() {
     //@ts-expect-error
     if (window._iElementMap) return window._iElementMap;
+
     //@ts-expect-error
     return (window._iElementMap = new ElementMap());
   }
@@ -452,8 +457,8 @@ export default class Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    this._dom.dataset.type = this.constructor.name;
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
     this._dom.append(...this.cdom);
   }
   /**

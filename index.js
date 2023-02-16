@@ -86,11 +86,13 @@ if (install) {
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
     // Update UI to notify the user they can add to home screen
+
     //@ts-expect-error
     install.style.display = 'inline-block';
 
     install.addEventListener('click', (e) => {
       // Hide our user interface that shows our A2HS button
+
       //@ts-expect-error
       install.style.display = 'none';
       // Show the prompt
