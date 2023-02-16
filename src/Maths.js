@@ -109,6 +109,8 @@ Maths.register();
  * @description An element representing a LaTeX inline maths environment.
  */
 export class InlineMaths extends Element {
+  static type = 'InlineMaths';
+
   /**
    * @author Joseph Abbey
    * @date 28/01/2023
@@ -168,6 +170,8 @@ InlineMaths.register();
  * @description An element representing a number in a LaTeX maths environment.
  */
 export class Number extends Element {
+  static type = 'Number';
+
   /**
    * @author Joseph Abbey
    * @date 12/02/2023
@@ -244,6 +248,8 @@ Number.register();
  * @description An element representing a variable in a LaTeX maths environment.
  */
 export class Variable extends Element {
+  static type = 'Variable';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -352,6 +358,8 @@ Vector.register();
  * @description An element representing brackets in a LaTeX maths environment.
  */
 export class Brackets extends Element {
+  static type = 'Brackets';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -424,6 +432,8 @@ Brackets.register();
  * @description An element representing a function in a LaTeX maths environment.
  */
 export class Function extends Element {
+  static type = 'Function';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -489,6 +499,8 @@ Function.register();
  * @description An element representing a comma in a LaTeX maths environment.
  */
 export class Comma extends Element {
+  static type = 'Comma';
+
   /**
    * @author Joseph Abbey
    * @date 02/02/2023
@@ -531,6 +543,8 @@ Comma.register();
  * @description An element representing a c-dot in a LaTeX maths environment.
  */
 export class CDot extends Element {
+  static type = 'CDot';
+
   /**
    * @author Joseph Abbey
    * @date 12/02/2023
@@ -573,6 +587,8 @@ CDot.register();
  * @description An element representing a c-dot in a LaTeX maths environment.
  */
 export class Equals extends Element {
+  static type = 'Equals';
+
   /**
    * @author Joseph Abbey
    * @date 12/02/2023
@@ -615,6 +631,8 @@ Equals.register();
  * @description An element representing a c-dot in a LaTeX maths environment.
  */
 export class Approx extends Element {
+  static type = 'Approx';
+
   /**
    * @author Joseph Abbey
    * @date 12/02/2023
@@ -657,6 +675,8 @@ Approx.register();
  * @description An element representing a unary minus in a LaTeX maths environment.
  */
 export class UnaryMinus extends Element {
+  static type = 'UnaryMinus';
+
   /**
    * @author Joseph Abbey
    * @date 02/02/2023
@@ -711,6 +731,8 @@ UnaryMinus.register();
  * @description An element representing a fraction in a LaTeX maths environment.
  */
 export class Fraction extends Element {
+  static type = 'Fraction';
+
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
@@ -923,6 +945,8 @@ Fraction.register();
  * @description An element representing a LaTeX power.
  */
 export class Power extends Element {
+  static type = 'Power';
+
   /**
    * @author Joseph Abbey
    * @date 12/02/2023

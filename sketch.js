@@ -3,12 +3,13 @@ import { Article, Element, ElementEvent } from './src/index.js';
 
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
-if (!urlParams.has('article')) recent();
+if (
+  !urlParams.has('article') ||
+  localStorage.getItem('article.' + urlParams.get('article')) == null
+)
+  recent();
 
-/**
- * @var
- * @type {Article}
- */
+/** @type {Article} */
 //@ts-expect-error
 var article = Element.deserialiseMany([
   JSON.parse(
