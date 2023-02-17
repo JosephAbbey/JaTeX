@@ -126,6 +126,12 @@ document.addEventListener('keydown', (e) => {
         break;
       default:
     }
+  } else {
+    if (e.key == 'F1') {
+      e.preventDefault();
+      //@ts-expect-error
+      document.querySelector('#command_input')?.focus();
+    }
   }
 });
 
