@@ -86,6 +86,9 @@ export default class Section extends Element {
       );
     this._titleDom.innerText = this.title;
     this._titleDom.contentEditable = 'true';
+    //@ts-expect-error
+    this._titleDom.spellcheck = window.spellcheck;
+    this._titleDom.autocapitalize = 'sentences';
   }
   /**
    * @author Joseph Abbey

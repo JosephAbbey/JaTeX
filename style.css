@@ -85,13 +85,15 @@ button.required > .material-symbols-outlined {
   border-radius: 0.2em;
   background-color: #eefcfd11;
   border-color: transparent;
+  font-family: monospace;
 }
 
 #command_input:not(:focus-visible) {
   color: transparent;
 }
 
-#command_input:focus-visible {
+#command_input:focus-visible,
+#command:active > #command_input {
   background-color: #32373c;
   outline: none;
   z-index: 1;
@@ -127,12 +129,23 @@ button.required > .material-symbols-outlined {
 }
 
 #command_palette > div > ul > li {
+  cursor: pointer;
+  user-select: none;
   margin-top: 0.2em;
   margin-left: 0.5em;
-  list-style: inside '> ';
+  --cmd-palette-icon: '\e5cc';
+  list-style: inside;
+  font-size: 1.2em;
 }
 
-#command_input:focus-visible ~ #command_palette {
+#command_palette > div > ul > li::marker {
+  font-family: 'Material Symbols Outlined';
+  font-size: calc(1em - 4px);
+  content: var(--cmd-palette-icon) '\2009';
+}
+
+#command_input:focus-visible ~ #command_palette,
+#command:active > #command_palette {
   display: block;
 }
 

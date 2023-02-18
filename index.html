@@ -30,20 +30,30 @@
           <div>
             <ul>
               <!-- TODO: Move to function in index.js -->
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
-              <li class="command" data-command="test">Test</li>
+              <li
+                class="command"
+                style="--cmd-palette-icon: '\e9f5'"
+                onclick="
+                  window.spellcheck = !window.spellcheck;
+                  this.style.setProperty('--cmd-palette-icon', window.spellcheck ? '\'\\e9f6\'' : '\'\\e9f5\'');
+                  window.article.constructor.map.forEach((e) => e.updateDom());
+                ">Toggle spell check
+                <!-- You may need to enable spell check in chrome://settings/languages -->
+              </li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
+              <li class="command">Test</li>
             </ul>
           </div>
         </div>
