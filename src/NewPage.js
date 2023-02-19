@@ -48,7 +48,7 @@ export default class NewPage extends Element {
   }
 
   get tex() {
-    return '\\newpage';
+    return '\\newpage\n';
   }
 }
 

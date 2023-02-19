@@ -71,7 +71,8 @@ export default class Maths extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.overflowWrap = 'none';
@@ -126,7 +127,8 @@ export class InlineMaths extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.whiteSpace = 'nowrap';
@@ -141,7 +143,44 @@ export class InlineMaths extends Element {
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('click', (e) => {
+      if (e.altKey) {
+        if (e.shiftKey) this.desmos();
+        else this.wolfram_alpha();
+      }
+    });
     return this._dom;
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 19/02/2023
+   * @param l - The link to open
+   *
+   * @description Opens a popup window.
+   */
+  open(l) {
+    window.open(l, '_blank', 'popup');
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 19/02/2023
+   *
+   * @description Opens this expression in desmos in a popup window.
+   */
+  desmos() {
+    this.open('https://www.desmos.com/calculator?latex=' + this.ctex);
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 19/02/2023
+   *
+   * @description Opens this expression in WolframAlpha in a popup window.
+   */
+  wolfram_alpha() {
+    this.open('https://www.wolframalpha.com/input?i=' + this.ctex);
   }
 
   get tex() {
@@ -204,7 +243,8 @@ export class Number extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = this.num.toString();
@@ -282,7 +322,8 @@ export class Variable extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = this.var;
@@ -391,7 +432,8 @@ export class Brackets extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.append(
@@ -407,7 +449,7 @@ export class Brackets extends Element {
   }
 
   get tex() {
-    return this.square ? '[' : '(' + this.ctex + this.square ? ']' : ')';
+    return (this.square ? '[' : '(') + this.ctex + (this.square ? ']' : ')');
   }
 }
 
@@ -467,7 +509,8 @@ export class Function extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.marginLeft = '0.2em';
@@ -516,7 +559,8 @@ export class Comma extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ', ';
@@ -560,7 +604,8 @@ export class CDot extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' ● ';
@@ -604,7 +649,8 @@ export class Equals extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' = ';
@@ -648,7 +694,8 @@ export class Approx extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.innerText = ' ≈ ';
@@ -692,7 +739,8 @@ export class UnaryMinus extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.append(document.createTextNode('-'), ...this.cdom);
@@ -911,7 +959,8 @@ export class Fraction extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
     this._dom.style.display = 'inline-block';
