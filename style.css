@@ -1,177 +1,51 @@
-:root {
-  color-scheme: dark;
-  accent-color: #24292e;
+@import './index.css';
+
+main {
+  display: grid;
+  grid-template-columns: 1fr 50rem 1fr;
+  gap: 0.5em;
+  grid-template-areas: '⚫ 📄 ➡️';
+  justify-content: center;
 }
 
-body {
-  margin: 0;
-  background-color: #24292e;
-}
-
-button:has(.material-symbols-outlined) {
-  margin: 0;
-  padding: 0;
-  background-color: transparent;
-  border: none;
-  color: white;
-  border-radius: 2px;
-  outline: none;
-  height: 24px;
-}
-
-button:has(.material-symbols-outlined):hover {
-  background-color: #eefcfd11;
-}
-
-button.required > .material-symbols-outlined {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-  transform: rotate(5deg);
-}
-
-@keyframes shake {
-  10%,
-  90% {
-    transform: rotate(-5deg);
-  }
-  20%,
-  80% {
-    transform: rotate(10deg);
-  }
-  30%,
-  50%,
-  70% {
-    transform: rotate(-20deg);
-  }
-  40%,
-  60% {
-    transform: rotate(20deg);
-  }
-}
-
-#navbar {
-  background-color: #24292e;
-  border-bottom: 1px solid grey;
-  height: 1.7em;
-  padding-bottom: 0.1em;
-  margin-top: 0;
-  margin-bottom: 1em;
-  position: sticky;
-  top: 0;
-  padding-top: 0.3rem;
-  display: flex;
-  justify-content: space-between;
-}
-
-#command {
-  height: 1.5em;
-  max-width: 600px;
-  width: 40%;
-  position: relative;
-  font-family: monospace;
-}
-
-#command .icon {
-  float: left;
-  margin: 0.1em;
-  font-size: 1.25em;
-}
-
-#command_input {
-  margin: 0;
-  width: 100%;
-  height: 1.8em;
-  position: absolute;
-  left: 0;
-  border-radius: 0.2em;
-  background-color: #eefcfd11;
-  border-color: transparent;
-  font-family: monospace;
-}
-
-#command_input:not(:focus-visible) {
-  color: transparent;
-}
-
-#command_input:focus-visible,
-#command:active > #command_input {
-  background-color: #32373c;
-  outline: none;
-  z-index: 1;
-}
-
-#command_palette {
-  overflow: hidden;
-  top: 0;
-  transform: translateX(-5px);
-  position: fixed;
-  padding-top: 2.3em;
-  padding-bottom: 5px;
-  padding-inline: 5px;
-  max-width: 600px;
-  width: 40%;
-  max-height: 200px;
-  display: none;
-  background-color: #3d4248;
-  border-radius: 0 0 0.5rem 0.5rem;
-  box-shadow: 0 0 5px #111;
-}
-
-#command_palette > div {
-  overflow-y: hidden;
-  max-height: 200px;
-}
-
-#command_palette > div > ul {
-  overflow-y: scroll;
-  max-height: 200px;
-  margin: 0;
-  padding: 0;
-}
-
-#command_palette > div > ul > li {
-  cursor: pointer;
-  user-select: none;
-  margin-top: 0.2em;
-  margin-left: 0.5em;
-  --cmd-palette-icon: '\e5cc';
-  list-style: inside;
-  font-size: 1.2em;
-}
-
-#command_palette > div > ul > li::marker {
-  font-family: 'Material Symbols Outlined';
-  font-size: calc(1em - 4px);
-  content: var(--cmd-palette-icon) '\2009';
-}
-
-#command_input:focus-visible ~ #command_palette,
-#command:active > #command_palette {
-  display: block;
-}
-
-#buttons {
-  margin-inline: 1em;
-  display: flex;
-  justify-content: flex-end;
+main::before {
+  content: '';
+  grid-area: ⚫;
 }
 
 #root {
+  grid-area: 📄;
   max-width: 50rem;
-  margin-inline: auto;
+  margin-inline: 0.2em;
   color-scheme: light;
   color: black;
 }
 
-:modal {
-  background-color: #24292e;
-  border-radius: 1rem;
-  border: none;
-  box-shadow: 0 0 5px #111;
-  overflow: auto;
+#edit_controls {
+  width: max-content;
+  grid-area: ➡️;
 }
 
-:modal::backdrop {
-  backdrop-filter: blur(2px);
+#edit_controls > div {
+  position: sticky;
+  top: 2.8rem;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (width < calc(53rem + 24px)) {
+  main {
+    grid-template-columns: none;
+    grid-template-areas: '📄';
+  }
+
+  main::before {
+    display: none;
+  }
+
+  #edit_controls {
+    display: none;
+  }
 }
 
 #latex:modal > div {

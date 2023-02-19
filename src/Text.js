@@ -75,6 +75,8 @@ export default class Text extends Element {
     // String can be empty, but shouldn't be unless we are immediately focussing it with `.focus()`.
     if (options.text == undefined)
       throw new TextError('Text must be provided.');
+    if (options.text == '')
+      setTimeout(() => this.dom != document.activeElement && this.delete(), 10);
     this._text = options.text;
   }
 
@@ -129,15 +131,17 @@ export default class Text extends Element {
       case 'historyRedo':
       case 'deleteContentBackward':
       case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          this.delete();
+          break;
+        }
       case 'insertText':
         this._text = this.dom.innerText;
-        if (this.text == '') this.delete();
-        else
-          this.dispatchEvent(
-            new TextEvent('edit', this, {
-              content: this.dom.innerText,
-            })
-          );
+        this.dispatchEvent(
+          new TextEvent('edit', this, {
+            content: this.dom.innerText,
+          })
+        );
         break;
       default:
         console.log(e);

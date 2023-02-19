@@ -41,6 +41,8 @@
     "ntex",
     "outfile",
     "pagenumbering",
+    "textbf",
+    "textit",
     "usepackage"
   ]
 }

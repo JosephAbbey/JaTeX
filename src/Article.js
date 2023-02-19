@@ -121,7 +121,7 @@ export default class Article extends Element {
   get serialised() {
     return {
       ...super.serialised,
-      root: getSelector(this.root),
+      root: this.root.id ? '#' + this.root.id : getSelector(this.root),
       packages: this.packages,
       author: this.author,
       title: this.title,

@@ -30,6 +30,18 @@ export {
  */
 export { default as Font, FontError, FontEvent } from './Font.js';
 /**
+ * @typedef {import("./TextDecoration.js").TextDecorationOptions} TextDecorationOptions
+ * @typedef {import("./TextDecoration.js").TextDecorationSerialised} TextDecorationSerialised
+ */
+export {
+  default as TextDecoration,
+  TextDecorationError,
+  TextDecorationEvent,
+  bold,
+  italic,
+  underline,
+} from './TextDecoration.js';
+/**
  * @typedef {import("./PageNumbering.js").PageNumberingOptions} PageNumberingOptions
  * @typedef {import("./PageNumbering.js").PageNumberingSerialised} PageNumberingSerialised
  */

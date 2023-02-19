@@ -97,7 +97,7 @@ export default class Font extends Element {
   }
 
   get tex() {
-    return `\\{${this.font}}\n` + this.ctex;
+    return `\\${this.font}\n` + this.ctex;
   }
 }
 

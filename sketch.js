@@ -1,5 +1,12 @@
 import { recent } from './index.js';
-import { Article, Element, ElementEvent } from './src/index.js';
+import {
+  Article,
+  Element,
+  ElementEvent,
+  bold,
+  italic,
+  underline,
+} from './src/index.js';
 
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
@@ -95,18 +102,17 @@ function showLaTeX() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#save_btn')?.addEventListener('click', () => {
-    save();
-  });
-  document.querySelector('#show_latex_btn')?.addEventListener('click', () => {
-    showLaTeX();
-  });
-  document.querySelector('#reset_btn')?.addEventListener('click', () => {
-    reset();
-  });
-  document.querySelector('#print_btn')?.addEventListener('click', () => {
-    print();
-  });
+  document.querySelector('#save_btn')?.addEventListener('click', save);
+  document
+    .querySelector('#show_latex_btn')
+    ?.addEventListener('click', showLaTeX);
+  document.querySelector('#reset_btn')?.addEventListener('click', reset);
+  document.querySelector('#print_btn')?.addEventListener('click', print);
+  document.querySelector('#bold_btn')?.addEventListener('click', bold);
+  document.querySelector('#italic_btn')?.addEventListener('click', italic);
+  document
+    .querySelector('#underline_btn')
+    ?.addEventListener('click', underline);
 });
 
 document.addEventListener('keydown', (e) => {
