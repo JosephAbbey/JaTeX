@@ -8,12 +8,6 @@ import {
   underline,
 } from './src/index.js';
 
-if (!localStorage.has('article.default')) {
-  fetch('./tmp/default.json')
-    .then((r) => r.text())
-    .then((t) => localStorage.setItem('article.default', t));
-}
-
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
 if (

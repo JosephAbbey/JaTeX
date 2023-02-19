@@ -1,3 +1,9 @@
+if (!localStorage.getItem('article.default')) {
+  fetch('./tmp/default.json')
+    .then((r) => r.text())
+    .then((t) => localStorage.setItem('article.default', t));
+}
+
 /** Create new article. */
 function new_btn() {
   window.location.pathname = '/new.html';
