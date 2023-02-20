@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#24292E" />
     <title>JaTeX</title>
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="/images/192.png" />
     <link rel="manifest" href="./manifest.json" />
     <link
       rel="stylesheet"
@@ -20,93 +21,26 @@
   </head>
   <body>
     <div id="navbar">
-      <div style="width: 20%; margin-inline: 1em"></div>
       <div id="command">
         <input
           type="search"
           name="command"
           id="command_input"
-          autocomplete="off" />
+          autocomplete="off"
+          spellcheck="false" />
         <div id="command_palette">
           <div>
-            <ul>
-              <!-- TODO: Move to function in index.js -->
-              <li
-                class="command"
-                style="--cmd-palette-icon: '\e9f5'"
-                onclick="
-                  window.spellcheck = !window.spellcheck;
-                  this.style.setProperty('--cmd-palette-icon', window.spellcheck ? '\'\\e9f6\'' : '\'\\e9f5\'');
-                  window.article.constructor.map.forEach((e) => e.updateDom());
-                ">
-                Toggle spell check
-                <!-- You may need to enable spell check in chrome://settings/languages -->
-              </li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-              <li class="command">Test</li>
-            </ul>
+            <ul></ul>
           </div>
         </div>
         <span class="material-symbols-outlined icon">search</span>
       </div>
-      <div id="buttons" style="width: 20%">
-        <!-- TODO: Move to function in index.js -->
-        <button
-          id="new_btn"
-          aria-label="New Article"
-          title="New Article ctrl+n">
-          <span class="material-symbols-outlined">add</span>
-        </button>
-        <button id="recent_btn" aria-label="Recent" title="Recent">
-          <span class="material-symbols-outlined">update</span>
-        </button>
-        <button id="save_btn" aria-label="Save" title="Save ctrl+s">
-          <span class="material-symbols-outlined">save</span>
-        </button>
-        <button id="print_btn" aria-label="Print" title="Print ctrl+p">
-          <span class="material-symbols-outlined">print</span>
-        </button>
-        <button
-          id="show_latex_btn"
-          aria-label="Show LaTeX Code"
-          title="Show LaTeX Code ctrl+e">
-          <span class="material-symbols-outlined">code_blocks</span>
-        </button>
-        <button id="reset_btn" aria-label="Reset" title="Reset ctrl+d">
-          <span class="material-symbols-outlined">delete</span>
-        </button>
-        <button id="install_btn" aria-label="Install" title="Install">
-          <span class="material-symbols-outlined">install_desktop</span>
-        </button>
-      </div>
+      <div id="buttons"></div>
     </div>
     <main>
       <div id="root"></div>
       <div id="edit_controls">
-        <div>
-          <!-- TODO: Move to function in index.js -->
-          <button id="bold_btn" aria-label="Bold" title="Bold">
-            <span class="material-symbols-outlined">format_bold</span>
-          </button>
-          <button id="italic_btn" aria-label="Italicise" title="Italicise">
-            <span class="material-symbols-outlined">format_italic</span>
-          </button>
-          <button id="underline_btn" aria-label="Underline" title="Underline">
-            <span class="material-symbols-outlined">format_underlined</span>
-          </button>
-        </div>
+        <div></div>
       </div>
     </main>
     <dialog id="latex"></dialog>

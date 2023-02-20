@@ -34,13 +34,58 @@ export function getArticleIDs() {
   return ids;
 }
 
+/**
+ * @param {string} id - The id of the command.
+ * @param {(this: HTMLLIElement, ev: MouseEvent) => any} click - The function to call when the command is executed.
+ * @param {string} text - The text of the command.
+ * @param {(() => string) | string?} icon - the code for the icon to use for the command.
+ * @returns {HTMLLIElement} The command element.
+ * @description It creates a command element, sets its id, text, and icon, and then appends it to the navbar.
+ */
+export function addCommand(id, click, text, icon) {
+  var li = document.createElement('li');
+  li.id = id;
+  li.innerText = text;
+  if (icon instanceof Function) {
+    li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'");
+    document
+      .querySelector('#command')
+      ?.addEventListener('mousedown', () =>
+        li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'")
+      );
+  } else if (typeof icon === 'string') {
+    li.style.setProperty('--cmd-palette-icon', "'\\" + icon + "'");
+  }
+  document.querySelector('#command_palette > div > ul')?.append(li);
+  li.addEventListener('click', click, false);
+  return li;
+}
+
+/**
+ * @param {string} id - The id of the button.
+ * @param {(this: HTMLButtonElement, ev: MouseEvent) => any} click - The function to call when the button is clicked.
+ * @param {string?} ariaLabel - The text that will be read by screen readers.
+ * @param {string} title - The text that appears when you hover over the button.
+ * @param {string} icon - the icon to use for the button.
+ * @returns {HTMLButtonElement} The button element.
+ * @description It creates a button element, sets its id, aria-label, title, and icon, and then appends it to the navbar.
+ */
+export function addButton(id, click, ariaLabel, title, icon) {
+  var btn = document.createElement('button');
+  btn.id = id;
+  btn.ariaLabel = ariaLabel;
+  btn.title = title;
+  var icn = document.createElement('span');
+  icn.className = 'material-symbols-outlined';
+  icn.innerHTML = icon;
+  btn.append(icn);
+  document.querySelector('#buttons')?.append(btn);
+  btn.addEventListener('click', click, false);
+  return btn;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#new_btn')?.addEventListener('click', () => {
-    new_btn();
-  });
-  document.querySelector('#recent_btn')?.addEventListener('click', () => {
-    recent();
-  });
+  addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add');
 });
 
 document.addEventListener('keydown', (e) => {
@@ -87,37 +132,38 @@ const registerServiceWorker = async () => {
 registerServiceWorker();
 
 let deferredPrompt;
-const install = document.querySelector('#install_btn');
-if (install) {
-  //@ts-expect-error
-  install.style.display = 'none';
 
-  window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Update UI to notify the user they can add to home screen
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
 
-    //@ts-expect-error
-    install.style.display = 'inline-block';
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
 
-    install.addEventListener('click', (e) => {
+  // Update UI to notify the user they can add to home screen
+  addButton(
+    'install_btn',
+    function (e) {
       // Hide our user interface that shows our A2HS button
+      this.style.display = 'none';
 
-      //@ts-expect-error
-      install.style.display = 'none';
       // Show the prompt
       deferredPrompt.prompt();
+
       // Wait for the user to respond to the prompt
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
+      deferredPrompt.userChoice.then(
+        (/** @type {{ outcome: string; }} */ choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the A2HS prompt');
+          } else {
+            console.log('User dismissed the A2HS prompt');
+          }
+          deferredPrompt = null;
         }
-        deferredPrompt = null;
-      });
-    });
-  });
-}
+      );
+    },
+    'Install',
+    'Install',
+    'install_desktop'
+  );
+});

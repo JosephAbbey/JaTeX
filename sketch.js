@@ -1,4 +1,4 @@
-import { recent } from './index.js';
+import { addButton, addCommand, recent } from './index.js';
 import {
   Article,
   Element,
@@ -101,20 +101,68 @@ function showLaTeX() {
   }
 }
 
+/**
+ * @param {string} id - The id of the button.
+ * @param {(this: HTMLButtonElement, ev: MouseEvent) => any} click - The function to call when the button is clicked.
+ * @param {string?} ariaLabel - The text that will be read by screen readers.
+ * @param {string} title - The text that appears when you hover over the button.
+ * @param {string} icon - the icon to use for the button.
+ * @returns {HTMLButtonElement} The button element.
+ * @description It creates a button element, sets its id, aria-label, title, and icon, and then appends it to the edit controls.
+ */
+function addEditControl(id, click, ariaLabel, title, icon) {
+  var btn = document.createElement('button');
+  btn.id = id;
+  btn.ariaLabel = ariaLabel;
+  btn.title = title;
+  var icn = document.createElement('span');
+  icn.className = 'material-symbols-outlined';
+  icn.innerHTML = icon;
+  btn.append(icn);
+  document.querySelector('#edit_controls > div')?.append(btn);
+  btn.addEventListener('click', click, false);
+  return btn;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#save_btn')?.addEventListener('click', save);
-  document
-    .querySelector('#show_latex_btn')
-    ?.addEventListener('click', showLaTeX);
-  document.querySelector('#reset_btn')?.addEventListener('click', reset);
-  document
-    .querySelector('#print_btn')
-    ?.addEventListener('click', () => print());
-  document.querySelector('#bold_btn')?.addEventListener('click', bold);
-  document.querySelector('#italic_btn')?.addEventListener('click', italic);
-  document
-    .querySelector('#underline_btn')
-    ?.addEventListener('click', underline);
+  addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
+  addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
+  addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
+  addButton(
+    'show_latex_btn',
+    showLaTeX,
+    'Show LaTeX Code',
+    'Show LaTeX Code ctrl+e',
+    'code_blocks'
+  );
+  addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
+
+  addEditControl('bold_btn', bold, 'Bold', 'Bold', 'format_bold');
+  addEditControl(
+    'italic_btn',
+    italic,
+    'Italicise',
+    'Italicise',
+    'format_italic'
+  );
+  addEditControl(
+    'underline_btn',
+    underline,
+    'Underline',
+    'Underline',
+    'format_underlined'
+  );
+
+  // You may need to enable spell check in chrome://settings/languages
+  addCommand(
+    'toggle_spellcheck',
+    () => (
+      (article.spellcheck = !article.spellcheck),
+      Element.map.forEach((e) => e.updateDom())
+    ),
+    'Toggle spell check',
+    () => (article.spellcheck ? 'e9f6' : 'e9f5')
+  );
 });
 
 document.addEventListener('keydown', (e) => {

@@ -90,8 +90,7 @@ export default class Text extends Element {
     this._dom.dataset.type = this.constructor.type;
     this._dom.innerText = this.text;
     this._dom.contentEditable = 'true';
-    //@ts-expect-error
-    this._dom.spellcheck = window.spellcheck;
+    this._dom.spellcheck = this.article?.spellcheck ?? false;
     this._dom.autocapitalize = 'sentences';
   }
   createDom() {

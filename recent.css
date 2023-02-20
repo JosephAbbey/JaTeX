@@ -1,0 +1,39 @@
+@import './index.css';
+
+#articles {
+  display: flex;
+  gap: 0.6em;
+  margin-inline: 0.6em;
+}
+
+#articles > a {
+  all: unset;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: all 200ms ease-in-out;
+}
+#articles > a:hover {
+  box-shadow: 0 0 5px #111;
+  opacity: 1;
+}
+
+#articles > a > div {
+  border-radius: 0.2em;
+  border: 1px solid grey;
+  padding: 0.5em;
+}
+
+#articles > a > div > div:nth-of-type(1) {
+  font-size: larger;
+  margin-bottom: 0.2em;
+}
+
+#articles > a > div > div:nth-of-type(2) {
+  font-size: smaller;
+}
+
+#articles > a > div > div:nth-of-type(3) {
+  text-align: end;
+  font-family: monospace;
+  opacity: 0.5;
+}

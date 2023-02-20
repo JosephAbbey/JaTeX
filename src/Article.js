@@ -33,6 +33,7 @@ export class ArticleEvent extends ElementEvent {}
  * @prop {?Package[]} [packages]
  * @prop {string} title
  * @prop {string} author
+ * @prop {boolean=} spellcheck
  */
 
 /**
@@ -41,6 +42,7 @@ export class ArticleEvent extends ElementEvent {}
  * @prop {Package[]} [packages]
  * @prop {string} title
  * @prop {string} author
+ * @prop {boolean} spellcheck
  */
 
 /**
@@ -125,6 +127,7 @@ export default class Article extends Element {
       packages: this.packages,
       author: this.author,
       title: this.title,
+      spellcheck: this.spellcheck,
     };
   }
 
@@ -165,6 +168,8 @@ export default class Article extends Element {
 
     if (!options.author) throw new ArticleError('An author must be provided.');
     this.author = options.author;
+
+    this.spellcheck = options.spellcheck ?? false;
 
     this.maketitles = [];
 
@@ -242,6 +247,15 @@ export default class Article extends Element {
    * @description The author of the article. `\author{%}`
    */
   author;
+
+  /**
+   * @author Joseph Abbey
+   * @date 20/02/2023
+   * @type {boolean}
+   *
+   * @description Whether spellcheck is on.
+   */
+  spellcheck;
 
   get tex() {
     return (
