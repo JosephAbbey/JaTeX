@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
     () => (
       // You may need to enable spell check in chrome://settings/languages
       (article.spellcheck = !article.spellcheck),
-      Element.map.forEach((e) => e.updateDom())
+      Element.map.forEach((e) => e.update())
     ),
     'Toggle spell check',
     () => (article.spellcheck ? 'e9f6' : 'e9f5')
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'toggle_readonly',
     () => (
       (article.readonly = !article.readonly),
-      Element.map.forEach((e) => e.updateDom()),
+      Element.map.forEach((e) => e.update()),
       document
         .querySelector('#edit_controls')
         //@ts-expect-error

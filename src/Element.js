@@ -480,6 +480,16 @@ export default class Element {
 
   /**
    * @author Joseph Abbey
+   * @date 20/02/2023
+   *
+   * @description Update everything.
+   */
+  update() {
+    this.updateDom();
+  }
+
+  /**
+   * @author Joseph Abbey
    * @date 28/01/2023
    * @protected
    * @type {HTMLElement?}

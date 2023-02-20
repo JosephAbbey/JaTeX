@@ -67,6 +67,11 @@ export default class Section extends Element {
     this._title = options.title;
   }
 
+  update() {
+    super.update();
+    this.updateTitleDom();
+  }
+
   /**
    * @author Joseph Abbey
    * @date 11/02/2023

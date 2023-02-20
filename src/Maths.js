@@ -885,6 +885,12 @@ export class Fraction extends Element {
     return this.denominator.map((c) => c.tex).join('');
   }
 
+  update() {
+    super.update();
+    this.updateNDom();
+    this.updateDDom();
+  }
+
   /**
    * @author Joseph Abbey
    * @date 14/02/2023
