@@ -107,7 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .querySelector('#show_latex_btn')
     ?.addEventListener('click', showLaTeX);
   document.querySelector('#reset_btn')?.addEventListener('click', reset);
-  document.querySelector('#print_btn')?.addEventListener('click', print);
+  document
+    .querySelector('#print_btn')
+    ?.addEventListener('click', () => print());
   document.querySelector('#bold_btn')?.addEventListener('click', bold);
   document.querySelector('#italic_btn')?.addEventListener('click', italic);
   document

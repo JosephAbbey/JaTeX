@@ -112,6 +112,8 @@ export default class Text extends Element {
   handleBeforeInput(e) {
     console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
+      case 'historyUndo':
+      case 'historyRedo':
       case 'insertLineBreak':
       case 'insertOrderedList':
       case 'insertUnorderedList':
@@ -225,8 +227,6 @@ export default class Text extends Element {
         c[0].dom.focus();
         console.log(e.inputType, '   After', '  Handled.');
         break;
-      case 'historyUndo':
-      case 'historyRedo':
       case 'deleteWordBackward':
       case 'deleteWordForward':
       case 'deleteByCut':
