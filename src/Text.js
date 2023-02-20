@@ -97,6 +97,10 @@ export default class Text extends Element {
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
     this._dom.addEventListener('input', this.handleInput.bind(this));
     return this._dom;
   }
@@ -105,7 +109,100 @@ export default class Text extends Element {
    * @param {InputEvent} e
    * @returns {void}
    */
+  handleBeforeInput(e) {
+    console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps instanceof Text) {
+              ps.text = ps.text.substring(0, ps.text.length - 1);
+              focusEnd(this.previousSibling?.dom);
+            } else if (ps) {
+              ps.delete();
+              focusEnd(this.previousSibling?.dom);
+            } else if (this.parent instanceof Paragraph) {
+              var ps1 = this.parent.previousSibling;
+              if (ps1 instanceof Paragraph) {
+                var p = this.parent;
+                ps1.appendChild(...p.children);
+                p.delete();
+                focusEnd(this.previousSibling?.dom);
+                console.log(e.inputType, 'Before', '  Handled.');
+              }
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns instanceof Text) {
+              ns.text = ns.text.substring(0, ns.text.length - 1);
+              this.nextSibling?.dom?.focus();
+            } else if (ns) {
+              ns.delete();
+              this.nextSibling?.dom?.focus();
+            } else if (this.parent instanceof Paragraph) {
+              var ns1 = this.parent.nextSibling;
+              if (ns1 instanceof Paragraph) {
+                this.parent.appendChild(...ns1.children);
+                ns1.delete();
+                this.nextSibling?.dom?.focus();
+                console.log(e.inputType, 'Before', '  Handled.');
+              }
+            }
+          }
+          console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+        console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
   handleInput(e) {
+    console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
         var [p1, p2] = this.dom.innerText.split('\n');
@@ -126,25 +223,45 @@ export default class Text extends Element {
           this.parent
         );
         c[0].dom.focus();
+        console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'historyUndo':
       case 'historyRedo':
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
       case 'deleteContentBackward':
       case 'deleteContentForward':
         if (this.dom.innerText == '') {
           this.delete();
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.dom.focus();
+          } else {
+            focusEnd(this.previousSibling?.dom);
+          }
+          console.log(e.inputType, '   After', '  Handled.');
           break;
         }
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
       case 'insertText':
         this._text = this.dom.innerText;
         this.dispatchEvent(
           new TextEvent('edit', this, {
             content: this.dom.innerText,
+            type: e.inputType,
           })
         );
+        console.log(e.inputType, '   After', '  Handled.');
         break;
       default:
-        console.log(e);
+        console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }
@@ -186,3 +303,23 @@ export default class Text extends Element {
 }
 
 Text.register();
+
+/**
+ * Opens the article.
+ * @param {HTMLElement & ElementContentEditable=} node
+ */
+function focusEnd(node) {
+  if (!node) return;
+  node.focus();
+  const sel = document.getSelection();
+  if (!sel) return;
+  //@ts-expect-error
+  node = node.firstChild;
+
+  if (sel.rangeCount) {
+    //@ts-expect-error
+    sel.getRangeAt(0)['setStart'](node, node.length);
+    //@ts-expect-error
+    sel.getRangeAt(0)['setEnd'](node, node.length);
+  }
+}

@@ -196,6 +196,10 @@ export default class TextDecoration extends Text {
     this._dom = document.createElement('span');
     this.updateDom();
     this._dom.addEventListener('input', this.handleInput.bind(this));
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
     return this._dom;
   }
 

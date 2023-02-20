@@ -310,26 +310,60 @@ export default class Element {
       new ElementEvent('delete', this, {})
     );
   }
+  /**
+   * @author Joseph Abbey
+   * @date 20/02/2023
+   * @type {Element=}
+   *
+   * @description The sibling immediately before this element.
+   */
+  get previousSibling() {
+    var i = this.parent?.children.findIndex((c) => this.id == c.id) ?? -1;
+    if (i == -1) return undefined;
+    try {
+      return this.parent?.children[i - 1];
+    } catch {
+      return undefined;
+    }
+  }
+  /**
+   * @author Joseph Abbey
+   * @date 20/02/2023
+   * @type {Element=}
+   *
+   * @description The sibling immediately after this element.
+   */
+  get nextSibling() {
+    var i = this.parent?.children.findIndex((c) => this.id == c.id) ?? -1;
+    if (i == -1) return undefined;
+    try {
+      return this.parent?.children[i + 1];
+    } catch {
+      return undefined;
+    }
+  }
 
   /**
    * @author Joseph Abbey
    * @date 05/02/2023
-   * @param {Element} c
+   * @param {Element[]} cs
    * @returns {void}
    *
    * @description Function to add a child element to the element.
    */
-  appendChild(c) {
-    this.children.push(c);
-    c.parent = this;
-    c.article = this.article;
-    this.updateDom();
-    this.dispatchEvent(
-      //@ts-expect-error
-      new ElementEvent('appendChild', this, {
-        child: c,
-      })
-    );
+  appendChild(...cs) {
+    cs.forEach((c) => {
+      this.children.push(c);
+      c.parent = this;
+      c.article = this.article;
+      this.updateDom();
+      this.dispatchEvent(
+        //@ts-expect-error
+        new ElementEvent('appendChild', this, {
+          child: c,
+        })
+      );
+    });
   }
   /**
    * @author Joseph Abbey
@@ -374,7 +408,6 @@ export default class Element {
     );
     Element.map.delete(c.id);
   }
-
   /**
    * @author Joseph Abbey
    * @date 12/02/2023
@@ -405,6 +438,7 @@ export default class Element {
     r.forEach((c) => ((c.parent = null), (c.article = null)));
     return r;
   }
+
   /**
    * @author Joseph Abbey
    * @date 29/01/2023

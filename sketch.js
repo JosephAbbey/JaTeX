@@ -54,7 +54,7 @@ article.addEventListener('childEvent', (event) => {
   while (c.type == 'childEvent') {
     c = c.data;
   }
-  console.log(c, c.targetElement.serialised, article.serialised);
+  console.log(c);
 
   if (!document.title.startsWith('● ')) {
     document.querySelector('#save_btn')?.classList.add('required');
