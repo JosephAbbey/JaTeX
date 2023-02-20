@@ -126,7 +126,7 @@ function addEditControl(id, click, ariaLabel, title, icon) {
 
 document.addEventListener('DOMContentLoaded', () => {
   addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
-  addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
+  const save_btn = addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
   addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
   addButton(
     'show_latex_btn',
@@ -153,15 +153,34 @@ document.addEventListener('DOMContentLoaded', () => {
     'format_underlined'
   );
 
-  // You may need to enable spell check in chrome://settings/languages
   addCommand(
     'toggle_spellcheck',
     () => (
+      // You may need to enable spell check in chrome://settings/languages
       (article.spellcheck = !article.spellcheck),
       Element.map.forEach((e) => e.updateDom())
     ),
     'Toggle spell check',
     () => (article.spellcheck ? 'e9f6' : 'e9f5')
+  );
+  document
+    .querySelector('#edit_controls')
+    //@ts-expect-error
+    ?.style.setProperty('display', article.readonly ? 'none' : '');
+  save_btn.disabled = article.readonly;
+  addCommand(
+    'toggle_readonly',
+    () => (
+      (article.readonly = !article.readonly),
+      Element.map.forEach((e) => e.updateDom()),
+      document
+        .querySelector('#edit_controls')
+        //@ts-expect-error
+        ?.style.setProperty('display', article.readonly ? 'none' : ''),
+      (save_btn.disabled = article.readonly)
+    ),
+    'Toggle readonly mode',
+    () => (article.readonly ? 'e9f6' : 'e9f5')
   );
 });
 

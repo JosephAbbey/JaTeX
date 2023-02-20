@@ -304,6 +304,8 @@ export default class Element {
   }
 
   delete() {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
     this.parent?.removeChild(this);
     this.dispatchEvent(
       //@ts-expect-error
@@ -352,6 +354,8 @@ export default class Element {
    * @description Function to add a child element to the element.
    */
   appendChild(...cs) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
     cs.forEach((c) => {
       this.children.push(c);
       c.parent = this;
@@ -375,6 +379,8 @@ export default class Element {
    * @description Function to add a child element to the element after another element.
    */
   insertChildAfter(c, o) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
     const index = this.children.findIndex((e) => e.id == o.id);
     if (index > -1) this.children.splice(index + 1, 0, c);
     c.parent = this;
@@ -397,6 +403,8 @@ export default class Element {
    * @description Function to remove a child element from the element.
    */
   removeChild(c) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
     const index = this.children.findIndex((e) => e.id == c.id);
     if (index > -1) this.children.splice(index, 1);
     this.updateDom();
@@ -423,6 +431,8 @@ export default class Element {
    * @description Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
    */
   spliceChildren(start, deleteCount, ...items) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
     var r = deleteCount
       ? this.children.splice(start, deleteCount, ...items)
       : this.children.splice(start);

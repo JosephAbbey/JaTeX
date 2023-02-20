@@ -175,9 +175,15 @@ export default class TextDecoration extends Text {
     this._dom.id = this.id; //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.innerText = this.text;
-    this._dom.contentEditable = 'true';
-    this._dom.spellcheck = this.article?.spellcheck ?? false;
-    this._dom.autocapitalize = 'sentences';
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+      this._dom.spellcheck = this.article?.spellcheck ?? false;
+      this._dom.autocapitalize = 'sentences';
+    } else {
+      this._dom.contentEditable = 'false';
+      this._dom.spellcheck = false;
+      this._dom.autocapitalize = 'off';
+    }
     switch (this.decoration) {
       case 'textbf':
         this._dom.style.fontWeight = 'bold';

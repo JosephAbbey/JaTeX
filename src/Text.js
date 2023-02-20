@@ -89,9 +89,15 @@ export default class Text extends Element {
     this._dom.id = this.id; //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.innerText = this.text;
-    this._dom.contentEditable = 'true';
-    this._dom.spellcheck = this.article?.spellcheck ?? false;
-    this._dom.autocapitalize = 'sentences';
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+      this._dom.spellcheck = this.article?.spellcheck ?? false;
+      this._dom.autocapitalize = 'sentences';
+    } else {
+      this._dom.contentEditable = 'false';
+      this._dom.spellcheck = false;
+      this._dom.autocapitalize = 'off';
+    }
   }
   createDom() {
     this._dom = document.createElement('span');
@@ -284,6 +290,8 @@ export default class Text extends Element {
     return this._text;
   }
   set text(s) {
+    if (this.article?.readonly) throw new TextError('Article is readonly.');
+
     this._text = s;
     // Update the dom.
     if (this._dom) this._dom.innerText = s;

@@ -85,9 +85,15 @@ export default class Section extends Element {
         'Please create a DOM node before you call `updateTitleDom`.'
       );
     this._titleDom.innerText = this.title;
-    this._titleDom.contentEditable = 'true';
-    this._titleDom.spellcheck = this.article?.spellcheck ?? false;
-    this._titleDom.autocapitalize = 'sentences';
+    if (!this.article?.readonly) {
+      this._titleDom.contentEditable = 'true';
+      this._titleDom.spellcheck = this.article?.spellcheck ?? false;
+      this._titleDom.autocapitalize = 'sentences';
+    } else {
+      this._titleDom.contentEditable = 'false';
+      this._titleDom.spellcheck = false;
+      this._titleDom.autocapitalize = 'off';
+    }
   }
   /**
    * @author Joseph Abbey
@@ -170,6 +176,8 @@ export default class Section extends Element {
     return this._title;
   }
   set title(s) {
+    if (this.article?.readonly) throw new SectionError('Article is readonly.');
+
     this._title = s;
     // Update the dom.
     if (this._titleDom) this.titleDom.innerText = s;

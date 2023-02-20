@@ -34,6 +34,7 @@ export class ArticleEvent extends ElementEvent {}
  * @prop {string} title
  * @prop {string} author
  * @prop {boolean=} spellcheck
+ * @prop {boolean=} readonly
  */
 
 /**
@@ -43,6 +44,7 @@ export class ArticleEvent extends ElementEvent {}
  * @prop {string} title
  * @prop {string} author
  * @prop {boolean} spellcheck
+ * @prop {boolean} readonly
  */
 
 /**
@@ -128,6 +130,7 @@ export default class Article extends Element {
       author: this.author,
       title: this.title,
       spellcheck: this.spellcheck,
+      readonly: this.readonly,
     };
   }
 
@@ -170,6 +173,7 @@ export default class Article extends Element {
     this.author = options.author;
 
     this.spellcheck = options.spellcheck ?? false;
+    this.readonly = options.readonly ?? false;
 
     this.maketitles = [];
 
@@ -226,6 +230,8 @@ export default class Article extends Element {
     return this._title;
   }
   set title(s) {
+    if (this.article?.readonly) throw new ArticleError('Article is readonly.');
+
     this._title = s;
     // Update the dom.
     this.maketitles.forEach(
@@ -256,6 +262,15 @@ export default class Article extends Element {
    * @description Whether spellcheck is on.
    */
   spellcheck;
+
+  /**
+   * @author Joseph Abbey
+   * @date 20/02/2023
+   * @type {boolean}
+   *
+   * @description Whether readonly mode is on.
+   */
+  readonly;
 
   get tex() {
     return (

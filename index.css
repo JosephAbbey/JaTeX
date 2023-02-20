@@ -20,7 +20,11 @@ button:has(.material-symbols-outlined) {
   height: 24px;
 }
 
-button:has(.material-symbols-outlined):hover {
+button:has(.material-symbols-outlined):disabled {
+  opacity: 0.3;
+}
+
+button:has(.material-symbols-outlined):not(:disabled):hover {
   background-color: #eefcfd11;
 }
 
