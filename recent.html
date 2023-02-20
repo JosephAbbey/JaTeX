@@ -12,8 +12,42 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
     <link href="./index.css" rel="stylesheet" />
     <style>
-      a {
-        display: block;
+      #articles {
+        display: flex;
+        gap: 0.6em;
+        margin-inline: 0.6em;
+      }
+
+      #articles > a {
+        all: unset;
+        cursor: pointer;
+        opacity: 0.9;
+        transition: all 200ms ease-in-out;
+      }
+      #articles > a:hover {
+        box-shadow: 0 0 5px #111;
+        opacity: 1;
+      }
+
+      #articles > a > div {
+        border-radius: 0.2em;
+        border: 1px solid grey;
+        padding: 0.5em;
+      }
+
+      #articles > a > div > div:nth-of-type(1) {
+        font-size: larger;
+        margin-bottom: 0.2em;
+      }
+
+      #articles > a > div > div:nth-of-type(2) {
+        font-size: smaller;
+      }
+
+      #articles > a > div > div:nth-of-type(3) {
+        text-align: end;
+        font-family: monospace;
+        opacity: 0.5;
       }
     </style>
   </head>
@@ -69,12 +103,27 @@
       var articles = document.querySelector('#articles');
 
       for (var article of getArticleIDs()) {
-        var a = document.createElement('a');
-        a.href = '/?article=' + article;
-        a.innerText = JSON.parse(
+        var articleData = JSON.parse(
           localStorage.getItem('article.' + article)
-        ).title;
-        articles.appendChild(a);
+        );
+        var a = document.createElement('a');
+        var a_div = document.createElement('div');
+        var a_div_0 = document.createElement('div');
+        var a_div_1 = document.createElement('div');
+        var a_div_1_b = document.createElement('b');
+        var a_div_2 = document.createElement('div');
+
+        a.href = '/?article=' + article;
+        a_div_1.innerText = 'By ';
+        a_div_0.innerText = articleData.title;
+        a_div_1_b.innerText = articleData.author;
+        // TODO: add actual date.
+        a_div_2.innerText = new Date().toLocaleDateString();
+
+        a_div_1.append(a_div_1_b);
+        a_div.append(a_div_0, a_div_1, a_div_2);
+        a.append(a_div);
+        articles.append(a);
       }
     </script>
   </body>
