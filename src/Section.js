@@ -112,6 +112,10 @@ export default class Section extends Element {
       this._titleDom = document.createElement('h2');
       this.updateTitleDom();
       this._titleDom.addEventListener('input', this.handleInput.bind(this));
+      this._titleDom.addEventListener(
+        'beforeinput',
+        this.handleBeforeInput.bind(this)
+      );
     }
     return this._titleDom;
   }
@@ -137,15 +141,69 @@ export default class Section extends Element {
    * @param {InputEvent} e
    * @returns {void}
    */
-  handleInput(e) {
+  handleBeforeInput(e) {
+    console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
-        this.titleDom.innerText = this.titleDom.innerText.replace('\n', '');
-        break;
       case 'historyUndo':
       case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      default:
+        console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
       case 'deleteContentBackward':
       case 'deleteContentForward':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
       case 'insertText':
         this._title = this.titleDom.innerText;
         this.dispatchEvent(
@@ -153,9 +211,10 @@ export default class Section extends Element {
             content: this.titleDom.innerText,
           })
         );
+        console.log(e.inputType, '   After', '  Handled.');
         break;
       default:
-        console.log(e);
+        console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

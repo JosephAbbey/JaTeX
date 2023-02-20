@@ -77,6 +77,10 @@ export default class MakeTitle extends Element {
     this._dom = document.createElement('h1');
     this.updateDom();
     this._dom.addEventListener('input', this.handleInput.bind(this));
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
     return this._dom;
   }
 
@@ -84,15 +88,69 @@ export default class MakeTitle extends Element {
    * @param {InputEvent} e
    * @returns {void}
    */
-  handleInput(e) {
+  handleBeforeInput(e) {
+    console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
-        this.dom.innerText = this.dom.innerText.replace('\n', '');
-        break;
       case 'historyUndo':
       case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      default:
+        console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
       case 'deleteContentBackward':
       case 'deleteContentForward':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
       case 'insertText':
         if (this.article) {
           this.article.title = this.dom.innerText;
@@ -104,9 +162,10 @@ export default class MakeTitle extends Element {
         } else {
           this.dom.innerText = 'Unknown';
         }
+        console.log(e.inputType, '   After', '  Handled.');
         break;
       default:
-        console.log(e);
+        console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

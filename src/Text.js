@@ -117,6 +117,14 @@ export default class Text extends Element {
   handleBeforeInput(e) {
     console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
+      case 'insertParagraph':
+        if (
+          e.getTargetRanges()[0].startOffset != 0 &&
+          e.getTargetRanges()[0].endOffset != 0
+        ) {
+          console.log(e.inputType, 'Before', '  Unhandled.');
+          break;
+        }
       case 'historyUndo':
       case 'historyRedo':
       case 'insertLineBreak':
