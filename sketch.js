@@ -85,6 +85,7 @@ function showLaTeX() {
   /** @type {HTMLDialogElement?} */
   var dialog = document.querySelector('#latex');
   if (dialog) {
+    // TODO: Make editable and if changed replace the article with `parse(%)`
     dialog.innerHTML = '';
     var p = document.createElement('div');
     p.innerText = article.tex;

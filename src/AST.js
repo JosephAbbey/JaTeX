@@ -188,6 +188,7 @@ export default function parse(input, index = 0) {
   return [index, nodes];
 }
 
+// TODO: Add support for more tags and environments (Maths, InlineMaths, etc.)
 /**
  * @author Joseph Abbey
  * @date 21/02/2023
