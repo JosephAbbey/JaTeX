@@ -88,7 +88,7 @@ export default class Text extends Element {
     this._dom.innerHTML = '';
     this._dom.id = this.id; //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
-    this._dom.innerText = this.text;
+    this._dom.innerHTML = this.text;
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';
       this._dom.spellcheck = this.article?.spellcheck ?? false;
@@ -141,9 +141,9 @@ export default class Text extends Element {
       case 'deleteHardLineBackward':
       case 'deleteHardLineForward':
       case 'deleteByDrag':
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
+      // TEST: case 'formatBold':
+      // TEST: case 'formatItalic':
+      // TEST: case 'formatUnderline':
       case 'formatStrikeThrough':
       case 'formatSuperscript':
       case 'formatSubscript':
@@ -220,7 +220,7 @@ export default class Text extends Element {
     console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
-        var [p1, p2] = this.dom.innerText.split('\n');
+        var [p1, p2] = this.dom.innerHTML.split('<br>');
         this.text = p1;
         /**
          * @type {Element[]}
@@ -259,15 +259,18 @@ export default class Text extends Element {
           console.log(e.inputType, '   After', '  Handled.');
           break;
         }
+      case 'formatBold': // TEST
+      case 'formatItalic': // TEST
+      case 'formatUnderline': // TEST
       case 'insertReplacementText':
       case 'insertFromPaste':
       case 'insertTranspose':
       case 'insertCompositionText':
       case 'insertText':
-        this._text = this.dom.innerText;
+        this._text = this.dom.innerHTML;
         this.dispatchEvent(
           new TextEvent('edit', this, {
-            content: this.dom.innerText,
+            content: this.dom.innerHTML,
             type: e.inputType,
           })
         );
@@ -302,7 +305,7 @@ export default class Text extends Element {
 
     this._text = s;
     // Update the dom.
-    if (this._dom) this._dom.innerText = s;
+    if (this._dom) this._dom.innerHTML = s;
     if (this.text == '') this.delete();
     else
       this.dispatchEvent(
@@ -313,7 +316,11 @@ export default class Text extends Element {
   }
 
   get tex() {
-    return this.text;
+    return this.text
+      .replace(/<\/\w>/g, '}')
+      .replace(/<b>/g, '\\textbf{')
+      .replace(/<i>/g, '\\textit{')
+      .replace(/<u>/g, '\\underline{');
   }
 }
 

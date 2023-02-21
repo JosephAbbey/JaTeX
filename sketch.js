@@ -1,12 +1,5 @@
 import { addButton, addCommand, recent } from './index.js';
-import {
-  Article,
-  Element,
-  ElementEvent,
-  bold,
-  italic,
-  underline,
-} from './src/index.js';
+import { Article, Element, ElementEvent } from './src/index.js';
 
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
@@ -138,17 +131,23 @@ document.addEventListener('DOMContentLoaded', () => {
   );
   addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
 
-  addEditControl('bold_btn', bold, 'Bold', 'Bold', 'format_bold');
+  addEditControl(
+    'bold_btn',
+    () => document.execCommand('bold'),
+    'Bold',
+    'Bold',
+    'format_bold'
+  );
   addEditControl(
     'italic_btn',
-    italic,
+    () => document.execCommand('italic'),
     'Italicise',
     'Italicise',
     'format_italic'
   );
   addEditControl(
     'underline_btn',
-    underline,
+    () => document.execCommand('underline'),
     'Underline',
     'Underline',
     'format_underlined'
