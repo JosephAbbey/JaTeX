@@ -97,9 +97,8 @@ export class ElementEvent extends Event {
 
 /**
  * @callback ElementEventListener
- * @param {E} event
+ * @param {ElementEvent} event
  * @returns {void}
- * @template {ElementEvent} E
  */
 
 /**
@@ -120,7 +119,6 @@ export class ElementEvent extends Event {
  * @date 28/01/2023
  * @constructor
  * @abstract
- * @template {ElementEvent<Element, string>} E
  *
  * @description Base class for elements. Never directly instantiated.
  */
@@ -307,10 +305,7 @@ export default class Element {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
 
     this.parent?.removeChild(this);
-    this.dispatchEvent(
-      //@ts-expect-error
-      new ElementEvent('delete', this, {})
-    );
+    this.dispatchEvent(new ElementEvent('delete', this, {}));
   }
   /**
    * @author Joseph Abbey
@@ -362,7 +357,6 @@ export default class Element {
       c.article = this.article;
       this.updateDom();
       this.dispatchEvent(
-        //@ts-expect-error
         new ElementEvent('appendChild', this, {
           child: c,
         })
@@ -387,7 +381,6 @@ export default class Element {
     c.article = this.article;
     this.updateDom();
     this.dispatchEvent(
-      //@ts-expect-error
       new ElementEvent('insertChildAfter', this, {
         child: c,
         other: o,
@@ -409,7 +402,6 @@ export default class Element {
     if (index > -1) this.children.splice(index, 1);
     this.updateDom();
     this.dispatchEvent(
-      //@ts-expect-error
       new ElementEvent('removeChild', this, {
         child: c,
       })
@@ -438,7 +430,6 @@ export default class Element {
       : this.children.splice(start);
     this.updateDom();
     this.dispatchEvent(
-      //@ts-expect-error
       new ElementEvent('spliceChildren', this, {
         start,
         deleteCount,
@@ -556,7 +547,7 @@ export default class Element {
   /**
    * @author Joseph Abbey
    * @date 04/02/2023
-   * @type {Object<string,Array<ElementEventListener<E>>>}
+   * @type {Object<string,Array<ElementEventListener>>}
    * @private
    *
    * @description Function to add an event listener to the element.
@@ -566,7 +557,7 @@ export default class Element {
    * @author Joseph Abbey
    * @date 04/02/2023
    * @param {string} type
-   * @param {ElementEventListener<E>} listener - Function to handle the event.
+   * @param {ElementEventListener} listener - Function to handle the event.
    * @returns {void}
    *
    * @description Function to add an event listener to the element.
@@ -579,7 +570,7 @@ export default class Element {
    * @author Joseph Abbey
    * @date 04/02/2023
    * @param {string} type
-   * @param {ElementEventListener<E>} listener - Function to handle the event.
+   * @param {ElementEventListener} listener - Function to handle the event.
    * @returns {void}
    *
    * @description Function to remove an event listener from the element.
@@ -591,7 +582,7 @@ export default class Element {
   /**
    * @author Joseph Abbey
    * @date 04/02/2023
-   * @param {E} event - Data to emit with event.
+   * @param {ElementEvent} event - Data to emit with event.
    * @returns {void}
    *
    * @description Function to emit an event.

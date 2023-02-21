@@ -43,7 +43,7 @@ export class TextEvent extends ElementEvent {}
  * @author Joseph Abbey
  * @date 29/01/2023
  * @constructor
- * @extends {Element<TextEvent>}
+ * @extends {Element}
  *
  * @description An element representing a string of text.
  */

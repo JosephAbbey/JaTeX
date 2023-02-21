@@ -18,8 +18,7 @@ if (articles)
     a_div_1.innerText = 'By ';
     a_div_0.innerText = articleData.title;
     a_div_1_b.innerText = articleData.author;
-    // TODO: add actual date.
-    a_div_2.innerText = new Date().toLocaleDateString();
+    a_div_2.innerText = new Date(articleData.date).toLocaleString();
 
     a_div_1.append(a_div_1_b);
     a_div.append(a_div_0, a_div_1, a_div_2);

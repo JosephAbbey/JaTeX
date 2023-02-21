@@ -29,20 +29,22 @@ export class ArticleEvent extends ElementEvent {}
 
 /**
  * @typedef {Object} ArticleOptions
- * @prop {?Package[]} [packages]
+ * @prop {Package[]=} [packages]
  * @prop {string} title
  * @prop {string} author
  * @prop {boolean=} spellcheck
  * @prop {boolean=} readonly
+ * @prop {Date=} date
  */
 
 /**
  * @typedef {Object} ArticleSerialised
- * @prop {Package[]} [packages]
+ * @prop {Package[]} packages
  * @prop {string} title
  * @prop {string} author
  * @prop {boolean} spellcheck
  * @prop {boolean} readonly
+ * @prop {ReturnType<Date['toJSON']>} date
  */
 
 /**
@@ -71,6 +73,7 @@ export default class Article extends Element {
       title: this.title,
       spellcheck: this.spellcheck,
       readonly: this.readonly,
+      date: this.date.toJSON(),
     };
   }
 
@@ -88,6 +91,7 @@ export default class Article extends Element {
     //@ts-expect-error
     return super.deserialise({
       ...s,
+      date: s.date ? new Date(s.date) : undefined,
     });
   }
 
@@ -106,6 +110,8 @@ export default class Article extends Element {
 
     if (!options.author) throw new ArticleError('An author must be provided.');
     this.author = options.author;
+
+    this.date = options.date ?? new Date();
 
     this.spellcheck = options.spellcheck ?? false;
     this.readonly = options.readonly ?? false;
@@ -180,6 +186,15 @@ export default class Article extends Element {
 
   /**
    * @author Joseph Abbey
+   * @date 21/02/2023
+   * @type {Date}
+   *
+   * @description The date this article was last edited. `\date{%}`
+   */
+  date;
+
+  /**
+   * @author Joseph Abbey
    * @date 20/02/2023
    * @type {boolean}
    *
@@ -214,9 +229,22 @@ export default class Article extends Element {
       '\n' +
       `\\title{${this.title}}\n` +
       `\\author{${this.author}}\n` +
-      '\\date{\\today}\n\n' +
+      `\\date{${this.date.toLocaleDateString()}}\n\n` +
       this.ctex
     );
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 21/02/2023
+   * @param {ArticleEvent} event - Data to emit with event.
+   * @returns {void}
+   *
+   * @description Function to emit an event and update the edit date.
+   */
+  dispatchEvent(event) {
+    this.date = new Date();
+    super.dispatchEvent(event);
   }
 }
 

@@ -201,6 +201,8 @@ export function toAOM(input) {
   var author;
   /** @type {string=} */
   var title;
+  /** @type {Date=} */
+  var date;
   /** @type {Package[]} */
   var packages = [];
   /** @type {Element[]} */
@@ -419,7 +421,16 @@ export function toAOM(input) {
           author = node.data[0].text;
           break;
         case 'date':
-          console.log('Date:', node);
+          if (node.data && node.data.length == 1) {
+            if (node.data[0] instanceof Text) {
+              date = new Date(node.data[0].text);
+            } else if (
+              node.data[0] instanceof Tag &&
+              node.data[0].tag == 'today'
+            ) {
+              date = new Date();
+            } else throw new SyntaxError('Expected a string or `\\today`.');
+          } else throw new SyntaxError('Expected a string or `\\today`.');
           break;
         default:
           throw new SyntaxError('Unsupported tag: ' + node.tag);
@@ -437,5 +448,6 @@ export function toAOM(input) {
     children,
     readonly: false,
     spellcheck: false,
+    date,
   });
 }
