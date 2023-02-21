@@ -29,7 +29,6 @@ export class ArticleEvent extends ElementEvent {}
 
 /**
  * @typedef {Object} ArticleOptions
- * @prop {HTMLElement} root
  * @prop {?Package[]} [packages]
  * @prop {string} title
  * @prop {string} author
@@ -39,70 +38,12 @@ export class ArticleEvent extends ElementEvent {}
 
 /**
  * @typedef {Object} ArticleSerialised
- * @prop {string} root - selector for the element
  * @prop {Package[]} [packages]
  * @prop {string} title
  * @prop {string} author
  * @prop {boolean} spellcheck
  * @prop {boolean} readonly
  */
-
-/**
- * @author Aniket Chauhan
- * @date 16/03/2021
- * @see https://dev.to/aniket_chauhan/generate-a-css-selector-path-of-a-dom-element-4aim
- *
- * @param {HTMLElement} context - The DOM element you want to generate a selector for.
- * @returns {string} A string of the path to the element.
- * @description It takes a DOM element as an argument, and returns a string that can be used to select that element.
- */
-function getSelector(context) {
-  let index = getSelectorIndex(context);
-
-  let pathSelector = '';
-  while (context.tagName) {
-    pathSelector = context.localName + (pathSelector ? '>' + pathSelector : '');
-
-    //@ts-expect-error
-    context =
-      context.parentNode ??
-      (() => {
-        throw new ArticleError(
-          'Unable to serialise article due to invalid root element.'
-        );
-      })();
-  }
-  pathSelector = pathSelector + `:nth-of-type(${index})`;
-  return pathSelector;
-}
-
-/**
- * @author Aniket Chauhan
- * @date 16/03/2021
- * @see https://dev.to/aniket_chauhan/generate-a-css-selector-path-of-a-dom-element-4aim
- * @private
- * @param {HTMLElement} node - The node to get the index for.
- * @returns {number} The index of the element in the DOM.
- *
- * @description It loops through all the previous siblings of the element and increments the index by 1 if the
- * previous sibling is of the same type as the element.
- */
-function getSelectorIndex(node) {
-  let i = 1;
-  let tagName = node.tagName;
-
-  while (node.previousSibling) {
-    //@ts-expect-error
-    node = node.previousSibling;
-    if (
-      node.nodeType === 1 &&
-      tagName.toLowerCase() == node.tagName.toLowerCase()
-    ) {
-      i++;
-    }
-  }
-  return i;
-}
 
 /**
  * @author Joseph Abbey
@@ -125,7 +66,6 @@ export default class Article extends Element {
   get serialised() {
     return {
       ...super.serialised,
-      root: this.root.id ? '#' + this.root.id : getSelector(this.root),
       packages: this.packages,
       author: this.author,
       title: this.title,
@@ -148,7 +88,6 @@ export default class Article extends Element {
     //@ts-expect-error
     return super.deserialise({
       ...s,
-      root: document.querySelector(s.root),
     });
   }
 
@@ -159,10 +98,6 @@ export default class Article extends Element {
    */
   constructor(options) {
     super(options);
-
-    if (!options.root)
-      throw new ArticleError('A root element must be provided.');
-    this.root = options.root;
 
     this.packages = options.packages ?? [];
 
@@ -178,8 +113,6 @@ export default class Article extends Element {
     this.maketitles = [];
 
     this.article = this;
-
-    this.root.appendChild(this.dom);
   }
 
   /**
@@ -190,15 +123,6 @@ export default class Article extends Element {
    * @description The maketitle elements in the article.
    */
   maketitles;
-
-  /**
-   * @author Joseph Abbey
-   * @date 29/01/2023
-   * @type {HTMLElement}
-   *
-   * @description The root html element that this element will be attached to.
-   */
-  root;
 
   /**
    * @author Joseph Abbey

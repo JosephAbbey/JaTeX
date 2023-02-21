@@ -17,12 +17,11 @@ if (
   recent();
 
 /** @type {Article} */
-//@ts-expect-error
-var article = Element.deserialiseMany([
+var article = Article.deserialise(
   JSON.parse(
     localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
-  ),
-])[0];
+  )
+);
 
 document.title = article.title;
 
@@ -125,6 +124,8 @@ function addEditControl(id, click, ariaLabel, title, icon) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('#root')?.appendChild(article.dom);
+
   addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
   const save_btn = addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
   addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
