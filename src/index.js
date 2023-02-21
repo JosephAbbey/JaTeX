@@ -1,3 +1,5 @@
+export { default as parse } from './AST.js';
+export * as AST from './AST.js';
 /**
  * @typedef {import("./Article.js").Package} Package
  * @typedef {import("./Article.js").ArticleOptions} ArticleOptions

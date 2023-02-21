@@ -376,6 +376,15 @@ export class Vector extends Variable {
     }`;
     this._dom?.appendChild(style);
   }
+
+  get tex() {
+    switch (this.var) {
+      case 'θ':
+        return '\\vec{\\theta}';
+      default:
+        return '\\vec{' + this.var + '}';
+    }
+  }
 }
 
 Vector.register();

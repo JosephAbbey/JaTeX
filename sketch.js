@@ -1,5 +1,5 @@
 import { addButton, addCommand, recent } from './index.js';
-import { Article, Element, ElementEvent } from './src/index.js';
+import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
 
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
@@ -207,5 +207,9 @@ document.addEventListener('keydown', (e) => {
 //! remove
 //@ts-expect-error
 window.article = article;
+//@ts-expect-error
+window.parse = parse;
+//@ts-expect-error
+window.AST = AST;
 
 console.log(article);
