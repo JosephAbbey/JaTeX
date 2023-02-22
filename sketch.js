@@ -9,15 +9,10 @@ if (
 )
   recent();
 
-/** @type {Article} */
-var article = AST.toAOM(
-  parse(
-    Article.deserialise(
-      JSON.parse(
-        localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
-      )
-    ).tex
-  )[1]
+var article = Article.deserialise(
+  JSON.parse(
+    localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
+  )
 );
 
 document.title = article.title;
@@ -89,11 +84,19 @@ function showLaTeX() {
   /** @type {HTMLDialogElement?} */
   var dialog = document.querySelector('#latex');
   if (dialog) {
-    // TODO: Make editable and if changed replace the article with `parse(%)`
     dialog.innerHTML = '';
-    var p = document.createElement('div');
-    p.innerText = article.tex;
+    var p = document.createElement('textarea');
+    var i = (p.value = article.tex);
     dialog.appendChild(p);
+    dialog.addEventListener('close', () => {
+      if (i !== p.value) {
+        localStorage.setItem(
+          'article.' + urlParams.get('article'),
+          JSON.stringify(AST.toAOM(parse(p.value)[1]).serialised)
+        );
+        window.location.reload();
+      }
+    });
     dialog.showModal();
   }
 }

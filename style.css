@@ -49,7 +49,7 @@ main::before {
   }
 }
 
-#latex:modal > div {
+#latex:modal > textarea {
   border: 1px solid #111;
   background-color: #1112;
   border-radius: 0.5em 0 0 0.5em;
@@ -61,4 +61,6 @@ main::before {
   white-space: pre-wrap;
   font-family: monospace;
   overflow-y: scroll;
+  resize: none;
+  outline: none;
 }

@@ -731,6 +731,7 @@ export function toAOM(input) {
                     var: 'α',
                   })
                 );
+                break;
               case 'beta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -738,6 +739,7 @@ export function toAOM(input) {
                     var: 'β',
                   })
                 );
+                break;
               case 'gamma':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -745,6 +747,7 @@ export function toAOM(input) {
                     var: 'γ',
                   })
                 );
+                break;
               case 'delta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -752,6 +755,7 @@ export function toAOM(input) {
                     var: 'δ',
                   })
                 );
+                break;
               case 'epsilon':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -759,6 +763,7 @@ export function toAOM(input) {
                     var: 'ε',
                   })
                 );
+                break;
               case 'zeta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -766,6 +771,7 @@ export function toAOM(input) {
                     var: 'ζ',
                   })
                 );
+                break;
               case 'eta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -773,6 +779,7 @@ export function toAOM(input) {
                     var: 'η',
                   })
                 );
+                break;
               case 'theta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -780,6 +787,7 @@ export function toAOM(input) {
                     var: 'θ',
                   })
                 );
+                break;
               case 'iota':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -787,6 +795,7 @@ export function toAOM(input) {
                     var: 'ι',
                   })
                 );
+                break;
               case 'kappa':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -794,6 +803,7 @@ export function toAOM(input) {
                     var: 'κ',
                   })
                 );
+                break;
               case 'lamda':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -801,6 +811,7 @@ export function toAOM(input) {
                     var: 'λ',
                   })
                 );
+                break;
               case 'mu':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -808,6 +819,7 @@ export function toAOM(input) {
                     var: 'μ',
                   })
                 );
+                break;
               case 'nu':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -815,6 +827,7 @@ export function toAOM(input) {
                     var: 'ν',
                   })
                 );
+                break;
               case 'xi':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -822,6 +835,7 @@ export function toAOM(input) {
                     var: 'ξ',
                   })
                 );
+                break;
               case 'pi':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -829,6 +843,7 @@ export function toAOM(input) {
                     var: 'π',
                   })
                 );
+                break;
               case 'rho':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -836,6 +851,7 @@ export function toAOM(input) {
                     var: 'ρ',
                   })
                 );
+                break;
               case 'sigma':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -843,6 +859,7 @@ export function toAOM(input) {
                     var: 'σ',
                   })
                 );
+                break;
               case 'tau':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -850,6 +867,7 @@ export function toAOM(input) {
                     var: 'τ',
                   })
                 );
+                break;
               case 'upsilon':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -857,6 +875,7 @@ export function toAOM(input) {
                     var: 'υ',
                   })
                 );
+                break;
               case 'phi':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -864,6 +883,7 @@ export function toAOM(input) {
                     var: 'φ',
                   })
                 );
+                break;
               case 'chi':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -871,6 +891,7 @@ export function toAOM(input) {
                     var: 'χ',
                   })
                 );
+                break;
               case 'psi':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
@@ -878,18 +899,12 @@ export function toAOM(input) {
                     var: 'ψ',
                   })
                 );
+                break;
               case 'omega':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
                     id: Element.uuid(),
                     var: 'ω',
-                  })
-                );
-              case 'theta':
-                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
-                  new Variable({
-                    id: Element.uuid(),
-                    var: 'θ',
                   })
                 );
                 break;
