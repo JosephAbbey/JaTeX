@@ -44,6 +44,7 @@
     "pagenumbering",
     "textbf",
     "textit",
+    "textnormal",
     "usepackage"
   ]
 }

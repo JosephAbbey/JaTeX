@@ -8,6 +8,16 @@ import SubSection from './SubSection.js';
 import Document from './Document.js';
 import TextElement from './Text.js';
 import Paragraph from './Paragraph.js';
+import {
+  Equals,
+  Power,
+  InlineMaths as InlineMathsElement,
+  Brackets as BracketsElement,
+  Variable,
+  Approx,
+  Vector,
+} from './Maths.js';
+import TextNormal from './TextNormal.js';
 /**
  * @typedef {import("./Article.js").Package} Package
  */
@@ -37,7 +47,45 @@ export class Text extends Node {
   text;
 }
 export class Break extends Node {}
-export class InlineMaths extends Node {}
+export class InlineMaths extends Node {
+  /**
+   * @author Joseph Abbey
+   * @date 22/02/2023
+   * @param {Node[]} children
+   */
+  constructor(children) {
+    super();
+    this.children = children;
+  }
+
+  /**
+   * @type {Node[]}
+   */
+  children;
+}
+export class Brackets extends Node {
+  /**
+   * @author Joseph Abbey
+   * @date 22/02/2023
+   * @param {Node[]} children
+   * @param {boolean=} square
+   */
+  constructor(children, square = false) {
+    super();
+    this.children = children;
+    this.square = square;
+  }
+
+  /**
+   * @type {boolean}
+   */
+  square;
+
+  /**
+   * @type {Node[]}
+   */
+  children;
+}
 export class Tag extends Node {
   /**
    * @author Joseph Abbey
@@ -92,17 +140,18 @@ export class Env extends Tag {
  * @date 21/02/2023
  * @param {string} input
  * @param {number=} index
+ * @param {boolean=} inlineMaths
  * @returns {[number, Node[]]}
  *
  * @description Generates an Abstract Syntax Tree from the given input.
  */
-export default function parse(input, index = 0) {
+export default function parse(input, index = 0, inlineMaths = false) {
   /** @type {Node[]} */
   var nodes = [];
   main: while (index < input.length) {
     while (
       index < input.length &&
-      [' ', '\t', '\n', '\r'].includes(input.charAt(index))
+      ['\t', '\n', '\r'].includes(input.charAt(index))
     ) {
       index++;
     }
@@ -159,19 +208,77 @@ export default function parse(input, index = 0) {
         }
         nodes.push(new Tag(name, data, keyValueData));
         break;
+      case ')':
+      case ']':
       case '}':
         index++;
         return [index, nodes];
+      case '^':
+        index++;
+        if (input.charAt(index) == '{') {
+          index++;
+          let d = parse(input, index);
+          if (d instanceof Array) {
+            index = d[0];
+            nodes.push(new Tag('^', d[1]));
+          } else {
+            throw new SyntaxError('Invalid');
+          }
+        }
+        break;
+      case '(':
+        index++;
+        let d = parse(input, index);
+        if (d instanceof Array) {
+          index = d[0];
+          nodes.push(new Brackets(d[1]));
+        } else {
+          throw new SyntaxError('Invalid');
+        }
+        break;
+      case '[':
+        index++;
+        let b = parse(input, index);
+        if (b instanceof Array) {
+          index = b[0];
+          nodes.push(new Brackets(b[1], true));
+        } else {
+          throw new SyntaxError('Invalid');
+        }
+        break;
       case '$':
-        // TODO: Maths
-        throw new SyntaxError('TODO: Maths');
+        if (inlineMaths) {
+          index++;
+          return [index, nodes];
+        }
+        index++;
+        let c = parse(input, index, true);
+        if (c instanceof Array) {
+          index = c[0];
+          nodes.push(new InlineMaths(c[1]));
+          break;
+        } else {
+          throw new SyntaxError('Invalid');
+        }
+      case '&':
+        if (input.charAt(index + 1) == '=') {
+          index += 2;
+          nodes.push(new Tag('&='));
+          break;
+        }
       default:
         var text = '';
         while (
           index < input.length &&
           input.charAt(index) != '\\' &&
           input.charAt(index) != '$' &&
-          input.charAt(index) != '}'
+          input.charAt(index) != ')' &&
+          input.charAt(index) != ']' &&
+          input.charAt(index) != '}' &&
+          input.charAt(index) != '&' &&
+          input.charAt(index) != '(' &&
+          input.charAt(index) != '[' &&
+          input.charAt(index) != '^'
         ) {
           if (input.charAt(index) == '\n' && input.charAt(index + 1) == '\n') {
             index += 2;
@@ -225,130 +332,227 @@ export function toAOM(input) {
       var s;
       /** @type {SubSection=} */
       var ss;
-      for (let n in e.children) {
-        let node = e.children[n];
-        if (
-          t &&
-          !(
-            node instanceof Text ||
-            (node instanceof Tag &&
-              ['textbf', 'textit', 'underline'].includes(node.tag))
-          )
-        ) {
-          p.children.push(
-            new TextElement({
+      /**
+       * @param {Element=} enc
+       * @param {Node[]=} enc_c
+       */
+      function r(enc, enc_c) {
+        console.log('r', enc, enc_c);
+        for (let node of enc_c ?? e.children) {
+          if (
+            t &&
+            !(
+              node instanceof Text ||
+              (node instanceof Tag &&
+                ['textbf', 'textit', 'underline'].includes(node.tag))
+            )
+          ) {
+            p.children.push(
+              new TextElement({
+                id: Element.uuid(),
+                text: t,
+              })
+            );
+            t = '';
+          }
+          if (node instanceof Text) {
+            if (enc) {
+              // TODO: Detect Math environment from handling brackets differently and creating vars.
+              enc.children.push(
+                new TextElement({
+                  id: Element.uuid(),
+                  text: node.text,
+                })
+              );
+            } else t += node.text;
+          } else if (node instanceof InlineMaths) {
+            let i = new InlineMathsElement({
               id: Element.uuid(),
-              text: t,
-            })
-          );
-          t = '';
-        }
-        if (node instanceof Text) {
-          t += node.text;
-        } else if (node instanceof Break) {
-          (ss?.children ?? s?.children ?? c).push(p);
-          p = new Paragraph({ id: Element.uuid() });
-        } else if (node instanceof Env) {
-        } else if (node instanceof Tag) {
-          switch (node.tag) {
-            case 'textbf':
-            case 'textit':
-            case 'underline':
-              /** @param {Node} i */
-              function recurse(i) {
-                if (i instanceof Text) {
-                  t += i.text;
-                } else if (i instanceof Tag) {
-                  switch (i.tag) {
-                    case 'textbf':
-                      t += '<b>';
-                      for (let j of i.data ?? []) recurse(j);
-                      t += '</b>';
-                      break;
-                    case 'textit':
-                      t += '<i>';
-                      for (let j of i.data ?? []) recurse(j);
-                      t += '</i>';
-                      break;
-                    case 'underline':
-                      t += '<u>';
-                      for (let j of i.data ?? []) recurse(j);
-                      t += '</u>';
-                      break;
-                    default:
-                      throw new SyntaxError('Expected a string.');
-                  }
-                } else throw new SyntaxError('Expected a string.');
-              }
-              recurse(node);
-              break;
-            case 'pagenumbering':
-              if (
-                node.data &&
-                node.data.length == 1 &&
-                node.data[0] instanceof Text
-              )
-                (ss?.children ?? s?.children ?? c).push(
-                  new PageNumbering({
+              children: [],
+            });
+            r(i, node.children);
+            p.children.push(i);
+          } else if (node instanceof Brackets) {
+            let l = new BracketsElement({
+              id: Element.uuid(),
+              children: [],
+              square: node.square,
+            });
+            r(l, node.children);
+            (enc?.children ?? p.children).push(l);
+          } else if (node instanceof Break) {
+            (enc?.children ?? ss?.children ?? s?.children ?? c).push(p);
+            p = new Paragraph({ id: Element.uuid() });
+          } else if (node instanceof Env) {
+            (enc?.children ?? ss?.children ?? s?.children ?? c).push(env(node));
+          } else if (node instanceof Tag) {
+            switch (node.tag) {
+              case 'textbf':
+              case 'textit':
+              case 'underline':
+                /** @param {Node} i */
+                function recurse(i) {
+                  if (i instanceof Text) {
+                    t += i.text;
+                  } else if (i instanceof Tag) {
+                    switch (i.tag) {
+                      case 'textbf':
+                        t += '<b>';
+                        for (let j of i.data ?? []) recurse(j);
+                        t += '</b>';
+                        break;
+                      case 'textit':
+                        t += '<i>';
+                        for (let j of i.data ?? []) recurse(j);
+                        t += '</i>';
+                        break;
+                      case 'underline':
+                        t += '<u>';
+                        for (let j of i.data ?? []) recurse(j);
+                        t += '</u>';
+                        break;
+                      default:
+                        throw new SyntaxError('Expected a string.');
+                    }
+                  } else throw new SyntaxError('Expected a string.');
+                }
+                recurse(node);
+                break;
+              case 'pagenumbering':
+                if (
+                  node.data &&
+                  node.data.length == 1 &&
+                  node.data[0] instanceof Text
+                )
+                  (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                    new PageNumbering({
+                      id: Element.uuid(),
+                      numbering: node.data[0].text,
+                    })
+                  );
+                else throw new SyntaxError('Expected a string.');
+                break;
+              case '&=':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Equals({
                     id: Element.uuid(),
-                    numbering: node.data[0].text,
                   })
                 );
-              else throw new SyntaxError('Expected a string.');
-              break;
-            case 'maketitle':
-              (ss?.children ?? s?.children ?? c).push(
-                new MakeTitle({
+                break;
+              case 'approx':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Approx({
+                    id: Element.uuid(),
+                  })
+                );
+                break;
+              case 'textnormal':
+                if (
+                  node.data &&
+                  node.data.length == 1 &&
+                  node.data[0] instanceof Text
+                ) {
+                  (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                    new TextNormal({
+                      id: Element.uuid(),
+                      text: node.data[0].text,
+                    })
+                  );
+                } else throw new SyntaxError('Expected a string.');
+                break;
+              case 'vec':
+                if (node.data && node.data.length == 1) {
+                  if (node.data[0] instanceof Text) {
+                    (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                      new Vector({
+                        id: Element.uuid(),
+                        var: node.data[0].text,
+                      })
+                    );
+                  } else if (
+                    node.data[0] instanceof Tag &&
+                    node.data[0].tag == 'theta'
+                  ) {
+                    (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                      new Vector({
+                        id: Element.uuid(),
+                        var: 'θ',
+                      })
+                    );
+                  } else throw new SyntaxError('Expected a string.');
+                } else throw new SyntaxError('Expected a string.');
+                break;
+              case 'theta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'θ',
+                  })
+                );
+                break;
+              case '^':
+                let power = new Power({
                   id: Element.uuid(),
-                })
-              );
-              break;
-            case 'newpage':
-              (ss?.children ?? s?.children ?? c).push(
-                new NewPage({
-                  id: Element.uuid(),
-                })
-              );
-              break;
-            case 'section':
-              if (
-                node.data &&
-                node.data.length == 1 &&
-                node.data[0] instanceof Text
-              ) {
-                if (s) {
-                  if (ss) {
-                    s.children.push(ss);
-                    ss = undefined;
-                  }
-                  c.push(s);
-                }
-                s = new Section({
-                  id: Element.uuid(),
-                  title: node.data[0].text,
+                  children: [],
                 });
-              } else throw new SyntaxError('Expected a string.');
-              break;
-            case 'subsection':
-              if (
-                node.data &&
-                node.data.length == 1 &&
-                node.data[0] instanceof Text
-              ) {
-                if (s) {
-                  if (ss) s.children.push(ss);
-                  ss = new SubSection({
+                r(power, node.data);
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(power);
+                break;
+              case 'maketitle':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new MakeTitle({
+                    id: Element.uuid(),
+                  })
+                );
+                break;
+              case 'newpage':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new NewPage({
+                    id: Element.uuid(),
+                  })
+                );
+                break;
+              case 'section':
+                if (
+                  node.data &&
+                  node.data.length == 1 &&
+                  node.data[0] instanceof Text
+                ) {
+                  if (s) {
+                    if (ss) {
+                      s.children.push(ss);
+                      ss = undefined;
+                    }
+                    c.push(s);
+                  }
+                  s = new Section({
                     id: Element.uuid(),
                     title: node.data[0].text,
                   });
-                }
-              } else throw new SyntaxError('Expected a string.');
-              break;
-            default:
-              throw new SyntaxError('Unsupported tag: ' + node.tag);
-          }
-        } else throw new SyntaxError('Invalid');
+                } else throw new SyntaxError('Expected a string.');
+                break;
+              case 'subsection':
+                if (
+                  node.data &&
+                  node.data.length == 1 &&
+                  node.data[0] instanceof Text
+                ) {
+                  if (s) {
+                    if (ss) s.children.push(ss);
+                    ss = new SubSection({
+                      id: Element.uuid(),
+                      title: node.data[0].text,
+                    });
+                  }
+                } else throw new SyntaxError('Expected a string.');
+                break;
+              default:
+              // throw new SyntaxError('Unsupported tag: ' + node.tag);
+            }
+          } else throw new SyntaxError('Invalid');
+        }
       }
+      r();
       if (s) {
         if (ss) {
           s.children.push(ss);
@@ -437,7 +641,8 @@ export function toAOM(input) {
           throw new SyntaxError('Unsupported tag: ' + node.tag);
       }
     } else {
-      throw new SyntaxError('Expected tag: ' + node);
+      console.log(node);
+      throw new SyntaxError('Expected tag: ');
     }
   }
 

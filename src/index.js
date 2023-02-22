@@ -11,12 +11,8 @@ export {
   DocumentError,
   DocumentEvent,
 } from './Document.js';
-import { ElementEvent } from './Element.js';
 /**
- * @template {ElementEvent} E
- * @typedef {import("./Element.js").ElementEventListener<E>} ElementEventListener
- */
-/**
+ * @typedef {import("./Element.js").ElementEventListener} ElementEventListener
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
  */
@@ -93,4 +89,13 @@ export { default as SubSection } from './SubSection.js';
  * @typedef {import("./Text.js").TextSerialised} TextSerialised
  */
 export { default as Text, TextError, TextEvent } from './Text.js';
+/**
+ * @typedef {import("./TextNormal.js").TextNormalOptions} TextNormalOptions
+ * @typedef {import("./TextNormal.js").TextNormalSerialised} TextNormalSerialised
+ */
+export {
+  default as TextNormal,
+  TextNormalError,
+  TextNormalEvent,
+} from './TextNormal.js';
 export { default as NewPage } from './NewPage.js';
