@@ -343,8 +343,52 @@ export class Variable extends Element {
 
   get tex() {
     switch (this.var) {
+      case 'α':
+        return '\\alpha';
+      case 'β':
+        return '\\beta';
+      case 'γ':
+        return '\\gamma';
+      case 'δ':
+        return '\\delta';
+      case 'ε':
+        return '\\epsilon';
+      case 'ζ':
+        return '\\zeta';
+      case 'η':
+        return '\\eta';
       case 'θ':
         return '\\theta';
+      case 'ι':
+        return '\\iota';
+      case 'κ':
+        return '\\kappa';
+      case 'λ':
+        return '\\lamda';
+      case 'μ':
+        return '\\mu';
+      case 'ν':
+        return '\\nu';
+      case 'ξ':
+        return '\\xi';
+      case 'π':
+        return '\\pi';
+      case 'ρ':
+        return '\\rho';
+      case 'σ':
+        return '\\sigma';
+      case 'τ':
+        return '\\tau';
+      case 'υ':
+        return '\\upsilon';
+      case 'φ':
+        return '\\phi';
+      case 'χ':
+        return '\\chi';
+      case 'ψ':
+        return '\\psi';
+      case 'ω':
+        return '\\omega';
       default:
         return this.var;
     }

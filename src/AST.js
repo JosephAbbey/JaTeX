@@ -488,19 +488,403 @@ export function toAOM(input) {
                         var: node.data[0].text,
                       })
                     );
-                  } else if (
-                    node.data[0] instanceof Tag &&
-                    node.data[0].tag == 'theta'
-                  ) {
-                    (enc?.children ?? ss?.children ?? s?.children ?? c).push(
-                      new Vector({
-                        id: Element.uuid(),
-                        var: 'θ',
-                      })
-                    );
+                  } else if (node.data[0] instanceof Tag) {
+                    if (node.data[0].tag == 'gamma')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Γ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'delta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Δ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'theta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Θ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'lambda')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Λ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'xi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Ξ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'pi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Π',
+                        })
+                      );
+                    else if (node.data[0].tag == 'sigma')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Σ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'phi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Φ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'psi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Ψ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'omega')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'Ω',
+                        })
+                      );
+                    else if (node.data[0].tag == 'alpha')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'α',
+                        })
+                      );
+                    else if (node.data[0].tag == 'beta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'β',
+                        })
+                      );
+                    else if (node.data[0].tag == 'gamma')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'γ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'delta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'δ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'epsilon')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ε',
+                        })
+                      );
+                    else if (node.data[0].tag == 'zeta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ζ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'eta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'η',
+                        })
+                      );
+                    else if (node.data[0].tag == 'theta')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'θ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'iota')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ι',
+                        })
+                      );
+                    else if (node.data[0].tag == 'kappa')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'κ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'lamda')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'λ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'mu')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'μ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'nu')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ν',
+                        })
+                      );
+                    else if (node.data[0].tag == 'xi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ξ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'pi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'π',
+                        })
+                      );
+                    else if (node.data[0].tag == 'rho')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ρ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'sigma')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'σ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'tau')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'τ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'upsilon')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'υ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'phi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'φ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'chi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'χ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'psi')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ψ',
+                        })
+                      );
+                    else if (node.data[0].tag == 'omega')
+                      (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                        new Vector({
+                          id: Element.uuid(),
+                          var: 'ω',
+                        })
+                      );
+                    else throw new SyntaxError('Expected a string.');
                   } else throw new SyntaxError('Expected a string.');
                 } else throw new SyntaxError('Expected a string.');
                 break;
+              case 'alpha':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'α',
+                  })
+                );
+              case 'beta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'β',
+                  })
+                );
+              case 'gamma':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'γ',
+                  })
+                );
+              case 'delta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'δ',
+                  })
+                );
+              case 'epsilon':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ε',
+                  })
+                );
+              case 'zeta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ζ',
+                  })
+                );
+              case 'eta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'η',
+                  })
+                );
+              case 'theta':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'θ',
+                  })
+                );
+              case 'iota':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ι',
+                  })
+                );
+              case 'kappa':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'κ',
+                  })
+                );
+              case 'lamda':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'λ',
+                  })
+                );
+              case 'mu':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'μ',
+                  })
+                );
+              case 'nu':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ν',
+                  })
+                );
+              case 'xi':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ξ',
+                  })
+                );
+              case 'pi':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'π',
+                  })
+                );
+              case 'rho':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ρ',
+                  })
+                );
+              case 'sigma':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'σ',
+                  })
+                );
+              case 'tau':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'τ',
+                  })
+                );
+              case 'upsilon':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'υ',
+                  })
+                );
+              case 'phi':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'φ',
+                  })
+                );
+              case 'chi':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'χ',
+                  })
+                );
+              case 'psi':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ψ',
+                  })
+                );
+              case 'omega':
+                (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                  new Variable({
+                    id: Element.uuid(),
+                    var: 'ω',
+                  })
+                );
               case 'theta':
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(
                   new Variable({
