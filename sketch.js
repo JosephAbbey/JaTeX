@@ -10,10 +10,14 @@ if (
   recent();
 
 /** @type {Article} */
-var article = Article.deserialise(
-  JSON.parse(
-    localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
-  )
+var article = AST.toAOM(
+  parse(
+    Article.deserialise(
+      JSON.parse(
+        localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
+      )
+    ).tex
+  )[1]
 );
 
 document.title = article.title;

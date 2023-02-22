@@ -335,14 +335,15 @@ export function toAOM(input) {
       /**
        * @param {Element=} enc
        * @param {Node[]=} enc_c
+       * @param {boolean=} inlineMaths
        */
-      function r(enc, enc_c) {
-        console.log('r', enc, enc_c);
+      function r(enc, enc_c, inlineMaths = false) {
         for (let node of enc_c ?? e.children) {
           if (
             t &&
             !(
               node instanceof Text ||
+              (!inlineMaths && node instanceof Brackets) ||
               (node instanceof Tag &&
                 ['textbf', 'textit', 'underline'].includes(node.tag))
             )
@@ -356,30 +357,48 @@ export function toAOM(input) {
             t = '';
           }
           if (node instanceof Text) {
-            if (enc) {
-              // TODO: Detect Math environment from handling brackets differently and creating vars.
-              enc.children.push(
-                new TextElement({
-                  id: Element.uuid(),
-                  text: node.text,
-                })
+            if (inlineMaths) {
+              node.text.split('').forEach((v) =>
+                v == ' '
+                  ? null
+                  : (enc?.children ?? ss?.children ?? s?.children ?? c).push(
+                      new Variable({
+                        id: Element.uuid(),
+                        var: v,
+                      })
+                    )
               );
-            } else t += node.text;
+            } else {
+              if (enc) {
+                enc.children.push(
+                  new TextElement({
+                    id: Element.uuid(),
+                    text: node.text,
+                  })
+                );
+              } else t += node.text;
+            }
           } else if (node instanceof InlineMaths) {
             let i = new InlineMathsElement({
               id: Element.uuid(),
               children: [],
             });
-            r(i, node.children);
+            r(i, node.children, true);
             p.children.push(i);
           } else if (node instanceof Brackets) {
-            let l = new BracketsElement({
-              id: Element.uuid(),
-              children: [],
-              square: node.square,
-            });
-            r(l, node.children);
-            (enc?.children ?? p.children).push(l);
+            if (inlineMaths) {
+              let l = new BracketsElement({
+                id: Element.uuid(),
+                children: [],
+                square: node.square,
+              });
+              r(l, node.children, inlineMaths);
+              (enc?.children ?? p.children).push(l);
+            } else {
+              t += '(';
+              r(enc, node.children);
+              t += ')';
+            }
           } else if (node instanceof Break) {
             (enc?.children ?? ss?.children ?? s?.children ?? c).push(p);
             p = new Paragraph({ id: Element.uuid() });
@@ -495,7 +514,7 @@ export function toAOM(input) {
                   id: Element.uuid(),
                   children: [],
                 });
-                r(power, node.data);
+                r(power, node.data, inlineMaths);
                 (enc?.children ?? ss?.children ?? s?.children ?? c).push(power);
                 break;
               case 'maketitle':
@@ -547,7 +566,8 @@ export function toAOM(input) {
                 } else throw new SyntaxError('Expected a string.');
                 break;
               default:
-              // throw new SyntaxError('Unsupported tag: ' + node.tag);
+                console.error(new SyntaxError('Unsupported tag: ' + node.tag));
+              // `throw new SyntaxError('Unsupported tag: ' + node.tag);`
             }
           } else throw new SyntaxError('Invalid');
         }
@@ -640,10 +660,7 @@ export function toAOM(input) {
         default:
           throw new SyntaxError('Unsupported tag: ' + node.tag);
       }
-    } else {
-      console.log(node);
-      throw new SyntaxError('Expected tag: ');
-    }
+    } else throw new SyntaxError('Expected tag: ');
   }
 
   return new Article({
