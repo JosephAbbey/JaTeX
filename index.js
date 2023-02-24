@@ -9,12 +9,12 @@ if (!(await store.has('default'))) {
 
 /** Create new article. */
 function new_btn() {
-  window.location.pathname = '/new.html';
+  window.location.href = '/new.html';
 }
 
 /** Shows recent options. */
 export function recent() {
-  window.location.pathname = '/recent.html';
+  window.location.href = '/recent.html';
 }
 
 /**

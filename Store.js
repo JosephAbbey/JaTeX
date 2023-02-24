@@ -102,6 +102,7 @@ export class LocalStorage extends Store {
    * @async
    * @generator
    * @yields {string}
+   * @returns {AsyncGenerator<string, void, unknown>}
    */
   async *keys() {
     for (var i = 0; i < localStorage.length; i++) {
@@ -137,23 +138,20 @@ export class RealtimeDB extends Store {
    * @returns {Promise<any>}
    */
   async auth() {
+    const firebase_app =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
+    const firebase_database =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+    const firebase_auth =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js';
     const [
       { initializeApp },
       { getDatabase, ref, set, get, remove },
       { getAuth, signInWithPopup, GithubAuthProvider, signOut },
     ] = await Promise.all([
-      import(
-        // @ts-ignore
-        'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js'
-      ),
-      import(
-        // @ts-ignore
-        'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js'
-      ),
-      import(
-        // @ts-ignore
-        'https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js'
-      ),
+      import(firebase_app),
+      import(firebase_database),
+      import(firebase_auth),
     ]);
 
     const firebaseConfig = {
@@ -238,6 +236,7 @@ export class RealtimeDB extends Store {
    * @async
    * @generator
    * @yields {string}
+   * @returns {AsyncGenerator<string, void, unknown>}
    */
   async *keys() {
     const data = await this._;

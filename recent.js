@@ -1,4 +1,4 @@
-import { store } from './index.js';
+import { open, store } from './index.js';
 
 var articles = document.querySelector('#articles');
 
@@ -13,7 +13,7 @@ if (articles)
     var a_div_1_b = document.createElement('b');
     var a_div_2 = document.createElement('div');
 
-    a.href = '/?article=' + article;
+    a.addEventListener('click', () => open(article));
     a_div_1.innerText = 'By ';
     a_div_0.innerText = articleData.title;
     a_div_1_b.innerText = articleData.author;
