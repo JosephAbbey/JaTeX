@@ -1,12 +1,11 @@
-import { getArticleIDs } from './index.js';
+import { store } from './index.js';
 
 var articles = document.querySelector('#articles');
 
 if (articles)
-  for (var article of getArticleIDs()) {
-    var articleData = JSON.parse(
-      localStorage.getItem('article.' + article) ?? '{}'
-    );
+  for await (var article of store.keys()) {
+    var articleData = await store.get(article);
+    if (!articleData) continue;
     var a = document.createElement('a');
     var a_div = document.createElement('div');
     var a_div_0 = document.createElement('div');

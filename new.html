@@ -16,13 +16,38 @@
   <body>
     <script type="module">
       import { Element } from './src/index.js';
-      import { open } from './index.js';
+      import { open, store } from './index.js';
 
       var id = Element.uuid();
-      localStorage.setItem(
-        'article.' + id,
-        `{"class":"Article","id":"${id}","children":[{"class":"Document","id":"${Element.uuid()}","children":[{"class":"PageNumbering","id":"${Element.uuid()}","children":[],"numbering":"gobble"},{"class":"MakeTitle","id":"${Element.uuid()}","children":[]},{"class":"NewPage","id":"${Element.uuid()}","children":[]},{"class":"PageNumbering","id":"${Element.uuid()}","children":[],"numbering":"arabic"}]}],"packages":[],"author":"You","title":"New Article"}`
-      );
+      store.set(id, {
+        class: 'Article',
+        id: id,
+        children: [
+          {
+            class: 'Document',
+            id: Element.uuid(),
+            children: [
+              {
+                class: 'PageNumbering',
+                id: Element.uuid(),
+                children: [],
+                numbering: 'gobble',
+              },
+              { class: 'MakeTitle', id: Element.uuid(), children: [] },
+              { class: 'NewPage', id: Element.uuid(), children: [] },
+              {
+                class: 'PageNumbering',
+                id: Element.uuid(),
+                children: [],
+                numbering: 'arabic',
+              },
+            ],
+          },
+        ],
+        packages: [],
+        author: 'You',
+        title: 'New Article',
+      });
       open(id);
     </script>
   </body>

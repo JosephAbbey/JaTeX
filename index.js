@@ -1,7 +1,10 @@
-if (!localStorage.getItem('article.default')) {
+import { RealtimeDB } from './Store.js';
+export const store = new RealtimeDB();
+
+if (!(await store.has('default'))) {
   fetch('./tmp/default.json')
-    .then((r) => r.text())
-    .then((t) => localStorage.setItem('article.default', t));
+    .then((r) => r.json())
+    .then((t) => store.set('default', t));
 }
 
 /** Create new article. */
@@ -20,18 +23,6 @@ export function recent() {
  */
 export function open(id) {
   window.location.href = '/?article=' + id;
-}
-
-/**
- * @returns All the keys of the articles stored in localStorage.
- */
-export function getArticleIDs() {
-  var ids = [];
-  for (var i = 0; i < localStorage.length; i++) {
-    var k = localStorage.key(i);
-    if (k?.startsWith('article.')) ids.push(k.substring(8));
-  }
-  return ids;
 }
 
 /**
@@ -84,9 +75,7 @@ export function addButton(id, click, ariaLabel, title, icon) {
   return btn;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add');
-});
+addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add');
 
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey) {

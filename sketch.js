@@ -1,18 +1,17 @@
-import { addButton, addCommand, recent } from './index.js';
+import { addButton, addCommand, recent, store } from './index.js';
 import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
 
 var urlParams = new Map(new URL(window.location.href).searchParams.entries());
 
 if (
   !urlParams.has('article') ||
-  localStorage.getItem('article.' + urlParams.get('article')) == null
+  !(await store.has(urlParams.get('article') ?? ''))
 )
   recent();
 
 var article = Article.deserialise(
-  JSON.parse(
-    localStorage.getItem('article.' + urlParams.get('article')) ?? '{}'
-  )
+  //@ts-expect-error
+  await store.get(urlParams.get('article'))
 );
 
 document.title = article.title;
@@ -58,10 +57,7 @@ article.addEventListener('childEvent', (event) => {
  * @description Saves the article to local storage.
  */
 function save() {
-  localStorage.setItem(
-    'article.' + urlParams.get('article'),
-    JSON.stringify(article.serialised)
-  );
+  store.set(urlParams.get('article') ?? '', article.serialised);
   if (document.title.startsWith('● ')) {
     document.querySelector('#save_btn')?.classList.remove('required');
     document.title = document.title.substring(2);
@@ -73,7 +69,7 @@ function save() {
  * @description Deletes the article in local storage.
  */
 function reset() {
-  localStorage.removeItem('article.' + urlParams.get('article'));
+  store.delete(urlParams.get('article') ?? '');
   recent();
 }
 
@@ -90,9 +86,9 @@ function showLaTeX() {
     dialog.appendChild(p);
     dialog.addEventListener('close', () => {
       if (i !== p.value) {
-        localStorage.setItem(
-          'article.' + urlParams.get('article'),
-          JSON.stringify(AST.toAOM(parse(p.value)[1]).serialised)
+        store.set(
+          urlParams.get('article') ?? '',
+          AST.toAOM(parse(p.value)[1]).serialised
         );
         window.location.reload();
       }
@@ -124,73 +120,71 @@ function addEditControl(id, click, ariaLabel, title, icon) {
   return btn;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#root')?.appendChild(article.dom);
+document.querySelector('#root')?.appendChild(article.dom);
 
-  addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
-  const save_btn = addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
-  addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
-  addButton(
-    'show_latex_btn',
-    showLaTeX,
-    'Show LaTeX Code',
-    'Show LaTeX Code ctrl+e',
-    'code_blocks'
-  );
-  addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
+addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
+const save_btn = addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
+addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
+addButton(
+  'show_latex_btn',
+  showLaTeX,
+  'Show LaTeX Code',
+  'Show LaTeX Code ctrl+e',
+  'code_blocks'
+);
+addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
 
-  addEditControl(
-    'bold_btn',
-    () => document.execCommand('bold'),
-    'Bold',
-    'Bold',
-    'format_bold'
-  );
-  addEditControl(
-    'italic_btn',
-    () => document.execCommand('italic'),
-    'Italicise',
-    'Italicise',
-    'format_italic'
-  );
-  addEditControl(
-    'underline_btn',
-    () => document.execCommand('underline'),
-    'Underline',
-    'Underline',
-    'format_underlined'
-  );
+addEditControl(
+  'bold_btn',
+  () => document.execCommand('bold'),
+  'Bold',
+  'Bold',
+  'format_bold'
+);
+addEditControl(
+  'italic_btn',
+  () => document.execCommand('italic'),
+  'Italicise',
+  'Italicise',
+  'format_italic'
+);
+addEditControl(
+  'underline_btn',
+  () => document.execCommand('underline'),
+  'Underline',
+  'Underline',
+  'format_underlined'
+);
 
-  addCommand(
-    'toggle_spellcheck',
-    () => (
-      // You may need to enable spell check in chrome://settings/languages
-      (article.spellcheck = !article.spellcheck),
-      Element.map.forEach((e) => e.update())
-    ),
-    'Toggle spell check',
-    () => (article.spellcheck ? 'e9f6' : 'e9f5')
-  );
-  document
-    .querySelector('#edit_controls')
-    //@ts-expect-error
-    ?.style.setProperty('display', article.readonly ? 'none' : '');
-  save_btn.disabled = article.readonly;
-  addCommand(
-    'toggle_readonly',
-    () => (
-      (article.readonly = !article.readonly),
-      Element.map.forEach((e) => e.update()),
-      document
-        .querySelector('#edit_controls')
-        //@ts-expect-error
-        ?.style.setProperty('display', article.readonly ? 'none' : ''),
-      (save_btn.disabled = article.readonly)
-    ),
-    'Toggle readonly mode',
-    () => (article.readonly ? 'e9f6' : 'e9f5')
-  );
-});
+addCommand(
+  'toggle_spellcheck',
+  () => (
+    // You may need to enable spell check in chrome://settings/languages
+    (article.spellcheck = !article.spellcheck),
+    Element.map.forEach((e) => e.update())
+  ),
+  'Toggle spell check',
+  () => (article.spellcheck ? 'e9f6' : 'e9f5')
+);
+document
+  .querySelector('#edit_controls')
+  //@ts-expect-error
+  ?.style.setProperty('display', article.readonly ? 'none' : '');
+save_btn.disabled = article.readonly;
+addCommand(
+  'toggle_readonly',
+  () => (
+    (article.readonly = !article.readonly),
+    Element.map.forEach((e) => e.update()),
+    document
+      .querySelector('#edit_controls')
+      //@ts-expect-error
+      ?.style.setProperty('display', article.readonly ? 'none' : ''),
+    (save_btn.disabled = article.readonly)
+  ),
+  'Toggle readonly mode',
+  () => (article.readonly ? 'e9f6' : 'e9f5')
+);
 
 document.addEventListener('keydown', (e) => {
   if (e.ctrlKey) {
@@ -219,5 +213,7 @@ window.article = article;
 window.parse = parse;
 //@ts-expect-error
 window.AST = AST;
+//@ts-expect-error
+window.store = store;
 
 console.log(article);
