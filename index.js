@@ -114,6 +114,35 @@ export function addButton(id, click, ariaLabel, title, icon) {
   return btn;
 }
 
+/**
+ * @param {number} ms - The number of milliseconds to sleep.
+ * @returns {Promise<void>} A promise that resolves after a certain amount of time.
+ * @description Wait for an amount of time.
+ */
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * @param {string} s - Text to show.
+ * @param {number} t - Time to show for (ms).
+ * @description It pops up a snackbar message.
+ */
+export async function alert(s, t = 5000) {
+  const snackbar = document.querySelector('#snackbar');
+  if (snackbar) {
+    const div = document.createElement('div');
+    div.innerText = s;
+    snackbar.appendChild(div);
+    await sleep(1);
+    div.classList.add('show');
+    await sleep(t);
+    div.classList.remove('show');
+    await sleep(500);
+    div.remove();
+  }
+}
+
 addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add');
 
 document.addEventListener('keydown', (e) => {
