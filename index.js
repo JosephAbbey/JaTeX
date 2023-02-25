@@ -83,6 +83,12 @@ export function addCommand(id, click, text, icon) {
       ?.addEventListener('mousedown', () =>
         li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'")
       );
+    li.addEventListener('click', () =>
+      setTimeout(
+        () => li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'"),
+        10
+      )
+    );
   } else if (typeof icon === 'string') {
     li.style.setProperty('--cmd-palette-icon', "'\\" + icon + "'");
   }
@@ -138,7 +144,7 @@ export async function alert(s, t = 5000) {
     div.classList.add('show');
     await sleep(t);
     div.classList.remove('show');
-    await sleep(500);
+    await sleep(250);
     div.remove();
   }
 }
@@ -162,6 +168,45 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+/**
+ * @author Dziad Borowy
+ * @see {@link https://stackoverflow.com/questions/9206013/javascript-list-js-implement-a-fuzzy-search#answer-15252131}
+ * @param {string} hay - The string to search in.
+ * @param {string} needle - The string to search for.
+ * @returns {boolean}
+ * @description Fuzzy searches in the string and returns whether there is a match.
+ */
+export function fuzzy(hay, needle) {
+  var hay = hay.toLowerCase();
+  var n = -1;
+  needle = needle.toLowerCase();
+  for (var l of needle) if (!~(n = hay.indexOf(l, n + 1))) return false;
+  return true;
+}
+
+document.querySelector('#command_input')?.addEventListener('input', (e) => {
+  document.querySelectorAll('#command_palette > div > ul > li').forEach(
+    (el) =>
+      //@ts-expect-error
+      (el.style.display = fuzzy(el.innerHTML, e.target?.value ?? '')
+        ? 'list-item'
+        : 'none')
+  );
+});
+document
+  .querySelector('#command_input')
+  //@ts-expect-error
+  ?.addEventListener('keypress', ({ key }) => {
+    if (key === 'Enter') {
+      document
+        .querySelector(
+          '#command_palette > div > ul > li:not([style*="display: none"])'
+        )
+        //@ts-expect-error
+        ?.click();
+    }
+  });
 
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {

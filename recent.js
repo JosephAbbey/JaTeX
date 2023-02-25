@@ -1,4 +1,4 @@
-import { open, store } from './index.js';
+import { fuzzy, open, store } from './index.js';
 
 var articles = document.querySelector('#articles');
 
@@ -26,3 +26,28 @@ if (articles)
     a.append(a_div);
     articles.append(a);
   }
+
+document.querySelector('#command_input')?.addEventListener('input', (e) => {
+  document.querySelectorAll('#articles > a').forEach(
+    (el) =>
+      //@ts-expect-error
+      (el.style.display =
+        fuzzy(
+          el.children[0].children[0].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        ) ||
+        fuzzy(
+          el.children[0].children[1].children[0].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        ) ||
+        fuzzy(
+          el.children[0].children[2].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        )
+          ? 'list-item'
+          : 'none')
+  );
+});
