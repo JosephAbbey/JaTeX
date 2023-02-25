@@ -1,3 +1,6 @@
+// TODO: listen to change events
+// TODO: create bucket class to get items from multiple stores
+
 /**
  * @author Joseph Abbey
  * @date 24/02/2023
@@ -8,6 +11,24 @@
  */
 export default class Store {
   constructor() {}
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<string[]>}
+   */
+  async absolute(key) {
+    return [];
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<string | undefined>}
+   */
+  async share(key) {
+    return undefined;
+  }
 
   /**
    * @async
@@ -59,6 +80,18 @@ export default class Store {
 export class LocalStorage extends Store {
   constructor() {
     super();
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<[string]>}
+   */
+  async absolute(key) {
+    if (key.startsWith('LocalStorage:')) {
+      key = key.substring(11);
+    }
+    return [key];
   }
 
   /**
@@ -192,12 +225,46 @@ export class RealtimeDB extends Store {
   /**
    * @async
    * @param {string} key
+   * @return {Promise<[string, string]>}
+   */
+  async absolute(key) {
+    if (key.startsWith('RealtimeDB:')) {
+      key = key.substring(11);
+    }
+    if (key.startsWith('~')) {
+      const [user, k] = key.substring(1).split('/');
+      return [user, k];
+    }
+    const _ = await this._;
+    return [_.userID, key];
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<string | undefined>}
+   */
+  async share(key) {
+    const _ = await this._;
+    if (await this.has(key)) {
+      if (key.startsWith('~')) {
+        return 'RealtimeDB:' + key;
+      }
+      return `RealtimeDB:~${_.userID}/${key}`;
+    }
+    return undefined;
+  }
+
+  /**
+   * @async
+   * @param {string} key
    * @return {Promise<boolean>}
    */
   async has(key) {
-    const data = await this._;
-    const d = await data.get(data.ref(`users/${data.userID}/documents`));
-    return d.hasChild(key);
+    const _ = await this._;
+    const [user, k] = await this.absolute(key);
+    const d = await _.get(_.ref(`users/${user}/documents`));
+    return d.hasChild(k);
   }
 
   /**
@@ -206,8 +273,9 @@ export class RealtimeDB extends Store {
    * @returns {Promise<import("./src/Article.js").ArticleSerialised | undefined>}
    */
   async get(key) {
-    const data = await this._;
-    const d = await data.get(data.ref(`users/${data.userID}/documents/${key}`));
+    const _ = await this._;
+    const [user, k] = await this.absolute(key);
+    const d = await _.get(_.ref(`users/${user}/documents/${k}`));
     return d.exists() ? JSON.parse(d.val().contents) : undefined;
   }
 
@@ -217,8 +285,10 @@ export class RealtimeDB extends Store {
    * @param {import("./src/Article.js").ArticleSerialised} value
    */
   async set(key, value) {
-    const data = await this._;
-    await data.set(data.ref(`users/${data.userID}/documents/${key}`), {
+    const _ = await this._;
+    const [user, k] = await this.absolute(key);
+    // This will essentially create a fork.
+    await _.set(_.ref(`users/${_.userID}/documents/${k}`), {
       contents: JSON.stringify(value),
     });
   }
@@ -228,8 +298,9 @@ export class RealtimeDB extends Store {
    * @param {string} key
    */
   async delete(key) {
-    const data = await this._;
-    await data.remove(data.ref(`users/${data.userID}/documents/${key}`));
+    const _ = await this._;
+    const [user, k] = await this.absolute(key);
+    await _.remove(_.ref(`users/${_.userID}/documents/${k}`));
   }
 
   /**
@@ -239,8 +310,8 @@ export class RealtimeDB extends Store {
    * @returns {AsyncGenerator<string, void, unknown>}
    */
   async *keys() {
-    const data = await this._;
-    const d = await data.get(data.ref(`users/${data.userID}/documents`));
+    const _ = await this._;
+    const d = await _.get(_.ref(`users/${_.userID}/documents`));
     const ks = [];
     d.forEach((child) => {
       ks.push(child.key);
