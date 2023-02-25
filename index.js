@@ -1,15 +1,52 @@
-import { RealtimeDB } from './Store.js';
-export const store = new RealtimeDB();
+import { Bucket } from './Store.js';
+import { Element } from './src/index.js';
+export const store = new Bucket();
 
-if (!(await store.has('default'))) {
+if (!(await store.has('LocalStorage:default'))) {
   fetch('./tmp/default.json')
     .then((r) => r.json())
-    .then((t) => store.set('default', t));
+    .then((t) => store.set('LocalStorage:default', t));
 }
 
 /** Create new article. */
 function new_btn() {
-  window.location.href = '/new.html';
+  var id = Element.uuid();
+  // TODO: Allow for user selection
+  store.set('LocalStorage:' + id, {
+    class: 'Article',
+    id,
+    children: [
+      {
+        class: 'Document',
+        id: Element.uuid(),
+        children: [
+          {
+            class: 'PageNumbering',
+            id: Element.uuid(),
+            children: [],
+            // @ts-ignore
+            numbering: 'gobble',
+          },
+          { class: 'MakeTitle', id: Element.uuid(), children: [] },
+          { class: 'NewPage', id: Element.uuid(), children: [] },
+          {
+            class: 'PageNumbering',
+            id: Element.uuid(),
+            children: [],
+            // @ts-ignore
+            numbering: 'arabic',
+          },
+        ],
+      },
+    ],
+    packages: [],
+    author: 'You',
+    title: 'New Article',
+    readonly: false,
+    spellcheck: false,
+    date: new Date().toJSON(),
+  });
+  open('LocalStorage:' + id);
 }
 
 /** Shows recent options. */
@@ -132,6 +169,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Update UI to notify the user they can add to home screen
   addButton(
     'install_btn',
+    // @ts-ignore
     function (e) {
       // Hide our user interface that shows our A2HS button
       this.style.display = 'none';

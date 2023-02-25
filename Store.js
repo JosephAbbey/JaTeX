@@ -1,5 +1,4 @@
 // TODO: listen to change events
-// TODO: create bucket class to get items from multiple stores
 
 /**
  * @author Joseph Abbey
@@ -42,7 +41,7 @@ export default class Store {
   /**
    * @async
    * @param {string} key
-   * @returns {Promise<import("./src/Article.js").ArticleSerialised | undefined>}
+   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
    */
   async get(key) {
     return undefined;
@@ -51,7 +50,7 @@ export default class Store {
   /**
    * @async
    * @param {string} key
-   * @param {import("./src/Article.js").ArticleSerialised} value
+   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
    */
   async set(key, value) {}
 
@@ -71,6 +70,86 @@ export default class Store {
 
 /**
  * @author Joseph Abbey
+ * @date 25/02/2023
+ * @constructor
+ * @extends {Store}
+ *
+ * @description A `Store` subclass to interface a set of stores.
+ */
+export class Bucket extends Store {
+  // TODO: Allow enabling and disabling stores
+  /**
+   * @private
+   * @type {{ [key: string]: Store }}
+   */
+  stores = {
+    LocalStorage: new LocalStorage(),
+    RealtimeDB: new RealtimeDB(),
+  };
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<[string, string]>}
+   */
+  async absolute(key) {
+    const [store, k] = key.split(':');
+    return [store, k];
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async has(key) {
+    const [store, k] = await this.absolute(key);
+    return Boolean(await this.stores[store]?.has(k));
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
+   */
+  async get(key) {
+    const [store, k] = await this.absolute(key);
+    return this.stores[store]?.get(k);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
+   */
+  async set(key, value) {
+    const [store, k] = await this.absolute(key);
+    await this.stores[store]?.set(k, value);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   */
+  async delete(key) {
+    const [store, k] = await this.absolute(key);
+    await this.stores[store]?.delete(k);
+  }
+
+  /**
+   * @async
+   * @generator
+   * @yields {string}
+   * @returns {AsyncGenerator<string, void, unknown>}
+   */
+  async *keys() {
+    for (var s in this.stores)
+      for await (var k of this.stores[s].keys()) yield s + ':' + k;
+  }
+}
+
+/**
+ * @author Joseph Abbey
  * @date 24/02/2023
  * @constructor
  * @extends {Store}
@@ -78,10 +157,6 @@ export default class Store {
  * @description A `Store` subclass for the localStorage API.
  */
 export class LocalStorage extends Store {
-  constructor() {
-    super();
-  }
-
   /**
    * @async
    * @param {string} key
@@ -106,7 +181,7 @@ export class LocalStorage extends Store {
   /**
    * @async
    * @param {string} key
-   * @returns {Promise<import("./src/Article.js").ArticleSerialised | undefined>}
+   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
    */
   async get(key) {
     return (
@@ -117,7 +192,7 @@ export class LocalStorage extends Store {
   /**
    * @async
    * @param {string} key
-   * @param {import("./src/Article.js").ArticleSerialised} value
+   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
    */
   async set(key, value) {
     localStorage.setItem('document.' + key, JSON.stringify(value));
@@ -140,7 +215,7 @@ export class LocalStorage extends Store {
   async *keys() {
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
-      if (k?.startsWith('document.')) yield k.substring(8);
+      if (k?.startsWith('document.')) yield k.substring(9);
     }
   }
 }
@@ -154,16 +229,11 @@ export class LocalStorage extends Store {
  * @description A `Store` subclass for the Firebase RealtimeDB API.
  */
 export class RealtimeDB extends Store {
-  constructor() {
-    super();
-    this._ = this.auth();
-  }
-
   /**
    * @private
    * @type {Promise<any>}
    */
-  _;
+  _ = this.auth();
 
   /**
    * @private
@@ -270,7 +340,7 @@ export class RealtimeDB extends Store {
   /**
    * @async
    * @param {string} key
-   * @returns {Promise<import("./src/Article.js").ArticleSerialised | undefined>}
+   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
    */
   async get(key) {
     const _ = await this._;
@@ -282,7 +352,7 @@ export class RealtimeDB extends Store {
   /**
    * @async
    * @param {string} key
-   * @param {import("./src/Article.js").ArticleSerialised} value
+   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
    */
   async set(key, value) {
     const _ = await this._;
