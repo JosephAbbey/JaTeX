@@ -100,7 +100,8 @@ export class LocalStorage extends Store {
    * @return {Promise<boolean>}
    */
   async has(key) {
-    return Boolean(localStorage.getItem('document.' + key));
+    const [k] = this.absolute(key);
+    return Boolean(localStorage.getItem('document.' + k));
   }
 
   /**
@@ -109,8 +110,9 @@ export class LocalStorage extends Store {
    * @returns {Promise<import("./src/Article.js").ArticleSerialised | undefined>}
    */
   async get(key) {
+    const [k] = this.absolute(key);
     return (
-      JSON.parse(localStorage.getItem('document.' + key) ?? 'null') ?? undefined
+      JSON.parse(localStorage.getItem('document.' + k) ?? 'null') ?? undefined
     );
   }
 
@@ -120,7 +122,8 @@ export class LocalStorage extends Store {
    * @param {import("./src/Article.js").ArticleSerialised} value
    */
   async set(key, value) {
-    localStorage.setItem('document.' + key, JSON.stringify(value));
+    const [k] = this.absolute(key);
+    localStorage.setItem('document.' + k, JSON.stringify(value));
   }
 
   /**
@@ -128,7 +131,8 @@ export class LocalStorage extends Store {
    * @param {string} key
    */
   async delete(key) {
-    localStorage.removeItem('document.' + key);
+    const [k] = this.absolute(key);
+    localStorage.removeItem('document.' + k);
   }
 
   /**
