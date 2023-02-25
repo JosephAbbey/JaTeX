@@ -2,11 +2,13 @@ import { Bucket } from './Store.js';
 import { Element } from './src/index.js';
 export const store = new Bucket();
 
-if (!(await store.has('LocalStorage:default'))) {
-  fetch('./tmp/default.json')
-    .then((r) => r.json())
-    .then((t) => store.set('LocalStorage:default', t));
-}
+store.has('LocalStorage:default').then((d) =>
+  d
+    ? undefined
+    : fetch('./tmp/default.json')
+        .then((r) => r.json())
+        .then((t) => store.set('LocalStorage:default', t))
+);
 
 /** Create new article. */
 function new_btn() {
