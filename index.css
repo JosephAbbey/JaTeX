@@ -1,3 +1,6 @@
+@import './style.css';
+@import './recent.css';
+
 :root {
   color-scheme: dark;
   accent-color: #24292e;
@@ -6,6 +9,10 @@
 body {
   margin: 0;
   background-color: #24292e;
+}
+
+main {
+  margin-top: 1rem;
 }
 
 button:has(.material-symbols-outlined) {
@@ -81,10 +88,12 @@ button.required > .material-symbols-outlined {
   font-family: monospace;
 }
 
-#command .icon {
+#command::after {
   float: left;
-  margin: 0.1em;
   font-size: 1.25em;
+  font-family: 'Material Symbols Outlined';
+  content: '\e8b6';
+  margin-left: 0.1em;
 }
 
 #command_input {

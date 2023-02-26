@@ -278,12 +278,13 @@ export class RealtimeDB extends Store {
 
     const app = initializeApp(firebaseConfig);
 
-    const appCheck = initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(
-        '6LcsQrUkAAAAABKGtSVlSHS8kAljR7LxqpNKazSh'
-      ),
-      isTokenAutoRefreshEnabled: true,
-    });
+    if (window.location.hostname !== 'localhost')
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(
+          '6LcsQrUkAAAAABKGtSVlSHS8kAljR7LxqpNKazSh'
+        ),
+        isTokenAutoRefreshEnabled: true,
+      });
 
     const auth = getAuth();
     await new Promise((resolve) => auth.onAuthStateChanged(resolve));

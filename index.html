@@ -11,7 +11,7 @@
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <link href="./style.css" rel="stylesheet" />
+    <link href="./index.css" rel="stylesheet" />
     <style type="text/css" media="print">
       #navbar,
       #edit_controls {
@@ -33,20 +33,16 @@
             <ul></ul>
           </div>
         </div>
-        <span class="material-symbols-outlined icon">search</span>
       </div>
       <div id="buttons"></div>
     </nav>
-    <main>
-      <div id="root"></div>
-      <div id="edit_controls">
-        <div></div>
-      </div>
-    </main>
+    <main></main>
     <aside>
       <div id="snackbar"></div>
     </aside>
-    <dialog id="latex"></dialog>
-    <script src="./sketch.js" type="module"></script>
+    <script type="module">
+      import sketch from './sketch.js';
+      sketch();
+    </script>
   </body>
 </html>
