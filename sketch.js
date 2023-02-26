@@ -82,10 +82,11 @@ function showLaTeX() {
   if (dialog) {
     dialog.innerHTML = '';
     var p = document.createElement('textarea');
+    p.readOnly = article.readonly;
     var i = (p.value = article.tex);
     dialog.appendChild(p);
     dialog.addEventListener('close', () => {
-      if (i !== p.value) {
+      if (!article.readonly && i !== p.value) {
         store.set(
           urlParams.get('article') ?? '',
           AST.toAOM(parse(p.value)[1]).serialised

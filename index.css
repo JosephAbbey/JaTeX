@@ -59,7 +59,6 @@ button.required > .material-symbols-outlined {
   height: 1.7em;
   padding-bottom: 0.1em;
   margin-top: 0;
-  margin-bottom: 1em;
   position: sticky;
   top: 0;
   padding-top: 0.3rem;
@@ -135,6 +134,7 @@ button.required > .material-symbols-outlined {
 
 #command_palette > div > ul {
   overflow-y: scroll;
+  --scrollbar-track: #3d4248;
   max-height: 200px;
   margin: 0;
   padding: 0;
@@ -176,6 +176,41 @@ button.required > .material-symbols-outlined {
 
 :modal::backdrop {
   backdrop-filter: blur(2px);
+}
+
+* {
+  --scrollbar-thumb: #afafafad;
+  --scrollbar-track: transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Works on Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 0.75rem;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border: 3px solid var(--scrollbar-track);
+}
+
+body {
+  --scrollbar-track: #24292e;
+  overflow-y: scroll;
+}
+
+body::-webkit-scrollbar-thumb {
+  border-top: calc(2.1rem + 3px) solid var(--scrollbar-track);
+}
+
+body:has(:modal) {
+  overflow-y: hidden;
+  margin-right: 0.75rem;
 }
 
 aside {

@@ -4,8 +4,10 @@ main {
   display: grid;
   grid-template-columns: 1fr 50rem 1fr;
   gap: 0.5em;
-  grid-template-areas: '⚫ 📄 ➡️';
+  grid-template-areas:
+    '⚫ 📄 ➡️';
   justify-content: center;
+  margin-top: 1rem;
 }
 
 main::before {
