@@ -3,7 +3,7 @@ import { fuzzy, open, store } from './index.js';
 var articles = document.querySelector('#articles');
 
 if (articles)
-  for await (var article of store.keys()) {
+  for await (let article of store.keys()) {
     var articleData = await store.get(article);
     if (!articleData) continue;
     var a = document.createElement('a');
