@@ -1,4 +1,4 @@
-main {
+main:has(#root) {
   display: grid;
   grid-template-columns: 1fr 50rem 1fr;
   gap: 0.5em;
@@ -7,7 +7,7 @@ main {
   margin-top: 1rem;
 }
 
-main::before {
+main:has(#edit_controls)::before {
   content: '';
   grid-area: ⚫;
 }
@@ -34,12 +34,12 @@ main::before {
 }
 
 @media (width < calc(53rem + 24px)) {
-  main {
+  main:has(#root) {
     grid-template-columns: none;
     grid-template-areas: '📄';
   }
 
-  main::before {
+  main:has(#edit_controls)::before {
     display: none;
   }
 

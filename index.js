@@ -52,25 +52,10 @@ export async function recent() {
   url.pathname = '/recent.html';
   url.searchParams.delete('article');
   window.history.pushState({}, '', url);
-  document
-    .querySelectorAll('link.page:not([disabled])')
-    //@ts-expect-error
-    .forEach((e) => (e.disabled = true));
   buttons.forEach((b) => b.remove());
   buttons = [];
   commands.forEach((c) => c.remove());
   commands = [];
-  const style = document.querySelector('#style_recent');
-  //@ts-expect-error
-  if (style) style.disabled = false;
-  else {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '/recent.css';
-    link.id = 'style_recent';
-    link.classList.add('page');
-    document.head.appendChild(link);
-  }
   if (main) main.innerHTML = '';
   (await import('./recent.js')).default();
 }
@@ -83,25 +68,10 @@ export async function open(id) {
   url.pathname = '/';
   url.searchParams.set('article', id);
   window.history.pushState({}, '', url);
-  document
-    .querySelectorAll('link.page:not([disabled])')
-    //@ts-expect-error
-    .forEach((e) => (e.disabled = true));
   buttons.forEach((b) => b.remove());
   buttons = [];
   commands.forEach((c) => c.remove());
   commands = [];
-  const style = document.querySelector('#style_style');
-  //@ts-expect-error
-  if (style) style.disabled = false;
-  else {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = '/style.css';
-    link.id = 'style_style';
-    link.classList.add('page');
-    document.head.appendChild(link);
-  }
   if (main) main.innerHTML = '';
   (await import('./sketch.js')).default();
 }

@@ -44,6 +44,7 @@ function showLaTeX(article) {
   /** @type {HTMLDialogElement?} */
   var dialog = document.createElement('dialog');
   if (dialog) {
+    dialog.id = 'latex';
     dialog.innerHTML = '';
     var p = document.createElement('textarea');
     p.readOnly = article.readonly;
