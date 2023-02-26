@@ -251,14 +251,18 @@ export class RealtimeDB extends Store {
       'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
     const firebase_auth =
       'https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js';
+    const firebase_app_check =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-app-check.js';
     const [
       { initializeApp },
       { getDatabase, ref, set, get, remove },
       { getAuth, signInWithPopup, GithubAuthProvider, signOut },
+      { initializeAppCheck, ReCaptchaV3Provider },
     ] = await Promise.all([
       import(firebase_app),
       import(firebase_database),
       import(firebase_auth),
+      import(firebase_app_check),
     ]);
 
     const firebaseConfig = {
@@ -273,6 +277,13 @@ export class RealtimeDB extends Store {
     };
 
     const app = initializeApp(firebaseConfig);
+
+    const appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(
+        '6LcsQrUkAAAAABKGtSVlSHS8kAljR7LxqpNKazSh'
+      ),
+      isTokenAutoRefreshEnabled: true,
+    });
 
     const auth = getAuth();
     await new Promise((resolve) => auth.onAuthStateChanged(resolve));
