@@ -2,13 +2,7 @@ import { Bucket } from './Store.js';
 import { Element } from './src/index.js';
 export const store = new Bucket();
 
-store.has('LocalStorage:default').then((d) =>
-  d
-    ? undefined
-    : fetch('./tmp/default.json')
-        .then((r) => r.json())
-        .then((t) => store.set('LocalStorage:default', t))
-);
+export const url = new URL(window.location.href);
 
 /** Create new article. */
 function new_btn() {
@@ -51,28 +45,80 @@ function new_btn() {
   open('LocalStorage:' + id);
 }
 
+const main = document.querySelector('main');
+
 /** Shows recent options. */
-export function recent() {
-  window.location.href = '/recent.html';
+export async function recent() {
+  url.pathname = '/recent.html';
+  url.searchParams.delete('article');
+  window.history.pushState({}, '', url);
+  document
+    .querySelectorAll('link.page:not([disabled])')
+    //@ts-expect-error
+    .forEach((e) => (e.disabled = true));
+  buttons.forEach((b) => b.remove());
+  buttons = [];
+  commands.forEach((c) => c.remove());
+  commands = [];
+  const style = document.querySelector('#style_recent');
+  //@ts-expect-error
+  if (style) style.disabled = false;
+  else {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/recent.css';
+    link.id = 'style_recent';
+    link.classList.add('page');
+    document.head.appendChild(link);
+  }
+  if (main) main.innerHTML = '';
+  (await import('./recent.js')).default();
 }
 
 /**
  * Opens the article.
  * @param {string} id
  */
-export function open(id) {
-  window.location.href = '/?article=' + id;
+export async function open(id) {
+  url.pathname = '/';
+  url.searchParams.set('article', id);
+  window.history.pushState({}, '', url);
+  document
+    .querySelectorAll('link.page:not([disabled])')
+    //@ts-expect-error
+    .forEach((e) => (e.disabled = true));
+  buttons.forEach((b) => b.remove());
+  buttons = [];
+  commands.forEach((c) => c.remove());
+  commands = [];
+  const style = document.querySelector('#style_style');
+  //@ts-expect-error
+  if (style) style.disabled = false;
+  else {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/style.css';
+    link.id = 'style_style';
+    link.classList.add('page');
+    document.head.appendChild(link);
+  }
+  if (main) main.innerHTML = '';
+  (await import('./sketch.js')).default();
 }
+
+/** @type {HTMLLIElement[]} */
+var commands = [];
 
 /**
  * @param {string} id - The id of the command.
  * @param {(this: HTMLLIElement, ev: MouseEvent) => any} click - The function to call when the command is executed.
  * @param {string} text - The text of the command.
  * @param {(() => string) | string?} icon - the code for the icon to use for the command.
+ * @param {boolean=} permanent - If the button should not be removed when the page changes.
  * @returns {HTMLLIElement} The command element.
  * @description It creates a command element, sets its id, text, and icon, and then appends it to the navbar.
  */
-export function addCommand(id, click, text, icon) {
+export function addCommand(id, click, text, icon, permanent) {
   var li = document.createElement('li');
   li.id = id;
   li.innerText = text;
@@ -94,19 +140,31 @@ export function addCommand(id, click, text, icon) {
   }
   document.querySelector('#command_palette > div > ul')?.append(li);
   li.addEventListener('click', click, false);
+  if (!permanent) commands.push(li);
   return li;
 }
+
+/** @type {HTMLButtonElement[]} */
+var buttons = [];
 
 /**
  * @param {string} id - The id of the button.
  * @param {(this: HTMLButtonElement, ev: MouseEvent) => any} click - The function to call when the button is clicked.
  * @param {string?} ariaLabel - The text that will be read by screen readers.
  * @param {string} title - The text that appears when you hover over the button.
- * @param {string} icon - the icon to use for the button.
+ * @param {string} icon - The icon to use for the button.
+ * @param {boolean=} permanent - If the button should not be removed when the page changes.
  * @returns {HTMLButtonElement} The button element.
  * @description It creates a button element, sets its id, aria-label, title, and icon, and then appends it to the navbar.
  */
-export function addButton(id, click, ariaLabel, title, icon) {
+export function addButton(
+  id,
+  click,
+  ariaLabel,
+  title,
+  icon,
+  permanent = false
+) {
   var btn = document.createElement('button');
   btn.id = id;
   btn.ariaLabel = ariaLabel;
@@ -117,6 +175,7 @@ export function addButton(id, click, ariaLabel, title, icon) {
   btn.append(icn);
   document.querySelector('#buttons')?.append(btn);
   btn.addEventListener('click', click, false);
+  if (!permanent) buttons.push(btn);
   return btn;
 }
 
@@ -149,26 +208,6 @@ export async function alert(s, t = 5000) {
   }
 }
 
-addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add');
-
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey) {
-    switch (e.key) {
-      case 'n':
-        e.preventDefault();
-        new_btn();
-        break;
-      default:
-    }
-  } else {
-    if (e.key == 'F1') {
-      e.preventDefault();
-      //@ts-expect-error
-      document.querySelector('#command_input')?.focus();
-    }
-  }
-});
-
 /**
  * @author Dziad Borowy
  * @see {@link https://stackoverflow.com/questions/9206013/javascript-list-js-implement-a-fuzzy-search#answer-15252131}
@@ -184,29 +223,6 @@ export function fuzzy(hay, needle) {
   for (var l of needle) if (!~(n = hay.indexOf(l, n + 1))) return false;
   return true;
 }
-
-document.querySelector('#command_input')?.addEventListener('input', (e) => {
-  document.querySelectorAll('#command_palette > div > ul > li').forEach(
-    (el) =>
-      //@ts-expect-error
-      (el.style.display = fuzzy(el.innerHTML, e.target?.value ?? '')
-        ? 'list-item'
-        : 'none')
-  );
-});
-document
-  .querySelector('#command_input')
-  //@ts-expect-error
-  ?.addEventListener('keypress', ({ key }) => {
-    if (key === 'Enter') {
-      document
-        .querySelector(
-          '#command_palette > div > ul > li:not([style*="display: none"])'
-        )
-        //@ts-expect-error
-        ?.click();
-    }
-  });
 
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
@@ -230,6 +246,57 @@ const registerServiceWorker = async () => {
     }
   }
 };
+
+store.has('LocalStorage:default').then((d) =>
+  d
+    ? undefined
+    : fetch('./tmp/default.json')
+        .then((r) => r.json())
+        .then((t) => store.set('LocalStorage:default', t))
+);
+
+addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add', true);
+
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey) {
+    switch (e.key) {
+      case 'n':
+        e.preventDefault();
+        new_btn();
+        break;
+      default:
+    }
+  } else {
+    if (e.key == 'F1') {
+      e.preventDefault();
+      //@ts-expect-error
+      document.querySelector('#command_input')?.focus();
+    }
+  }
+});
+
+document.querySelector('#command_input')?.addEventListener('input', (e) => {
+  document.querySelectorAll('#command_palette > div > ul > li').forEach(
+    (el) =>
+      //@ts-expect-error
+      (el.style.display = fuzzy(el.innerHTML, e.target?.value ?? '')
+        ? 'list-item'
+        : 'none')
+  );
+});
+document
+  .querySelector('#command_input')
+  //@ts-expect-error
+  ?.addEventListener('keypress', ({ key }) => {
+    if (key === 'Enter') {
+      document
+        .querySelector(
+          '#command_palette > div > ul > li:not([style*="display: none"])'
+        )
+        //@ts-expect-error
+        ?.click();
+    }
+  });
 
 registerServiceWorker();
 

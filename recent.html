@@ -4,14 +4,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#24292E" />
-    <title>Recent</title>
+    <title>JaTeX - Recent</title>
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="/images/192.png" />
     <link rel="manifest" href="./manifest.json" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <link href="./recent.css" rel="stylesheet" />
+    <link href="./index.css" rel="stylesheet" />
+    <link id="style_recent" class="page" href="./recent.css" rel="stylesheet" />
+    <style type="text/css" media="print">
+      #navbar,
+      #edit_controls {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <nav id="navbar">
@@ -29,10 +36,13 @@
       </div>
       <div id="buttons"></div>
     </nav>
-    <main><div id="articles"></div></main>
+    <main></main>
     <aside>
       <div id="snackbar"></div>
     </aside>
-    <script src="./recent.js" type="module"></script>
+    <script type="module">
+      import recent from './recent.js';
+      recent();
+    </script>
   </body>
 </html>

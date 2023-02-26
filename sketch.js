@@ -1,20 +1,5 @@
-import { addButton, addCommand, recent, store } from './index.js';
+import { addButton, addCommand, recent, store, url } from './index.js';
 import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
-
-var urlParams = new Map(new URL(window.location.href).searchParams.entries());
-
-if (
-  !urlParams.has('article') ||
-  !(await store.has(urlParams.get('article') ?? ''))
-)
-  recent();
-
-var article = Article.deserialise(
-  //@ts-expect-error
-  await store.get(urlParams.get('article'))
-);
-
-document.title = article.title;
 
 /***/
 function beforeunload(e) {
@@ -30,34 +15,12 @@ function beforeunload(e) {
   return 'Reload site?';
 }
 
-article.addEventListener('editTitle', (event) => {
-  document.title =
-    (document.title.startsWith('● ') ? '● ' : '') + event.data.content;
-});
-
-article.addEventListener('childEvent', (event) => {
-  /**
-   * @var
-   * @type {ElementEvent}
-   */
-  var c = event;
-  while (c.type == 'childEvent') {
-    c = c.data;
-  }
-  console.log(c);
-
-  if (!document.title.startsWith('● ')) {
-    document.querySelector('#save_btn')?.classList.add('required');
-    document.title = '● ' + document.title;
-    window.addEventListener('beforeunload', beforeunload);
-  }
-});
-
 /**
+ * @param {Article} article
  * @description Saves the article to local storage.
  */
-function save() {
-  store.set(urlParams.get('article') ?? '', article.serialised);
+function save(article) {
+  store.set(url.searchParams.get('article') ?? '', article.serialised);
   if (document.title.startsWith('● ')) {
     document.querySelector('#save_btn')?.classList.remove('required');
     document.title = document.title.substring(2);
@@ -69,31 +32,34 @@ function save() {
  * @description Deletes the article in local storage.
  */
 function reset() {
-  store.delete(urlParams.get('article') ?? '');
+  store.delete(url.searchParams.get('article') ?? '');
   recent();
 }
 
 /**
+ * @param {Article} article
  * @description It opens a new window, with the LaTeX code of the article in.
  */
-function showLaTeX() {
+function showLaTeX(article) {
   /** @type {HTMLDialogElement?} */
-  var dialog = document.querySelector('#latex');
+  var dialog = document.createElement('dialog');
   if (dialog) {
     dialog.innerHTML = '';
     var p = document.createElement('textarea');
     p.readOnly = article.readonly;
     var i = (p.value = article.tex);
     dialog.appendChild(p);
-    dialog.addEventListener('close', () => {
+    dialog.addEventListener('close', (e) => {
       if (!article.readonly && i !== p.value) {
         store.set(
-          urlParams.get('article') ?? '',
+          url.searchParams.get('article') ?? '',
           AST.toAOM(parse(p.value)[1]).serialised
         );
         window.location.reload();
       }
+      dialog?.remove();
     });
+    document.body.appendChild(dialog);
     dialog.showModal();
   }
 }
@@ -121,100 +87,148 @@ function addEditControl(id, click, ariaLabel, title, icon) {
   return btn;
 }
 
-document.querySelector('#root')?.appendChild(article.dom);
+/** */
+export default async function sketch() {
+  Element.map.clear();
+  if (!url.searchParams.has('article')) return recent();
+  var s = await store.get(url.searchParams.get('article') ?? '');
+  if (!s) return recent();
+  var article = Article.deserialise(s);
 
-addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
-const save_btn = addButton('save_btn', save, 'Save', 'Save ctrl+s', 'save');
-addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
-addButton(
-  'show_latex_btn',
-  showLaTeX,
-  'Show LaTeX Code',
-  'Show LaTeX Code ctrl+e',
-  'code_blocks'
-);
-addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
-
-addEditControl(
-  'bold_btn',
-  () => document.execCommand('bold'),
-  'Bold',
-  'Bold',
-  'format_bold'
-);
-addEditControl(
-  'italic_btn',
-  () => document.execCommand('italic'),
-  'Italicise',
-  'Italicise',
-  'format_italic'
-);
-addEditControl(
-  'underline_btn',
-  () => document.execCommand('underline'),
-  'Underline',
-  'Underline',
-  'format_underlined'
-);
-
-addCommand(
-  'toggle_spellcheck',
-  () => (
-    // You may need to enable spell check in chrome://settings/languages
-    (article.spellcheck = !article.spellcheck),
-    Element.map.forEach((e) => e.update())
-  ),
-  'Toggle spell check',
-  () => (article.spellcheck ? 'e9f6' : 'e9f5')
-);
-document
-  .querySelector('#edit_controls')
-  //@ts-expect-error
-  ?.style.setProperty('display', article.readonly ? 'none' : '');
-save_btn.disabled = article.readonly;
-addCommand(
-  'toggle_readonly',
-  () => (
-    (article.readonly = !article.readonly),
-    Element.map.forEach((e) => e.update()),
-    document
-      .querySelector('#edit_controls')
-      //@ts-expect-error
-      ?.style.setProperty('display', article.readonly ? 'none' : ''),
-    (save_btn.disabled = article.readonly)
-  ),
-  'Toggle readonly mode',
-  () => (article.readonly ? 'e9f6' : 'e9f5')
-);
-
-document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey) {
-    switch (e.key) {
-      case 's':
-        e.preventDefault();
-        save();
-        break;
-      case 'e':
-        e.preventDefault();
-        showLaTeX();
-        break;
-      case 'd':
-        e.preventDefault();
-        reset();
-        break;
-      default:
-    }
+  var root = document.createElement('div');
+  root.id = 'root';
+  root.appendChild(article.dom);
+  var edit_controls = document.createElement('div');
+  edit_controls.id = 'edit_controls';
+  edit_controls.style.setProperty('display', article.readonly ? 'none' : '');
+  var edit_controls_div = document.createElement('div');
+  edit_controls.appendChild(edit_controls_div);
+  var main = document.querySelector('main');
+  if (main) {
+    main.appendChild(root);
+    main.appendChild(edit_controls);
   }
-});
 
-//! remove
-//@ts-expect-error
-window.article = article;
-//@ts-expect-error
-window.parse = parse;
-//@ts-expect-error
-window.AST = AST;
-//@ts-expect-error
-window.store = store;
+  document.title = article.title;
 
-console.log(article);
+  article.addEventListener('editTitle', (event) => {
+    document.title =
+      (document.title.startsWith('● ') ? '● ' : '') + event.data.content;
+  });
+
+  article.addEventListener('childEvent', (event) => {
+    /**
+     * @var
+     * @type {ElementEvent}
+     */
+    var c = event;
+    while (c.type == 'childEvent') {
+      c = c.data;
+    }
+    console.log(c);
+
+    if (!document.title.startsWith('● ')) {
+      document.querySelector('#save_btn')?.classList.add('required');
+      document.title = '● ' + document.title;
+      window.addEventListener('beforeunload', beforeunload);
+    }
+  });
+
+  addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
+  const save_btn = addButton(
+    'save_btn',
+    save.bind(null, article),
+    'Save',
+    'Save ctrl+s',
+    'save'
+  );
+  save_btn.disabled = article.readonly;
+  addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
+  addButton(
+    'show_latex_btn',
+    showLaTeX.bind(null, article),
+    'Show LaTeX Code',
+    'Show LaTeX Code ctrl+e',
+    'code_blocks'
+  );
+  addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
+
+  addEditControl(
+    'bold_btn',
+    () => document.execCommand('bold'),
+    'Bold',
+    'Bold',
+    'format_bold'
+  );
+  addEditControl(
+    'italic_btn',
+    () => document.execCommand('italic'),
+    'Italicise',
+    'Italicise',
+    'format_italic'
+  );
+  addEditControl(
+    'underline_btn',
+    () => document.execCommand('underline'),
+    'Underline',
+    'Underline',
+    'format_underlined'
+  );
+
+  addCommand(
+    'toggle_spellcheck',
+    () => (
+      // You may need to enable spell check in chrome://settings/languages
+      (article.spellcheck = !article.spellcheck),
+      Element.map.forEach((e) => e.update())
+    ),
+    'Toggle spell check',
+    () => (article.spellcheck ? 'e9f6' : 'e9f5')
+  );
+  addCommand(
+    'toggle_readonly',
+    () => (
+      (article.readonly = !article.readonly),
+      Element.map.forEach((e) => e.update()),
+      edit_controls.style.setProperty(
+        'display',
+        article.readonly ? 'none' : ''
+      ),
+      (save_btn.disabled = article.readonly)
+    ),
+    'Toggle readonly mode',
+    () => (article.readonly ? 'e9f6' : 'e9f5')
+  );
+
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey) {
+      switch (e.key) {
+        case 's':
+          e.preventDefault();
+          save(article);
+          break;
+        case 'e':
+          e.preventDefault();
+          showLaTeX(article);
+          break;
+        case 'd':
+          e.preventDefault();
+          reset();
+          break;
+        default:
+      }
+    }
+  });
+
+  //! remove
+  //@ts-expect-error
+  window.article = article;
+  //@ts-expect-error
+  window.parse = parse;
+  //@ts-expect-error
+  window.AST = AST;
+  //@ts-expect-error
+  window.store = store;
+
+  console.log(article);
+}
