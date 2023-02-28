@@ -97,6 +97,46 @@ export async function open(id) {
   (await import('./sketch.js')).default();
 }
 
+/**
+ * @param {string} message - The text to be displayed to the user.
+ * @returns {Promise<string, void>} - The text the user entered.
+ * @description It creates a text input at the top of the screen.
+ */
+export function prompt(message) {
+  const div = document.createElement('div');
+  div.classList.add('prompt');
+  const div_div = document.createElement('div');
+  const div_div_input = document.createElement('input');
+  div_div_input.autocomplete = 'off';
+  div_div_input.spellcheck = false;
+  div_div.appendChild(div_div_input);
+  const div_div_div = document.createElement('div');
+  const div_div_div_div = document.createElement('div');
+  div_div_div_div.innerText = message;
+  div_div_div.appendChild(div_div_div_div);
+  div_div.appendChild(div_div_div);
+  div.appendChild(div_div);
+  document.body.appendChild(div);
+  return new Promise((resolve, reject) =>
+    div_div_input.addEventListener('change', () => {
+      div.remove();
+      if (div_div_input.value == '') reject();
+      else resolve(div_div_input.value);
+    })
+  );
+}
+
+addCommand(
+  'prompt',
+  () => prompt('Woo Hoo!').then(console.log),
+  'Prompt',
+  'e745',
+  true
+);
+
+//@ts-expect-error
+window.prompt = prompt;
+
 /** @type {HTMLLIElement[]} */
 var commands = [];
 
