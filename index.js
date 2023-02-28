@@ -135,9 +135,6 @@ addCommand(
   true
 );
 
-//@ts-expect-error
-window.prompt = prompt;
-
 /** @type {HTMLLIElement[]} */
 var commands = [];
 
@@ -242,6 +239,44 @@ export function addCtrlKey(key, press, permanent = false) {
 export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+/**
+ * @param {string} s - Text to show.
+ * @returns {Promise<boolean>} - Whether the user confirmed or canceled.
+ * @description It pops up a snackbar message with confirm and cancel buttons.
+ */
+export async function confirm(s) {
+  const snackbar = document.querySelector('#snackbar');
+  if (snackbar) {
+    const div = document.createElement('div');
+    div.innerText = s;
+    const div_div = document.createElement('div');
+    const div_div_yes = document.createElement('button');
+    div_div_yes.innerText = 'yes';
+    div_div.appendChild(div_div_yes);
+    const div_div_no = document.createElement('button');
+    div_div_no.innerText = 'no';
+    div_div.appendChild(div_div_no);
+    div.appendChild(div_div);
+    div.classList.add('confirm');
+    snackbar.appendChild(div);
+    div.classList.add('show');
+    // Wait for button press
+    /** @type {boolean} */
+    var c = await new Promise((resolve) => {
+      div_div_yes.addEventListener('click', () => resolve(true));
+      div_div_no.addEventListener('click', () => resolve(false));
+    });
+    div.classList.remove('show');
+    await sleep(250);
+    div.remove();
+    return c;
+  }
+  return false;
+}
+
+//@ts-expect-error
+window.confirm = confirm;
 
 /**
  * @param {string} s - Text to show.

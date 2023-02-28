@@ -278,3 +278,30 @@ aside {
   transform: translateX(0);
   pointer-events: visiblePainted;
 }
+
+#snackbar > div.confirm {
+  padding-left: 1em;
+  padding-right: 1em;
+}
+
+#snackbar > div.confirm > div {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#snackbar > div.confirm > div > button {
+  margin-left: 0.5em;
+  padding-block: 0.3em;
+  padding-inline: 0.5em;
+  border: none;
+  border-radius: 0.2em;
+  font-family: monospace;
+}
+
+#snackbar > div.confirm > div > button:first-of-type {
+  background-color: green;
+}
+
+#snackbar > div.confirm > div > button:nth-of-type(2) {
+  background-color: red;
+}
