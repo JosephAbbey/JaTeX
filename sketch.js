@@ -1,4 +1,11 @@
-import { addButton, addCommand, recent, store, url } from './index.js';
+import {
+  addButton,
+  addCommand,
+  addCtrlKey,
+  recent,
+  store,
+  url,
+} from './index.js';
 import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
 
 /***/
@@ -201,25 +208,9 @@ export default async function sketch() {
     () => (article.readonly ? 'e9f6' : 'e9f5')
   );
 
-  document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey) {
-      switch (e.key) {
-        case 's':
-          e.preventDefault();
-          save(article);
-          break;
-        case 'e':
-          e.preventDefault();
-          showLaTeX(article);
-          break;
-        case 'd':
-          e.preventDefault();
-          reset();
-          break;
-        default:
-      }
-    }
-  });
+  addCtrlKey('s', save.bind(null, article));
+  addCtrlKey('e', showLaTeX.bind(null, article));
+  addCtrlKey('d', reset);
 
   //! remove
   //@ts-expect-error

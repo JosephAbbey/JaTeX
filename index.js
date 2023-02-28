@@ -70,6 +70,8 @@ export function clean() {
   buttons = [];
   commands.forEach((c) => c.remove());
   commands = [];
+  ctrlKeys.forEach((c) => window.removeEventListener('keydown', c));
+  ctrlKeys = [];
   if (main) main.innerHTML = '';
 }
 
@@ -167,6 +169,29 @@ export function addButton(
   return btn;
 }
 
+/** @type {((this: Window, ev: KeyboardEvent) => any)[]} */
+var ctrlKeys = [];
+
+/**
+ * @param {string} key - The key to listen for.
+ * @param {(this: Window, ev: KeyboardEvent) => any} press - The function to call when the key is pressed.
+ * @param {boolean=} permanent - If the button should not be removed when the page changes.
+ * @description It adds an eventlistener for `ctrl+${key}`.
+ */
+export function addCtrlKey(key, press, permanent = false) {
+  /** @type {(this: Window, ev: KeyboardEvent) => any} */
+  const handle = function (e) {
+    if (e.ctrlKey) {
+      if (e.key == key) {
+        e.preventDefault();
+        press.bind(this)(e);
+      }
+    }
+  };
+  window.addEventListener('keydown', handle);
+  if (!permanent) ctrlKeys.push(handle);
+}
+
 /**
  * @param {number} ms - The number of milliseconds to sleep.
  * @returns {Promise<void>} A promise that resolves after a certain amount of time.
@@ -245,21 +270,13 @@ store.has('LocalStorage:default').then((d) =>
 
 addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add', true);
 
+addCtrlKey('n', new_btn, true);
+
 document.addEventListener('keydown', (e) => {
-  if (e.ctrlKey) {
-    switch (e.key) {
-      case 'n':
-        e.preventDefault();
-        new_btn();
-        break;
-      default:
-    }
-  } else {
-    if (e.key == 'F1') {
-      e.preventDefault();
-      //@ts-expect-error
-      document.querySelector('#command_input')?.focus();
-    }
+  if (e.key == 'F1') {
+    e.preventDefault();
+    //@ts-expect-error
+    document.querySelector('#command_input')?.focus();
   }
 });
 
