@@ -117,6 +117,7 @@ export function prompt(message) {
   div_div.appendChild(div_div_div);
   div.appendChild(div_div);
   document.body.appendChild(div);
+  div_div_input.focus();
   return new Promise((resolve, reject) =>
     div_div_input.addEventListener('change', () => {
       div.remove();
