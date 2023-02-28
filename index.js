@@ -2,7 +2,7 @@ import { Bucket } from './Store.js';
 import { Element } from './src/index.js';
 export const store = new Bucket();
 
-export const url = new URL(window.location.href);
+export var url = new URL(window.location.href);
 
 /** Create new article. */
 function new_btn() {
@@ -47,11 +47,25 @@ function new_btn() {
 
 const main = document.querySelector('main');
 
-/** Shows recent options. */
-export async function recent() {
-  url.pathname = '/recent.html';
-  url.searchParams.delete('article');
-  window.history.pushState({}, '', url);
+window.addEventListener('popstate', async () => {
+  url = new URL(window.location.href);
+  clean();
+  switch (url.pathname) {
+    case '/':
+    case '/index':
+    case '/index.html':
+      (await import('./sketch.js')).default();
+      break;
+    case '/recent':
+    case '/recent.html':
+      (await import('./recent.js')).default();
+      break;
+    default:
+      window.location.reload();
+  }
+});
+
+export function clean() {
   buttons.forEach((b) => b.remove());
   buttons = [];
   commands.forEach((c) => c.remove());
@@ -59,6 +73,14 @@ export async function recent() {
   ctrlKeys.forEach((c) => window.removeEventListener('keydown', c));
   ctrlKeys = [];
   if (main) main.innerHTML = '';
+}
+
+/** Shows recent options. */
+export async function recent() {
+  url.pathname = '/recent.html';
+  url.searchParams.delete('article');
+  window.history.pushState({}, '', url);
+  clean();
   (await import('./recent.js')).default();
 }
 
@@ -70,13 +92,7 @@ export async function open(id) {
   url.pathname = '/';
   url.searchParams.set('article', id);
   window.history.pushState({}, '', url);
-  buttons.forEach((b) => b.remove());
-  buttons = [];
-  commands.forEach((c) => c.remove());
-  commands = [];
-  ctrlKeys.forEach((c) => window.removeEventListener('keydown', c));
-  ctrlKeys = [];
-  if (main) main.innerHTML = '';
+  clean();
   (await import('./sketch.js')).default();
 }
 
