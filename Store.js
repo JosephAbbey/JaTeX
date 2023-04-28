@@ -21,6 +21,14 @@ export default class Store {
   }
 
   /**
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async shareable(key) {
+    return false;
+  }
+
+  /**
    * @async
    * @param {string} key
    * @return {Promise<string | undefined>}
@@ -95,6 +103,25 @@ export class Bucket extends Store {
   async absolute(key) {
     const [store, k] = key.split(':');
     return [store, k];
+  }
+
+  /**
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async shareable(key) {
+    const [store, k] = await this.absolute(key);
+    return Boolean(await this.stores[store]?.shareable(k));
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<string | undefined>}
+   */
+  async share(key) {
+    const [store, k] = await this.absolute(key);
+    return await this.stores[store]?.share(k);
   }
 
   /**
@@ -323,6 +350,14 @@ export class RealtimeDB extends Store {
     }
     const _ = await this._;
     return [_.userID, key];
+  }
+
+  /**
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async shareable(key) {
+    return true;
   }
 
   /**
