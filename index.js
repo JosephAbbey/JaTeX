@@ -337,14 +337,6 @@ const registerServiceWorker = async () => {
   }
 };
 
-store.has('LocalStorage:default').then((d) =>
-  d
-    ? undefined
-    : fetch('./tmp/default.json')
-        .then((r) => r.json())
-        .then((t) => store.set('LocalStorage:default', t))
-);
-
 addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add', true);
 
 addCtrlKey('n', new_btn, true);
