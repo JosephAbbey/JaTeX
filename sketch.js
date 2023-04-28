@@ -23,11 +23,12 @@ function beforeunload(e) {
 }
 
 /**
+ * @param {String} key
  * @param {Article} article
  * @description Saves the article to local storage.
  */
-function save(article) {
-  store.set(url.searchParams.get('article') ?? '', article.serialised);
+function save(key, article) {
+  store.set(key, article.serialised);
   if (document.title.startsWith('● ')) {
     document.querySelector('#save_btn')?.classList.remove('required');
     document.title = document.title.substring(2);
@@ -36,18 +37,39 @@ function save(article) {
 }
 
 /**
+ * @param {String} key
+ * @param {Article} article
+ * @description Shows the share sheet.
+ */
+async function share(key, article) {
+  let url = await store.share(key);
+  if (url == undefined) return;
+  url = 'https://jatex.josephabbey.dev/?article=' + url;
+
+  if (navigator.canShare({ url }))
+    await navigator.share({
+      title: article.title,
+      text: 'View article on JaTeX.',
+      url,
+    });
+  else alert(url);
+}
+
+/**
+ * @param {String} key
  * @description Deletes the article in local storage.
  */
-function reset() {
-  store.delete(url.searchParams.get('article') ?? '');
+function reset(key) {
+  store.delete(key);
   recent();
 }
 
 /**
+ * @param {String} key
  * @param {Article} article
  * @description It opens a new window, with the LaTeX code of the article in.
  */
-function showLaTeX(article) {
+function showLaTeX(key, article) {
   /** @type {HTMLDialogElement?} */
   var dialog = document.createElement('dialog');
   if (dialog) {
@@ -59,10 +81,7 @@ function showLaTeX(article) {
     dialog.appendChild(p);
     dialog.addEventListener('close', (e) => {
       if (!article.readonly && i !== p.value) {
-        store.set(
-          url.searchParams.get('article') ?? '',
-          AST.toAOM(parse(p.value)[1]).serialised
-        );
+        store.set(key, AST.toAOM(parse(p.value)[1]).serialised);
         window.location.reload();
       }
       dialog?.remove();
@@ -99,7 +118,8 @@ function addEditControl(id, click, ariaLabel, title, icon) {
 export default async function sketch() {
   Element.map.clear();
   if (!url.searchParams.has('article')) return recent();
-  var s = await store.get(url.searchParams.get('article') ?? '');
+  const key = url.searchParams.get('article') ?? '';
+  var s = await store.get(key);
   if (!s) return recent();
   var article = Article.deserialise(s);
 
@@ -145,21 +165,29 @@ export default async function sketch() {
   addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
   const save_btn = addButton(
     'save_btn',
-    save.bind(null, article),
+    () => save(key, article),
     'Save',
     'Save ctrl+s',
     'save'
   );
   save_btn.disabled = article.readonly;
   addButton('print_btn', () => print(), 'Print', 'Print ctrl+p', 'print');
+  const share_btn = addButton(
+    'share_btn',
+    () => share(key, article),
+    'Share',
+    'Share ctrl+p',
+    'share'
+  );
+  store.shareable(key).then((d) => (share_btn.disabled = !d));
   addButton(
     'show_latex_btn',
-    showLaTeX.bind(null, article),
+    () => showLaTeX(key, article),
     'Show LaTeX Code',
     'Show LaTeX Code ctrl+e',
     'code_blocks'
   );
-  addButton('reset_btn', reset, 'Delete', 'Delete ctrl+d', 'delete');
+  addButton('reset_btn', () => reset(key), 'Delete', 'Delete ctrl+d', 'delete');
 
   addEditControl(
     'bold_btn',
@@ -208,9 +236,9 @@ export default async function sketch() {
     () => (article.readonly ? 'e9f6' : 'e9f5')
   );
 
-  addCtrlKey('s', save.bind(null, article));
-  addCtrlKey('e', showLaTeX.bind(null, article));
-  addCtrlKey('d', reset);
+  addCtrlKey('s', () => save(key, article));
+  addCtrlKey('e', () => showLaTeX(key, article));
+  addCtrlKey('d', () => reset(key));
 
   //! remove
   //@ts-expect-error

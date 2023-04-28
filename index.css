@@ -30,6 +30,7 @@ button:has(.material-symbols-outlined) {
 
 button:has(.material-symbols-outlined):disabled {
   opacity: 0.3;
+  cursor: not-allowed;
 }
 
 button:has(.material-symbols-outlined):not(:disabled):hover {
