@@ -65,6 +65,7 @@ window.addEventListener('popstate', async () => {
   }
 });
 
+/** Cleans the page for partial replacement. */
 export function clean() {
   buttons.forEach((b) => b.remove());
   buttons = [];
@@ -95,6 +96,44 @@ export async function open(id) {
   clean();
   (await import('./sketch.js')).default();
 }
+
+/**
+ * @param {string} message - The text to be displayed to the user.
+ * @returns {Promise<string, void>} - The text the user entered.
+ * @description It creates a text input at the top of the screen.
+ */
+export function prompt(message) {
+  const div = document.createElement('div');
+  div.classList.add('prompt');
+  const div_div = document.createElement('div');
+  const div_div_input = document.createElement('input');
+  div_div_input.autocomplete = 'off';
+  div_div_input.spellcheck = false;
+  div_div.appendChild(div_div_input);
+  const div_div_div = document.createElement('div');
+  const div_div_div_div = document.createElement('div');
+  div_div_div_div.innerText = message;
+  div_div_div.appendChild(div_div_div_div);
+  div_div.appendChild(div_div_div);
+  div.appendChild(div_div);
+  document.body.appendChild(div);
+  div_div_input.focus();
+  return new Promise((resolve, reject) =>
+    div_div_input.addEventListener('change', () => {
+      div.remove();
+      if (div_div_input.value == '') reject();
+      else resolve(div_div_input.value);
+    })
+  );
+}
+
+addCommand(
+  'prompt',
+  () => prompt('Woo Hoo!').then(console.log),
+  'Prompt',
+  'e745',
+  true
+);
 
 /** @type {HTMLLIElement[]} */
 var commands = [];
@@ -203,6 +242,44 @@ export function sleep(ms) {
 
 /**
  * @param {string} s - Text to show.
+ * @returns {Promise<boolean>} - Whether the user confirmed or canceled.
+ * @description It pops up a snackbar message with confirm and cancel buttons.
+ */
+export async function confirm(s) {
+  const snackbar = document.querySelector('#snackbar');
+  if (snackbar) {
+    const div = document.createElement('div');
+    div.innerText = s;
+    const div_div = document.createElement('div');
+    const div_div_yes = document.createElement('button');
+    div_div_yes.innerText = 'yes';
+    div_div.appendChild(div_div_yes);
+    const div_div_no = document.createElement('button');
+    div_div_no.innerText = 'no';
+    div_div.appendChild(div_div_no);
+    div.appendChild(div_div);
+    div.classList.add('confirm');
+    snackbar.appendChild(div);
+    div.classList.add('show');
+    // Wait for button press
+    /** @type {boolean} */
+    var c = await new Promise((resolve) => {
+      div_div_yes.addEventListener('click', () => resolve(true));
+      div_div_no.addEventListener('click', () => resolve(false));
+    });
+    div.classList.remove('show');
+    await sleep(250);
+    div.remove();
+    return c;
+  }
+  return false;
+}
+
+//@ts-expect-error
+window.confirm = confirm;
+
+/**
+ * @param {string} s - Text to show.
  * @param {number} t - Time to show for (ms).
  * @description It pops up a snackbar message.
  */
@@ -260,14 +337,6 @@ const registerServiceWorker = async () => {
   }
 };
 
-store.has('LocalStorage:default').then((d) =>
-  d
-    ? undefined
-    : fetch('./tmp/default.json')
-        .then((r) => r.json())
-        .then((t) => store.set('LocalStorage:default', t))
-);
-
 addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add', true);
 
 addCtrlKey('n', new_btn, true);
@@ -303,42 +372,44 @@ document
     }
   });
 
-registerServiceWorker();
+if (location.hostname !== 'localhost') {
+  registerServiceWorker();
 
-let deferredPrompt;
+  let deferredPrompt;
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  // Prevent Chrome 67 and earlier from automatically showing the prompt
-  e.preventDefault();
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault();
 
-  // Stash the event so it can be triggered later.
-  deferredPrompt = e;
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
 
-  // Update UI to notify the user they can add to home screen
-  addButton(
-    'install_btn',
-    // @ts-ignore
-    function (e) {
-      // Hide our user interface that shows our A2HS button
-      this.style.display = 'none';
+    // Update UI to notify the user they can add to home screen
+    addButton(
+      'install_btn',
+      // @ts-ignore
+      function (e) {
+        // Hide our user interface that shows our A2HS button
+        this.style.display = 'none';
 
-      // Show the prompt
-      deferredPrompt.prompt();
+        // Show the prompt
+        deferredPrompt.prompt();
 
-      // Wait for the user to respond to the prompt
-      deferredPrompt.userChoice.then(
-        (/** @type {{ outcome: string; }} */ choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the A2HS prompt');
-          } else {
-            console.log('User dismissed the A2HS prompt');
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then(
+          (/** @type {{ outcome: string; }} */ choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('User accepted the A2HS prompt');
+            } else {
+              console.log('User dismissed the A2HS prompt');
+            }
+            deferredPrompt = null;
           }
-          deferredPrompt = null;
-        }
-      );
-    },
-    'Install',
-    'Install',
-    'install_desktop'
-  );
-});
+        );
+      },
+      'Install',
+      'Install',
+      'install_desktop'
+    );
+  });
+}
