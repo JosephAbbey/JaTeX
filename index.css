@@ -25,6 +25,7 @@ button:has(.material-symbols-outlined) {
   border-radius: 2px;
   outline: none;
   height: 24px;
+  cursor: pointer;
 }
 
 button:has(.material-symbols-outlined):disabled {
