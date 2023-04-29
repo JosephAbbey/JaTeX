@@ -1,6 +1,60 @@
 import { Bucket } from './Store.js';
 import { Element } from './src/index.js';
-export const store = new Bucket();
+export const store = new Bucket(
+  JSON.parse(localStorage.getItem('stores') || 'null') || {
+    LocalStorage: true,
+  }
+);
+
+/**
+ * @description It opens a dialog, with toggles for stores.
+ */
+function editBucket() {
+  /** @type {HTMLDialogElement?} */
+  var dialog = document.createElement('dialog');
+  if (dialog) {
+    dialog.id = 'bucket';
+    dialog.innerHTML = '';
+    /** @type {[string, HTMLInputElement][]} */
+    let toggles = Object.keys(Bucket.stores).map((s) => {
+      const label = document.createElement('label');
+      label.innerText = s;
+      label.htmlFor = 'bucket.' + s;
+      if (dialog) dialog.appendChild(label);
+      const toggle = document.createElement('input');
+      toggle.type = 'checkbox';
+      toggle.id = 'bucket.' + s;
+      //@ts-expect-error
+      toggle.checked = store.enabled(s);
+      if (dialog) dialog.appendChild(toggle);
+      return [s, toggle];
+    });
+    dialog.addEventListener('close', (e) => {
+      localStorage.setItem(
+        'stores',
+        JSON.stringify(
+          Object.fromEntries(
+            toggles.map(
+              ([s, t]) => (
+                //@ts-expect-error
+                t.checked != store.enabled(s) &&
+                  //@ts-expect-error
+                  (t.checked ? store.enable(s) : store.disable(s)),
+                [s, t.checked]
+              )
+            )
+          )
+        )
+      );
+      reload();
+      dialog?.remove();
+    });
+    document.body.appendChild(dialog);
+    dialog.showModal();
+  }
+}
+
+addCommand('bucket', editBucket, 'Edit sources', 'e745', true);
 
 export var url = new URL(window.location.href);
 
@@ -47,8 +101,19 @@ function new_btn() {
 
 const main = document.querySelector('main');
 
-window.addEventListener('popstate', async () => {
-  url = new URL(window.location.href);
+/** Cleans the page for partial replacement. */
+export function clean() {
+  buttons.forEach((b) => b.remove());
+  buttons = [];
+  commands.forEach((c) => c.remove());
+  commands = [];
+  ctrlKeys.forEach((c) => window.removeEventListener('keydown', c));
+  ctrlKeys = [];
+  if (main) main.innerHTML = '';
+}
+
+/** Reloads the content of the page. */
+export async function reload() {
   clean();
   switch (url.pathname) {
     case '/':
@@ -63,18 +128,12 @@ window.addEventListener('popstate', async () => {
     default:
       window.location.reload();
   }
-});
-
-/** Cleans the page for partial replacement. */
-export function clean() {
-  buttons.forEach((b) => b.remove());
-  buttons = [];
-  commands.forEach((c) => c.remove());
-  commands = [];
-  ctrlKeys.forEach((c) => window.removeEventListener('keydown', c));
-  ctrlKeys = [];
-  if (main) main.innerHTML = '';
 }
+
+window.addEventListener('popstate', async () => {
+  url = new URL(window.location.href);
+  reload();
+});
 
 /** Shows recent options. */
 export async function recent() {

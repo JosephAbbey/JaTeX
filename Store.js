@@ -85,15 +85,51 @@ export default class Store {
  * @description A `Store` subclass to interface a set of stores.
  */
 export class Bucket extends Store {
-  // TODO: Allow enabling and disabling stores
+  static stores = {
+    LocalStorage: () => new LocalStorage(),
+    RealtimeDB: () => new RealtimeDB(),
+  };
+
   /**
    * @private
    * @type {{ [key: string]: Store }}
    */
-  stores = {
-    LocalStorage: new LocalStorage(),
-    RealtimeDB: new RealtimeDB(),
-  };
+  stores;
+
+  /**
+   * @constructor
+   * @param {{ [key in keyof typeof Bucket.stores]?: boolean }} stores
+   */
+  constructor(stores) {
+    super();
+    this.stores = Object.fromEntries(
+      Object.entries(stores)
+        .filter(([_, v]) => v)
+        .map(([k, _]) => [k, Bucket.stores[k]()])
+    );
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   */
+  enable(store) {
+    this.stores[store] = Bucket.stores[store]();
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   * @returns {boolean}
+   */
+  enabled(store) {
+    return Boolean(this.stores[store]);
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   */
+  disable(store) {
+    delete this.stores[store];
+  }
 
   /**
    * @async
@@ -436,8 +472,9 @@ export class RealtimeDB extends Store {
   async *keys() {
     const _ = await this._;
     const d = await _.get(_.ref(`users/${_.userID}/documents`));
+    /** @type {string[]} */
     const ks = [];
-    d.forEach((child) => {
+    d.forEach((/** @type {{ key: string; }} */ child) => {
       ks.push(child.key);
     });
     for (var k of ks) yield k;
