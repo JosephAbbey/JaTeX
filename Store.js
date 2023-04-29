@@ -357,7 +357,10 @@ export class RealtimeDB extends Store {
    * @return {Promise<boolean>}
    */
   async shareable(key) {
-    return true;
+    const _ = await this._;
+    const [user, k] = await this.absolute(key);
+    const d = await _.get(_.ref(`users/${user}/documents/${k}`));
+    return d.exists() ? !d.val().private : false;
   }
 
   /**
