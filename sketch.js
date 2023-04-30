@@ -2,7 +2,9 @@ import {
   addButton,
   addCommand,
   addCtrlKey,
+  open,
   recent,
+  select_store,
   store,
   url,
 } from './index.js';
@@ -187,6 +189,14 @@ export default async function sketch() {
     'Show LaTeX Code ctrl+e',
     'code_blocks'
   );
+  if (store.enabledStores().length != 1)
+    addButton(
+      'move_btn',
+      async () => open(await store.move(key, await select_store())),
+      'Move',
+      'Move',
+      'file_copy'
+    );
   addButton('reset_btn', () => reset(key), 'Delete', 'Delete ctrl+d', 'delete');
 
   addEditControl(
@@ -219,7 +229,7 @@ export default async function sketch() {
       Element.map.forEach((e) => e.update())
     ),
     'Toggle spell check',
-    () => (article.spellcheck ? 'e9f6' : 'e9f5')
+    () => (article.spellcheck ? 'toggle_on' : 'toggle_off')
   );
   addCommand(
     'toggle_readonly',
@@ -233,7 +243,7 @@ export default async function sketch() {
       (save_btn.disabled = article.readonly)
     ),
     'Toggle readonly mode',
-    () => (article.readonly ? 'e9f6' : 'e9f5')
+    () => (article.readonly ? 'toggle_on' : 'toggle_off')
   );
 
   addCtrlKey('s', () => save(key, article));
