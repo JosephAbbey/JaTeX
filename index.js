@@ -15,20 +15,46 @@ function editBucket() {
   if (dialog) {
     dialog.id = 'bucket';
     dialog.innerHTML = '';
+
+    const span = document.createElement('span');
+    span.innerText = 'Stores:';
+    dialog.appendChild(span);
+
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.marginTop = '0.5em';
     /** @type {[string, HTMLInputElement][]} */
     let toggles = Object.keys(Bucket.stores).map((s) => {
+      const div = document.createElement('div');
+      div.style.display = 'flex';
+      div.style.alignItems = 'center';
+      div.style.justifyContent = 'space-between';
       const label = document.createElement('label');
-      label.innerText = s;
       label.htmlFor = 'bucket.' + s;
-      if (dialog) dialog.appendChild(label);
+      label.style.display = 'flex';
+      label.style.alignItems = 'center';
+      label.style.padding = '0.25em';
+      label.style.height = 'calc(24px + 0.5em)';
+      const icn = document.createElement('span');
+      icn.className = 'material-symbols-outlined';
+      icn.style.marginRight = '0.25em';
+      icn.innerHTML = Bucket.stores[s].icon;
+      label.append(icn);
+      const text = document.createElement('span');
+      text.innerText = s;
+      label.appendChild(text);
+      div.appendChild(label);
       const toggle = document.createElement('input');
       toggle.type = 'checkbox';
       toggle.id = 'bucket.' + s;
       //@ts-expect-error
       toggle.checked = store.enabled(s);
-      if (dialog) dialog.appendChild(toggle);
+      div.appendChild(toggle);
+      container?.appendChild(div);
       return [s, toggle];
     });
+    dialog.appendChild(container);
     dialog.addEventListener('close', (e) => {
       localStorage.setItem(
         'stores',
@@ -54,15 +80,25 @@ function editBucket() {
   }
 }
 
-addCommand('bucket', editBucket, 'Edit sources', 'e745', true);
+addCommand('bucket', editBucket, 'Edit sources', 'storage', true);
 
 export var url = new URL(window.location.href);
 
+/** Show a selection box for stores. */
+export async function select_store() {
+  return store.enabledStores().length == 1
+    ? store.enabledStores()[0]
+    : select(
+        'Select a store',
+        store.enabledStores().map((s) => [s, s, Bucket.stores[s].icon])
+      );
+}
+
 /** Create new article. */
-function new_btn() {
+async function new_btn() {
   var id = Element.uuid();
-  // TODO: Allow for user selection
-  store.set('LocalStorage:' + id, {
+  const s = await select_store();
+  store.set(s + ':' + id, {
     class: 'Article',
     id,
     children: [
@@ -96,7 +132,7 @@ function new_btn() {
     spellcheck: false,
     date: new Date().toJSON(),
   });
-  open('LocalStorage:' + id);
+  open(s + ':' + id);
 }
 
 const main = document.querySelector('main');
@@ -186,13 +222,57 @@ export function prompt(message) {
   );
 }
 
-addCommand(
-  'prompt',
-  () => prompt('Woo Hoo!').then(console.log),
-  'Prompt',
-  'e745',
-  true
-);
+/**
+ * @template {string} T
+ * @param {string} message - The text to be displayed to the user.
+ * @param {([T, string] | [T, string, string])[]} options - The options to be displayed to the user.
+ * @returns {Promise<T, void>} - The text the user entered.
+ * @description It creates a text input at the top of the screen.
+ */
+export function select(message, options) {
+  return new Promise((resolve, reject) => {
+    /** @type {HTMLDialogElement?} */
+    var dialog = document.createElement('dialog');
+    if (dialog) {
+      dialog.id = 'select';
+      dialog.innerText = message;
+      dialog?.appendChild(document.createElement('br'));
+      const buttons = document.createElement('div');
+      buttons.style.display = 'flex';
+      buttons.style.flexDirection = 'column';
+      buttons.style.gap = '0.5em';
+      buttons.style.marginTop = '0.5em';
+      options.forEach((s) => {
+        const button = document.createElement('button');
+        button.style.display = 'flex';
+        button.style.alignItems = 'center';
+        button.style.padding = '0.5em';
+        button.style.height = 'calc(24px + 0.5em)';
+        if (s.length == 3) {
+          const icn = document.createElement('span');
+          icn.className = 'material-symbols-outlined';
+          icn.style.marginRight = '0.25em';
+          icn.innerHTML = s[2];
+          button.append(icn);
+        }
+        const text = document.createElement('span');
+        text.innerText = s[1];
+        button.appendChild(text);
+        button.addEventListener('click', (e) => {
+          dialog?.remove();
+          resolve(s[0]);
+        });
+        buttons?.appendChild(button);
+      });
+      dialog.appendChild(buttons);
+      dialog.addEventListener('close', (e) => {
+        reject();
+      });
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    }
+  });
+}
 
 /** @type {HTMLLIElement[]} */
 var commands = [];
@@ -211,20 +291,20 @@ export function addCommand(id, click, text, icon, permanent) {
   li.id = id;
   li.innerText = text;
   if (icon instanceof Function) {
-    li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'");
+    li.style.setProperty('--cmd-palette-icon', "'" + icon() + "'");
     document
       .querySelector('#command')
       ?.addEventListener('mousedown', () =>
-        li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'")
+        li.style.setProperty('--cmd-palette-icon', "'" + icon() + "'")
       );
     li.addEventListener('click', () =>
       setTimeout(
-        () => li.style.setProperty('--cmd-palette-icon', "'\\" + icon() + "'"),
+        () => li.style.setProperty('--cmd-palette-icon', "'" + icon() + "'"),
         10
       )
     );
   } else if (typeof icon === 'string') {
-    li.style.setProperty('--cmd-palette-icon', "'\\" + icon + "'");
+    li.style.setProperty('--cmd-palette-icon', "'" + icon + "'");
   }
   document.querySelector('#command_palette > div > ul')?.append(li);
   li.addEventListener('click', click, false);
@@ -333,9 +413,6 @@ export async function confirm(s) {
   }
   return false;
 }
-
-//@ts-expect-error
-window.confirm = confirm;
 
 /**
  * @param {string} s - Text to show.

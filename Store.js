@@ -9,6 +9,8 @@
  * @description A generic store for articles that can be extended for use with storage APIs.
  */
 export default class Store {
+  static icon = 'unknown_document';
+
   constructor() {}
 
   /**
@@ -78,141 +80,6 @@ export default class Store {
 
 /**
  * @author Joseph Abbey
- * @date 25/02/2023
- * @constructor
- * @extends {Store}
- *
- * @description A `Store` subclass to interface a set of stores.
- */
-export class Bucket extends Store {
-  static stores = {
-    LocalStorage: () => new LocalStorage(),
-    RealtimeDB: () => new RealtimeDB(),
-  };
-
-  /**
-   * @private
-   * @type {{ [key: string]: Store }}
-   */
-  stores;
-
-  /**
-   * @constructor
-   * @param {{ [key in keyof typeof Bucket.stores]?: boolean }} stores
-   */
-  constructor(stores) {
-    super();
-    this.stores = Object.fromEntries(
-      Object.entries(stores)
-        .filter(([_, v]) => v)
-        .map(([k, _]) => [k, Bucket.stores[k]()])
-    );
-  }
-
-  /**
-   * @param {keyof typeof Bucket.stores} store
-   */
-  enable(store) {
-    this.stores[store] = Bucket.stores[store]();
-  }
-
-  /**
-   * @param {keyof typeof Bucket.stores} store
-   * @returns {boolean}
-   */
-  enabled(store) {
-    return Boolean(this.stores[store]);
-  }
-
-  /**
-   * @param {keyof typeof Bucket.stores} store
-   */
-  disable(store) {
-    delete this.stores[store];
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   * @return {Promise<[string, string]>}
-   */
-  async absolute(key) {
-    const [store, k] = key.split(':');
-    return [store, k];
-  }
-
-  /**
-   * @param {string} key
-   * @return {Promise<boolean>}
-   */
-  async shareable(key) {
-    const [store, k] = await this.absolute(key);
-    return Boolean(await this.stores[store]?.shareable(k));
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   * @return {Promise<string | undefined>}
-   */
-  async share(key) {
-    const [store, k] = await this.absolute(key);
-    return await this.stores[store]?.share(k);
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   * @return {Promise<boolean>}
-   */
-  async has(key) {
-    const [store, k] = await this.absolute(key);
-    return Boolean(await this.stores[store]?.has(k));
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
-   */
-  async get(key) {
-    const [store, k] = await this.absolute(key);
-    return this.stores[store]?.get(k);
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
-   */
-  async set(key, value) {
-    const [store, k] = await this.absolute(key);
-    await this.stores[store]?.set(k, value);
-  }
-
-  /**
-   * @async
-   * @param {string} key
-   */
-  async delete(key) {
-    const [store, k] = await this.absolute(key);
-    await this.stores[store]?.delete(k);
-  }
-
-  /**
-   * @async
-   * @generator
-   * @yields {string}
-   * @returns {AsyncGenerator<string, void, unknown>}
-   */
-  async *keys() {
-    for (var s in this.stores)
-      for await (var k of this.stores[s].keys()) yield s + ':' + k;
-  }
-}
-
-/**
- * @author Joseph Abbey
  * @date 24/02/2023
  * @constructor
  * @extends {Store}
@@ -220,6 +87,8 @@ export class Bucket extends Store {
  * @description A `Store` subclass for the localStorage API.
  */
 export class LocalStorage extends Store {
+  static icon = 'work';
+
   /**
    * @async
    * @param {string} key
@@ -296,6 +165,8 @@ export class LocalStorage extends Store {
  * @description A `Store` subclass for the Firebase RealtimeDB API.
  */
 export class RealtimeDB extends Store {
+  static icon = 'smb_share';
+
   /**
    * @private
    * @type {Promise<any>}
@@ -478,5 +349,164 @@ export class RealtimeDB extends Store {
       ks.push(child.key);
     });
     for (var k of ks) yield k;
+  }
+}
+
+/**
+ * @author Joseph Abbey
+ * @date 25/02/2023
+ * @constructor
+ * @extends {Store}
+ *
+ * @description A `Store` subclass to interface a set of stores.
+ */
+export class Bucket extends Store {
+  static icon = 'home_storage';
+
+  static stores = {
+    LocalStorage,
+    RealtimeDB,
+  };
+
+  /**
+   * @private
+   * @type {{ [key in keyof typeof Bucket.stores]?: Store }}
+   */
+  stores;
+
+  /**
+   * @constructor
+   * @param {{ [key in keyof typeof Bucket.stores]?: boolean }} stores
+   */
+  constructor(stores) {
+    super();
+    this.stores = Object.fromEntries(
+      Object.entries(stores)
+        .filter(([_, v]) => v)
+        .map(([k, _]) => [k, new Bucket.stores[k]()])
+    );
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   */
+  enable(store) {
+    this.stores[store] = new Bucket.stores[store]();
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   * @returns {boolean}
+   */
+  enabled(store) {
+    return Boolean(this.stores[store]);
+  }
+
+  /**
+   * @param {keyof typeof Bucket.stores} store
+   */
+  disable(store) {
+    delete this.stores[store];
+  }
+
+  /**
+   * @returns {(keyof typeof Bucket.stores)[]}
+   */
+  enabledStores() {
+    //@ts-expect-error
+    return Object.keys(this.stores);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<[string, string]>}
+   */
+  async absolute(key) {
+    const [store, k] = key.split(':');
+    return [store, k];
+  }
+
+  /**
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async shareable(key) {
+    const [store, k] = await this.absolute(key);
+    return Boolean(await this.stores[store]?.shareable(k));
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<string | undefined>}
+   */
+  async share(key) {
+    const [store, k] = await this.absolute(key);
+    return await this.stores[store]?.share(k);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @return {Promise<boolean>}
+   */
+  async has(key) {
+    const [store, k] = await this.absolute(key);
+    return Boolean(await this.stores[store]?.has(k));
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @returns {Promise<(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised) | undefined>}
+   */
+  async get(key) {
+    const [store, k] = await this.absolute(key);
+    return this.stores[store]?.get(k);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @param {(import("./src/Article.js").ArticleSerialised & import("./src/Element.js").ElementSerialised)} value
+   */
+  async set(key, value) {
+    const [store, k] = await this.absolute(key);
+    await this.stores[store]?.set(k, value);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   */
+  async delete(key) {
+    const [store, k] = await this.absolute(key);
+    await this.stores[store]?.delete(k);
+  }
+
+  /**
+   * @async
+   * @param {string} key
+   * @param {keyof typeof Bucket.stores} store
+   */
+  async move(key, store) {
+    const [_, k] = await this.absolute(key);
+    const value = await this.get(key);
+    if (value) {
+      await Promise.all([this.set(store + ':' + k, value), this.delete(key)]);
+    }
+    return store + ':' + k;
+  }
+
+  /**
+   * @async
+   * @generator
+   * @yields {string}
+   * @returns {AsyncGenerator<string, void, unknown>}
+   */
+  async *keys() {
+    for (var s in this.stores)
+      for await (var k of this.stores[s].keys()) yield s + ':' + k;
   }
 }

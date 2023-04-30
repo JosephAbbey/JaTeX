@@ -62,6 +62,15 @@ button.required > .material-symbols-outlined {
   }
 }
 
+input[type='checkbox'] {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+input[type='checkbox']:not(:checked) {
+  opacity: 0.2;
+}
+
 #navbar {
   background-color: #24292e;
   border-bottom: 1px solid grey;
