@@ -1,7 +1,8 @@
-import { fuzzy, open, store } from './index.js';
+import { addButton, fuzzy, open, reload, store } from './index.js';
 
 /** */
 export default async function recent() {
+  document.title = 'JaTeX - Recent';
   var articles = document.createElement('div');
   articles.id = 'articles';
   document.querySelector('main')?.appendChild(articles);
@@ -30,6 +31,8 @@ export default async function recent() {
       a.append(a_div);
       articles.append(a);
     }
+
+  addButton('reload_btn', () => reload(), 'Refresh', 'Refresh', 'refresh');
 
   document.querySelector('#command_input')?.addEventListener('input', (e) => {
     document.querySelectorAll('#articles > a').forEach(

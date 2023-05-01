@@ -6,6 +6,10 @@ export const store = new Bucket(
   }
 );
 
+store.addEventListener('create', console.log);
+store.addEventListener('delete', console.log);
+store.addEventListener('edit', console.log);
+
 /**
  * @description It opens a dialog, with toggles for stores.
  */
@@ -362,6 +366,7 @@ export function addCtrlKey(key, press, permanent = false) {
     if (e.ctrlKey) {
       if (e.key == key) {
         e.preventDefault();
+        e.stopPropagation();
         press.bind(this)(e);
       }
     }

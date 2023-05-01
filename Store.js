@@ -1,17 +1,41 @@
-// TODO: listen to change events
+/**
+ * @constructor
+ * @extends {Event}
+ */
+export class StoreEvent extends Event {
+  /**
+   * @param {StoreEvent['type']} type
+   * @param {{ key: string }} data
+   */
+  constructor(type, data) {
+    super(type, {});
+
+    this.type = type;
+    this.data = data;
+  }
+
+  /**
+   * @type {"edit" | "create" | "delete"}
+   * @inheritdoc
+   */
+  type;
+
+  /**
+   * @type {{ key: string }}
+   */
+  data;
+}
 
 /**
- * @author Joseph Abbey
- * @date 24/02/2023
  * @constructor
  * @virtual
- *
- * @description A generic store for articles that can be extended for use with storage APIs.
  */
 export default class Store {
   static icon = 'unknown_document';
 
-  constructor() {}
+  constructor() {
+    this.eventListeners = [];
+  }
 
   /**
    * @async
@@ -76,6 +100,37 @@ export default class Store {
    * @returns {AsyncGenerator<string, void, unknown>}
    */
   async *keys() {}
+
+  /**
+   * @type {Object<StoreEvent['type'], Array<(e: StoreEvent) => void>>}
+   * @private
+   */
+  eventListeners;
+  /**
+   * @param {StoreEvent['type']} type
+   * @param {(e: StoreEvent) => void} listener
+   * @returns {void}
+   */
+  addEventListener(type, listener) {
+    if (!this.eventListeners[type]) this.eventListeners[type] = [];
+    this.eventListeners[type].push(listener);
+  }
+  /**
+   * @param {StoreEvent['type']} type
+   * @param {(e: StoreEvent) => void} listener
+   * @returns {void}
+   */
+  removeEventListener(type, listener) {
+    const index = this.eventListeners[type].indexOf(listener);
+    if (index > -1) this.eventListeners[type].splice(index, 1);
+  }
+  /**
+   * @param {StoreEvent} event
+   * @returns {void}
+   */
+  dispatchEvent(event) {
+    this.eventListeners[event.type]?.forEach((f) => f(event));
+  }
 }
 
 /**
@@ -88,6 +143,31 @@ export default class Store {
  */
 export class LocalStorage extends Store {
   static icon = 'work';
+
+  constructor() {
+    super();
+    addEventListener('storage', (e) => {
+      if (!e.key?.startsWith('document.')) return;
+      if (e.oldValue == null)
+        this.dispatchEvent(
+          new StoreEvent('create', {
+            key: e.key.substring(9),
+          })
+        );
+      else if (e.newValue == null)
+        this.dispatchEvent(
+          new StoreEvent('delete', {
+            key: e.key.substring(9),
+          })
+        );
+      else
+        this.dispatchEvent(
+          new StoreEvent('edit', {
+            key: e.key.substring(9),
+          })
+        );
+    });
+  }
 
   /**
    * @async
@@ -173,10 +253,57 @@ export class RealtimeDB extends Store {
    */
   _ = this.auth();
 
+  constructor() {
+    super();
+    this._.then(async (_) => {
+      const d = _.ref(`users/${_.userID}/documents`);
+      _.onChildAdded(
+        d,
+        ({ key }) =>
+          this.dispatchEvent(
+            new StoreEvent('create', {
+              key,
+            })
+          ),
+        {}
+      );
+      _.onChildRemoved(
+        d,
+        ({ key }) =>
+          this.dispatchEvent(
+            new StoreEvent('delete', {
+              key,
+            })
+          ),
+        {}
+      );
+      _.onChildChanged(
+        d,
+        ({ key }) =>
+          this.dispatchEvent(
+            new StoreEvent('edit', {
+              key,
+            })
+          ),
+        {}
+      );
+    });
+  }
+
   /**
    * @private
    * @async
-   * @returns {Promise<any>}
+   * @returns {Promise<{
+   *   ref: Function,
+   *   set: Function,
+   *   get: Function,
+   *   remove: Function,
+   *   onChildAdded: Function,
+   *   onChildRemoved: Function,
+   *   onChildChanged: Function,
+   *   userID: string,
+   *   signOut: Function,
+   * }>}
    */
   async auth() {
     const firebase_app =
@@ -189,7 +316,16 @@ export class RealtimeDB extends Store {
       'https://www.gstatic.com/firebasejs/9.17.1/firebase-app-check.js';
     const [
       { initializeApp },
-      { getDatabase, ref, set, get, remove },
+      {
+        getDatabase,
+        ref,
+        set,
+        get,
+        remove,
+        onChildAdded,
+        onChildRemoved,
+        onChildChanged,
+      },
       { getAuth, signInWithPopup, GithubAuthProvider, signOut },
       { initializeAppCheck, ReCaptchaV3Provider },
     ] = await Promise.all([
@@ -237,6 +373,9 @@ export class RealtimeDB extends Store {
       set,
       get,
       remove,
+      onChildAdded,
+      onChildRemoved,
+      onChildChanged,
       userID: auth.currentUser.uid,
       signOut: signOut.bind(null, auth),
     };
@@ -383,7 +522,32 @@ export class Bucket extends Store {
     this.stores = Object.fromEntries(
       Object.entries(stores)
         .filter(([_, v]) => v)
-        .map(([k, _]) => [k, new Bucket.stores[k]()])
+        .map(([k, _]) => {
+          /** @type {Store} */
+          const s = new Bucket.stores[k]();
+          s.addEventListener('create', (e) =>
+            this.dispatchEvent(
+              new StoreEvent('create', {
+                key: k + ':' + e.data.key,
+              })
+            )
+          );
+          s.addEventListener('delete', (e) =>
+            this.dispatchEvent(
+              new StoreEvent('delete', {
+                key: k + ':' + e.data.key,
+              })
+            )
+          );
+          s.addEventListener('edit', (e) =>
+            this.dispatchEvent(
+              new StoreEvent('edit', {
+                key: k + ':' + e.data.key,
+              })
+            )
+          );
+          return [k, s];
+        })
     );
   }
 
@@ -391,7 +555,29 @@ export class Bucket extends Store {
    * @param {keyof typeof Bucket.stores} store
    */
   enable(store) {
-    this.stores[store] = new Bucket.stores[store]();
+    const s = new Bucket.stores[store]();
+    s.addEventListener('create', (e) =>
+      this.dispatchEvent(
+        new StoreEvent('create', {
+          key: store + ':' + e.data.key,
+        })
+      )
+    );
+    s.addEventListener('delete', (e) =>
+      this.dispatchEvent(
+        new StoreEvent('delete', {
+          key: store + ':' + e.data.key,
+        })
+      )
+    );
+    s.addEventListener('edit', (e) =>
+      this.dispatchEvent(
+        new StoreEvent('edit', {
+          key: store + ':' + e.data.key,
+        })
+      )
+    );
+    this.stores[store] = s;
   }
 
   /**
