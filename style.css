@@ -7,6 +7,12 @@ main:has(#root) {
   margin-top: 1rem;
 }
 
+@media (display-mode: window-controls-overlay) {
+  main:has(#root) {
+    margin-top: 3rem;
+  }
+}
+
 main:has(#edit_controls)::before {
   content: '';
   grid-area: ⚫;

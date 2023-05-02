@@ -79,7 +79,7 @@ input[type='checkbox']:not(:checked) {
   margin-top: 0;
   position: sticky;
   top: 0;
-  padding-top: 0.3rem;
+  padding-top: 0.3em;
   display: flex;
   justify-content: space-between;
 }
@@ -205,6 +205,42 @@ input[type='checkbox']:not(:checked) {
 #buttons {
   display: flex;
   justify-content: flex-end;
+}
+
+@media (display-mode: window-controls-overlay) {
+  #navbar {
+    position: fixed;
+    left: env(titlebar-area-x);
+    top: env(titlebar-area-y);
+    width: env(titlebar-area-width);
+    height: env(titlebar-area-height);
+    -webkit-app-region: drag;
+    app-region: drag;
+    padding-top: 0.2em;
+    padding-bottom: 0;
+    border-bottom: 0px solid grey;
+    box-sizing: border-box;
+  }
+
+  #command,
+  .prompt > div {
+    width: 50%;
+  }
+
+  #command_palette,
+  .prompt > div > div {
+    width: calc(0.5 * env(titlebar-area-width));
+  }
+
+  #command,
+  #buttons > button {
+    -webkit-app-region: no-drag;
+    app-region: no-drag;
+  }
+
+  main {
+    margin-top: calc(1rem + env(titlebar-area-height));
+  }
 }
 
 :modal {
