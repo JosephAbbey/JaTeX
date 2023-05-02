@@ -7,13 +7,11 @@
 #articles > a {
   all: unset;
   cursor: pointer;
-  opacity: 0.9;
   transition: all 200ms ease-in-out;
 }
 
 #articles > a:hover {
   box-shadow: 0 0 5px #111;
-  opacity: 1;
 }
 
 #articles > a > div {
