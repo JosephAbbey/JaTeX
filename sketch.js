@@ -261,6 +261,4 @@ export default async function sketch() {
     store.removeEventListener('delete', d);
     store.removeEventListener('edit', e);
   };
-
-  () => {};
 }
