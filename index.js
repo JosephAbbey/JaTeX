@@ -6,9 +6,9 @@ export const store = new Bucket(
   }
 );
 
-store.addEventListener('create', console.log);
-store.addEventListener('delete', console.log);
-store.addEventListener('edit', console.log);
+// store.addEventListener('create', console.log);
+// store.addEventListener('delete', console.log);
+// store.addEventListener('edit', console.log);
 
 /**
  * @description It opens a dialog, with toggles for stores.
@@ -141,8 +141,10 @@ async function new_btn() {
 
 const main = document.querySelector('main');
 
+let unmount = () => {};
 /** Cleans the page for partial replacement. */
 export function clean() {
+  unmount();
   buttons.forEach((b) => b.remove());
   buttons = [];
   commands.forEach((c) => c.remove());
@@ -159,11 +161,11 @@ export async function reload() {
     case '/':
     case '/index':
     case '/index.html':
-      (await import('./sketch.js')).default();
+      unmount = (await (await import('./sketch.js')).default()) ?? (() => {});
       break;
     case '/recent':
     case '/recent.html':
-      (await import('./recent.js')).default();
+      unmount = (await (await import('./recent.js')).default()) ?? (() => {});
       break;
     default:
       window.location.reload();
@@ -181,7 +183,7 @@ export async function recent() {
   url.searchParams.delete('article');
   window.history.pushState({}, '', url);
   clean();
-  (await import('./recent.js')).default();
+  unmount = (await (await import('./recent.js')).default()) ?? (() => {});
 }
 
 /**
@@ -193,7 +195,7 @@ export async function open(id) {
   url.searchParams.set('article', id);
   window.history.pushState({}, '', url);
   clean();
-  (await import('./sketch.js')).default();
+  unmount = (await (await import('./sketch.js')).default()) ?? (() => {});
 }
 
 /**
@@ -512,6 +514,30 @@ document
         ?.click();
     }
   });
+document.querySelector('#command_input')?.addEventListener('input', (e) => {
+  document.querySelectorAll('#articles > a').forEach(
+    (el) =>
+      //@ts-expect-error
+      (el.style.display =
+        fuzzy(
+          el.children[0].children[0].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        ) ||
+        fuzzy(
+          el.children[0].children[1].children[0].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        ) ||
+        fuzzy(
+          el.children[0].children[2].innerHTML,
+          //@ts-expect-error
+          e.target?.value ?? ''
+        )
+          ? 'list-item'
+          : 'none')
+  );
+});
 
 if (location.hostname !== 'localhost') {
   registerServiceWorker();

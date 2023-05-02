@@ -167,6 +167,16 @@ export class LocalStorage extends Store {
           })
         );
     });
+
+    (async () => {
+      for await (let k of this.keys()) {
+        this.dispatchEvent(
+          new StoreEvent('create', {
+            key: k,
+          })
+        );
+      }
+    })();
   }
 
   /**

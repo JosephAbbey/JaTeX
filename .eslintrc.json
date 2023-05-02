@@ -23,7 +23,6 @@
     "require-yield": "warn",
     "accessor-pairs": "warn",
     "block-scoped-var": "warn",
-    "capitalized-comments": "warn",
     "constructor-super": "error",
     "default-case": "error",
     "eol-last": "warn",
