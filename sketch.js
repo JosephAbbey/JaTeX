@@ -4,6 +4,7 @@ import {
   addCtrlKey,
   open,
   recent,
+  reload,
   select_store,
   store,
   url,
@@ -155,7 +156,7 @@ export default async function sketch() {
     while (c.type == 'childEvent') {
       c = c.data;
     }
-    console.log(c);
+    // console.log(c);
 
     if (!document.title.startsWith('● ')) {
       document.querySelector('#save_btn')?.classList.add('required');
@@ -250,15 +251,14 @@ export default async function sketch() {
   addCtrlKey('e', () => showLaTeX(key, article));
   addCtrlKey('d', () => reset(key));
 
-  //! remove
-  //@ts-expect-error
-  window.article = article;
-  //@ts-expect-error
-  window.parse = parse;
-  //@ts-expect-error
-  window.AST = AST;
-  //@ts-expect-error
-  window.store = store;
+  const d = ({ data: { key: article } }) => article == key && recent();
+  const e = ({ data: { key: article } }) => article == key && reload();
 
-  console.log(article);
+  store.addEventListener('delete', d);
+  store.addEventListener('edit', e);
+
+  return () => {
+    store.removeEventListener('delete', d);
+    store.removeEventListener('edit', e);
+  };
 }

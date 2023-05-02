@@ -142,7 +142,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
-    console.log(e.inputType, 'Before', 'Fired:', e);
+    // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
       case 'historyUndo':
@@ -180,10 +180,10 @@ export default class Section extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        console.log(e.inputType, 'Before', '  Canceled.');
+        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       default:
-        console.log(e.inputType, 'Before', '  Unhandled.');
+      // console.log(e.inputType, 'Before', '  Unhandled.');
     }
   }
 
@@ -192,7 +192,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleInput(e) {
-    console.log(e.inputType, '   After', 'Fired:', e);
+    // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -211,10 +211,10 @@ export default class Section extends Element {
             content: this.titleDom.innerText,
           })
         );
-        console.log(e.inputType, '   After', '  Handled.');
+        // console.log(e.inputType, '   After', '  Handled.');
         break;
       default:
-        console.log(e.inputType, '   After', '  Unhandled.');
+        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

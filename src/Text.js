@@ -115,14 +115,14 @@ export default class Text extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
-    console.log(e.inputType, 'Before', 'Fired:', e);
+    // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
         if (
           e.getTargetRanges()[0].startOffset != 0 &&
           e.getTargetRanges()[0].endOffset != 0
         ) {
-          console.log(e.inputType, 'Before', '  Unhandled.');
+          // console.log(e.inputType, 'Before', '  Unhandled.');
           break;
         }
       case 'historyUndo':
@@ -160,7 +160,7 @@ export default class Text extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        console.log(e.inputType, 'Before', '  Canceled.');
+        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       case 'deleteContentBackward':
       case 'deleteContentForward':
@@ -183,7 +183,7 @@ export default class Text extends Element {
                 ps1.appendChild(...p.children);
                 p.delete();
                 focusEnd(this.previousSibling?.dom);
-                console.log(e.inputType, 'Before', '  Handled.');
+                // console.log(e.inputType, 'Before', '  Handled.');
               }
             }
           } else {
@@ -200,15 +200,15 @@ export default class Text extends Element {
                 this.parent.appendChild(...ns1.children);
                 ns1.delete();
                 this.nextSibling?.dom?.focus();
-                console.log(e.inputType, 'Before', '  Handled.');
+                // console.log(e.inputType, 'Before', '  Handled.');
               }
             }
           }
-          console.log(e.inputType, 'Before', '  Handled.');
+          // console.log(e.inputType, 'Before', '  Handled.');
         }
         break;
       default:
-        console.log(e.inputType, 'Before', '  Unhandled.');
+      // console.log(e.inputType, 'Before', '  Unhandled.');
     }
   }
 
@@ -217,7 +217,7 @@ export default class Text extends Element {
    * @returns {void}
    */
   handleInput(e) {
-    console.log(e.inputType, '   After', 'Fired:', e);
+    // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
         var [p1, p2] = this.dom.innerHTML.split('<br>');
@@ -238,7 +238,7 @@ export default class Text extends Element {
           this.parent
         );
         c[0].dom.focus();
-        console.log(e.inputType, '   After', '  Handled.');
+        // console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -256,7 +256,7 @@ export default class Text extends Element {
           } else {
             focusEnd(this.previousSibling?.dom);
           }
-          console.log(e.inputType, '   After', '  Handled.');
+          // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
       case 'formatBold': // TEST
@@ -274,10 +274,10 @@ export default class Text extends Element {
             type: e.inputType,
           })
         );
-        console.log(e.inputType, '   After', '  Handled.');
+        // console.log(e.inputType, '   After', '  Handled.');
         break;
       default:
-        console.log(e.inputType, '   After', '  Unhandled.');
+        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }
