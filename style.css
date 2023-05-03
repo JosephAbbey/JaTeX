@@ -56,7 +56,7 @@ main:has(#edit_controls)::before {
 
 #latex:modal > textarea {
   border: 1px solid #111;
-  background-color: #1112;
+  background-color: var(--textarea-background-color);
   border-radius: 0.5em 0 0 0.5em;
   padding: 0.5em;
   width: calc(100vw - 5.5em);
