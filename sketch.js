@@ -251,6 +251,265 @@ export default async function sketch() {
   addCtrlKey('e', () => showLaTeX(key, article));
   addCtrlKey('d', () => reset(key));
 
+  const webrtc = async () => {
+    const firebase_app =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js';
+    const firebase_database =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js';
+    const firebase_auth =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js';
+    const firebase_app_check =
+      'https://www.gstatic.com/firebasejs/9.17.1/firebase-app-check.js';
+    const [
+      { initializeApp },
+      {
+        getDatabase,
+        ref,
+        set,
+        get,
+        push,
+        remove,
+        onValue,
+        child,
+        onChildAdded,
+      },
+      { getAuth, signInWithPopup, GithubAuthProvider, signOut },
+      { initializeAppCheck, ReCaptchaV3Provider },
+    ] = await Promise.all([
+      import(firebase_app),
+      import(firebase_database),
+      import(firebase_auth),
+      import(firebase_app_check),
+    ]);
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyCWCjHVa3ZoA-PjK4dUCM4DtHiBEsJvP7A',
+      authDomain: 'jatex-jatex.firebaseapp.com',
+      databaseURL:
+        'https://jatex-jatex-default-rtdb.europe-west1.firebasedatabase.app',
+      projectId: 'jatex-jatex',
+      storageBucket: 'jatex-jatex.appspot.com',
+      messagingSenderId: '806439819758',
+      appId: '1:806439819758:web:bcd499625a317126ad56ff',
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    if (window.location.hostname !== 'localhost')
+      initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(
+          '6LcsQrUkAAAAABKGtSVlSHS8kAljR7LxqpNKazSh'
+        ),
+        isTokenAutoRefreshEnabled: true,
+      });
+
+    const auth = getAuth();
+    await new Promise((resolve) => auth.onAuthStateChanged(resolve));
+    if (!auth.currentUser) {
+      const provider = new GithubAuthProvider();
+      provider.setCustomParameters({
+        allow_signup: 'false',
+      });
+      await signInWithPopup(auth, provider);
+    }
+
+    const db = getDatabase(app);
+
+    /** @type {RTCConfiguration} */
+    const configuration = {
+      iceServers: [
+        {
+          urls: [
+            'stun:stun1.l.google.com:19302',
+            'stun:stun2.l.google.com:19302',
+          ],
+        },
+      ],
+      iceCandidatePoolSize: 10,
+    };
+
+    /** @type {RTCPeerConnection?} */
+    let peerConnection = null;
+    /** @type {RTCDataChannel | undefined | null} */
+    let dataChannel = null;
+    let roomRef = null;
+
+    /** */
+    async function createRoom() {
+      roomRef = push(ref(db, 'rooms'));
+
+      console.log('Create PeerConnection with configuration: ', configuration);
+      peerConnection = new RTCPeerConnection(configuration);
+
+      registerPeerConnectionListeners();
+
+      const callerCandidatesCollection = child(roomRef, 'callerCandidates');
+
+      peerConnection.addEventListener('icecandidate', (event) => {
+        if (!event.candidate) {
+          console.log('Got final candidate!');
+          return;
+        }
+        console.log('Got candidate: ', event.candidate);
+        set(push(callerCandidatesCollection), event.candidate.toJSON());
+      });
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      console.log('Created offer:', offer);
+
+      const roomWithOffer = {
+        offer: {
+          type: offer.type,
+          sdp: offer.sdp,
+        },
+      };
+      await set(roomRef, roomWithOffer);
+      console.log(`New room created with SDP offer. Room ID:`, roomRef.key);
+
+      onValue(roomRef, async (snapshot) => {
+        const data = snapshot.val();
+        if (!peerConnection?.currentRemoteDescription && data && data.answer) {
+          console.log('Got remote description:', data.answer);
+          const rtcSessionDescription = new RTCSessionDescription(data.answer);
+          await peerConnection?.setRemoteDescription(rtcSessionDescription);
+        }
+      });
+
+      onChildAdded(callerCandidatesCollection, async (change) => {
+        let data = change.val();
+        console.log('Got new remote ICE candidate:', data);
+        await peerConnection?.addIceCandidate(new RTCIceCandidate(data));
+      });
+
+      dataChannel = peerConnection.createDataChannel('edits');
+
+      dataChannel.addEventListener('open', (event) => {
+        console.log('open', event);
+      });
+
+      dataChannel.addEventListener('close', (event) => {
+        console.log('close', event);
+      });
+    }
+
+    /** */
+    async function joinRoomById(roomId) {
+      roomRef = ref(db, `rooms/${roomId}`);
+      const roomSnapshot = await get(roomRef);
+      console.log('Got room:', roomSnapshot.exists());
+
+      if (roomSnapshot.exists()) {
+        console.log('Create PeerConnection with configuration:', configuration);
+        peerConnection = new RTCPeerConnection(configuration);
+
+        registerPeerConnectionListeners();
+
+        // Code for collecting ICE candidates below
+        const calleeCandidatesCollection = child(roomRef, 'calleeCandidates');
+        peerConnection.addEventListener('icecandidate', (event) => {
+          if (!event.candidate) {
+            console.log('Got final candidate!');
+            return;
+          }
+          console.log('Got candidate: ', event.candidate);
+          set(push(calleeCandidatesCollection), event.candidate.toJSON());
+        });
+        // Code for collecting ICE candidates above
+
+        // Code for creating SDP answer below
+        const offer = roomSnapshot.val().offer;
+        console.log('Got offer:', offer);
+        await peerConnection.setRemoteDescription(
+          new RTCSessionDescription(offer)
+        );
+        const answer = await peerConnection.createAnswer();
+        console.log('Created answer:', answer);
+        await peerConnection.setLocalDescription(answer);
+
+        const roomWithAnswer = {
+          answer: {
+            type: answer.type,
+            sdp: answer.sdp,
+          },
+        };
+        await set(roomRef, roomWithAnswer);
+
+        onChildAdded(child(roomRef, 'callerCandidates'), async (change) => {
+          let data = change.val();
+          console.log('Got new remote ICE candidate:', data);
+          await peerConnection?.addIceCandidate(new RTCIceCandidate(data));
+        });
+
+        peerConnection.addEventListener('datachannel', (event) => {
+          dataChannel = event.channel;
+        });
+      }
+    }
+
+    /** */
+    async function hangUp() {
+      if (dataChannel) {
+        dataChannel.close();
+      }
+      if (peerConnection) {
+        peerConnection.close();
+      }
+
+      // Delete room on hangup
+      if (roomRef) {
+        const calleeCandidates = await get(child(roomRef, 'calleeCandidates'));
+        calleeCandidates.forEach(async (candidate) => {
+          console.log(candidate);
+          await remove(candidate);
+        });
+        const callerCandidates = await get(child(roomRef, 'callerCandidates'));
+        callerCandidates.forEach(async (candidate) => {
+          console.log(candidate);
+          await remove(candidate);
+        });
+        await remove(roomRef);
+      }
+    }
+
+    /** */
+    function registerPeerConnectionListeners() {
+      peerConnection?.addEventListener('icegatheringstatechange', () => {
+        console.log(
+          `ICE gathering state changed: ${peerConnection?.iceGatheringState}`
+        );
+      });
+
+      peerConnection?.addEventListener('connectionstatechange', () => {
+        console.log(
+          `Connection state change: ${peerConnection?.connectionState}`
+        );
+      });
+
+      peerConnection?.addEventListener('signalingstatechange', () => {
+        console.log(
+          `Signaling state change: ${peerConnection?.signalingState}`
+        );
+      });
+
+      peerConnection?.addEventListener('iceconnectionstatechange ', () => {
+        console.log(
+          `ICE connection state change: ${peerConnection?.iceConnectionState}`
+        );
+      });
+    }
+
+    window.addEventListener('unload', hangUp);
+
+    window.rtc = {
+      createRoom,
+      joinRoomById,
+      hangUp,
+      dataChannel: () => dataChannel,
+    };
+  };
+  webrtc();
+
   const d = ({ data: { key: article } }) => article == key && recent();
   const e = ({ data: { key: article } }) => article == key && reload();
 
