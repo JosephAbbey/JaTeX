@@ -6,6 +6,25 @@ export const store = new Bucket(
   }
 );
 
+if (localStorage.has('style'))
+  applyStyle(JSON.parse(localStorage.getItem('styles') ?? ''));
+
+/**
+ * @param {{ [x: string]: string; }} style
+ */
+export function applyStyle(style) {
+  const root = document.querySelector('html');
+  for (let prop in style) root?.style.setProperty('--' + prop, style[prop]);
+}
+
+/**
+ * @param {{ [x: string]: string; }} style
+ */
+export function setStyle(style) {
+  localStorage.setItem('styles', JSON.stringify(style));
+  applyStyle(style);
+}
+
 // store.addEventListener('create', console.log);
 // store.addEventListener('delete', console.log);
 // store.addEventListener('edit', console.log);
