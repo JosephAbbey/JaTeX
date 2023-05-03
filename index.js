@@ -6,7 +6,7 @@ export const store = new Bucket(
   }
 );
 
-if (localStorage.has('style'))
+if (localStorage.getItem('style'))
   applyStyle(JSON.parse(localStorage.getItem('styles') ?? ''));
 
 /**
