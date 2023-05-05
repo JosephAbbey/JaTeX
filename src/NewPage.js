@@ -42,7 +42,7 @@ export default class NewPage extends Element {
     this._dom.dataset.type = this.constructor.type;
   }
   createDom() {
-    this._dom = document.createElement('div');
+    this._dom = document.createElement('hr');
     this.updateDom();
     return this._dom;
   }

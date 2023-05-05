@@ -327,10 +327,10 @@ export default class Text extends Element {
 Text.register();
 
 /**
- * Opens the article.
+ * Focuses the end of a text input.
  * @param {HTMLElement & ElementContentEditable=} node
  */
-function focusEnd(node) {
+export function focusEnd(node) {
   if (!node) return;
   node.focus();
   const sel = document.getSelection();

@@ -389,6 +389,30 @@ export default class Element {
   }
   /**
    * @author Joseph Abbey
+   * @date 05/05/2023
+   * @param {Element} c
+   * @param {Element} o - Other element.
+   * @returns {void}
+   *
+   * @description Function to add a child element to the element before another element.
+   */
+  insertChildBefore(c, o) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
+    const index = this.children.findIndex((e) => e.id == o.id);
+    if (index > -1) this.children.splice(index, 0, c);
+    c.parent = this;
+    c.article = this.article;
+    this.updateDom();
+    this.dispatchEvent(
+      new ElementEvent('insertChildBefore', this, {
+        child: c,
+        other: o,
+      })
+    );
+  }
+  /**
+   * @author Joseph Abbey
    * @date 05/02/2023
    * @param {Element} c
    * @returns {void}
