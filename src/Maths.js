@@ -10,7 +10,7 @@ import Element, { ElementError, ElementEvent } from './Element.js';
 
 export class MathsError extends ElementError {}
 
-/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | UnaryMinus | Fraction | Power , "edit" | "editNumber">} */
+/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | Minus | Fraction | Power , "edit" | "editNumber">} */
 export class MathsEvent extends ElementEvent {}
 
 /**
@@ -289,7 +289,25 @@ export class Number extends Element {
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertText':
-        if (e.data)
+        if (e.data == '=') {
+          let v = new Equals({
+            id: Element.uuid(),
+          });
+          if (this._position == 0) this.parent?.insertChildBefore(v, this);
+          else this.parent?.insertChildAfter(v, this);
+          v.focus(-1);
+          e.preventDefault();
+          break;
+        } else if (e.data == '-') {
+          let v = new Minus({
+            id: Element.uuid(),
+          });
+          if (this._position == 0) this.parent?.insertChildBefore(v, this);
+          else this.parent?.insertChildAfter(v, this);
+          v.focus(-1);
+          e.preventDefault();
+          break;
+        } else if (e.data) {
           if (e.data.toLowerCase() != e.data.toUpperCase()) {
             let v = new Variable({
               id: Element.uuid(),
@@ -300,14 +318,11 @@ export class Number extends Element {
             v.focus(-1);
             e.preventDefault();
             break;
+          } else if (
+            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+          ) {
+            e.preventDefault();
           }
-        if (
-          !(
-            e.data &&
-            e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
-          )
-        ) {
-          e.preventDefault();
         }
         // console.log(e.inputType, '   After', '  Handled.');
         break;
@@ -586,8 +601,26 @@ export class Variable extends Element {
     switch (e.inputType) {
       case 'insertText':
         e.preventDefault();
-        if (e.data)
-          if (e.data.toLowerCase() != e.data.toUpperCase()) {
+        if (e.data) {
+          if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
             let v = new Variable({
               id: Element.uuid(),
               var: e.data,
@@ -595,34 +628,33 @@ export class Variable extends Element {
             if (this._position == 0) this.parent?.insertChildBefore(v, this);
             else this.parent?.insertChildAfter(v, this);
             v.focus(-1);
-          } else {
-            try {
-              let num = parseInt(e.data);
-              if (
-                this._position == 0 &&
-                this.previousSibling instanceof Number
-              ) {
-                console.log(this.previousSibling);
-                this.previousSibling.text += e.data;
-                this.previousSibling.focus(-1);
-              } else if (
-                this._position == 1 &&
-                this.nextSibling instanceof Number
-              ) {
-                this.nextSibling.text = e.data + this.nextSibling.text;
-                this.nextSibling.focus(1);
-              } else {
-                let v = new Number({
-                  id: Element.uuid(),
-                  num,
-                });
-                if (this._position == 0)
-                  this.parent?.insertChildBefore(v, this);
-                else this.parent?.insertChildAfter(v, this);
-                v.focus(-1);
-              }
-            } catch {}
+            e.preventDefault();
+            break;
+          } else if (
+            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+          ) {
+            if (this._position == 0 && this.previousSibling instanceof Number) {
+              console.log(this.previousSibling);
+              this.previousSibling.text += e.data;
+              this.previousSibling.focus(-1);
+            } else if (
+              this._position == 1 &&
+              this.nextSibling instanceof Number
+            ) {
+              this.nextSibling.text = e.data + this.nextSibling.text;
+              this.nextSibling.focus(1);
+            } else {
+              let v = new Number({
+                id: Element.uuid(),
+                num: parseFloat(e.data),
+              });
+              if (this._position == 0) this.parent?.insertChildBefore(v, this);
+              else this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+            }
+            e.preventDefault();
           }
+        }
         // console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'insertParagraph':
@@ -1093,7 +1125,7 @@ CDot.register();
  * @constructor
  * @extends {Element}
  *
- * @description An element representing a c-dot in a LaTeX maths environment.
+ * @description An element representing a equals in a LaTeX maths environment.
  */
 export class Equals extends Element {
   static type = 'Equals';
@@ -1117,12 +1149,208 @@ export class Equals extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.innerText = ' = ';
+    this._dom.innerText = '=';
+    // can't use spaces due to text editing
+    this._dom.style.marginInline = '0.25em';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      this._position = window.getSelection()?.getRangeAt(0).startOffset;
+      if (e.key == 'ArrowLeft') {
+        if (this._position == 0) this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (this._position == 1) this.nextSibling?.focus();
+      }
+    });
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
     return this._dom;
+  }
+
+  /**
+   * @private
+   * @type {number | undefined}
+   */
+  _position;
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        e.preventDefault();
+        if (e.data) {
+          if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (
+            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+          ) {
+            if (this._position == 0 && this.previousSibling instanceof Number) {
+              console.log(this.previousSibling);
+              this.previousSibling.text += e.data;
+              this.previousSibling.focus(-1);
+            } else if (
+              this._position == 1 &&
+              this.nextSibling instanceof Number
+            ) {
+              this.nextSibling.text = e.data + this.nextSibling.text;
+              this.nextSibling.focus(1);
+            } else {
+              let v = new Number({
+                id: Element.uuid(),
+                num: parseFloat(e.data),
+              });
+              if (this._position == 0) this.parent?.insertChildBefore(v, this);
+              else this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+            }
+            e.preventDefault();
+          }
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+        e.preventDefault();
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps) {
+              ps.delete();
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns) {
+              ns.delete();
+            }
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          this.delete();
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
   }
 
   get tex() {
@@ -1136,21 +1364,12 @@ Equals.register();
  * @author Joseph Abbey
  * @date 12/02/2023
  * @constructor
- * @extends {Element}
+ * @extends {Equals}
  *
- * @description An element representing a c-dot in a LaTeX maths environment.
+ * @description An element representing a approx equals in a LaTeX maths environment.
  */
-export class Approx extends Element {
+export class Approx extends Equals {
   static type = 'Approx';
-
-  /**
-   * @author Joseph Abbey
-   * @date 12/02/2023
-   * @param {ElementOptions} options - A configuration object.
-   */
-  constructor(options) {
-    super(options);
-  }
 
   updateDom() {
     if (!this._dom)
@@ -1162,12 +1381,15 @@ export class Approx extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.innerText = ' ≈ ';
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    return this._dom;
+    this._dom.innerText = '≈';
+    // can't use spaces due to text editing
+    this._dom.style.marginInline = '0.25em';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
 
   get tex() {
@@ -1179,18 +1401,18 @@ Approx.register();
 
 /**
  * @author Joseph Abbey
- * @date 02/02/2023
+ * @date 07/05/2023
  * @constructor
  * @extends {Element}
  *
- * @description An element representing a unary minus in a LaTeX maths environment.
+ * @description An element representing a minus in a LaTeX maths environment.
  */
-export class UnaryMinus extends Element {
-  static type = 'UnaryMinus';
+export class Minus extends Element {
+  static type = 'Minus';
 
   /**
    * @author Joseph Abbey
-   * @date 02/02/2023
+   * @date 07/05/2023
    * @param {ElementOptions} options - A configuration object.
    */
   constructor(options) {
@@ -1207,20 +1429,214 @@ export class UnaryMinus extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.append(document.createTextNode('-'), ...this.cdom);
+    this._dom.innerText = '-';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      this._position = window.getSelection()?.getRangeAt(0).startOffset;
+      if (e.key == 'ArrowLeft') {
+        if (this._position == 0) this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (this._position == 1) this.nextSibling?.focus();
+      }
+    });
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
     return this._dom;
   }
 
+  /**
+   * @private
+   * @type {number | undefined}
+   */
+  _position;
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        e.preventDefault();
+        if (e.data) {
+          if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (
+            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+          ) {
+            if (this._position == 0 && this.previousSibling instanceof Number) {
+              console.log(this.previousSibling);
+              this.previousSibling.text += e.data;
+              this.previousSibling.focus(-1);
+            } else if (
+              this._position == 1 &&
+              this.nextSibling instanceof Number
+            ) {
+              this.nextSibling.text = e.data + this.nextSibling.text;
+              this.nextSibling.focus(1);
+            } else {
+              let v = new Number({
+                id: Element.uuid(),
+                num: parseFloat(e.data),
+              });
+              if (this._position == 0) this.parent?.insertChildBefore(v, this);
+              else this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+            }
+            e.preventDefault();
+          }
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+        e.preventDefault();
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps) {
+              ps.delete();
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns) {
+              ns.delete();
+            }
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          this.delete();
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
+  }
+
   get tex() {
-    return '-' + this.ctex;
+    return ' - ';
   }
 }
 
-UnaryMinus.register();
+Minus.register();
 
 /**
  * @typedef FractionOptions

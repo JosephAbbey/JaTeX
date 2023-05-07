@@ -64,7 +64,7 @@ export {
   InlineMaths,
   MathsError,
   MathsEvent,
-  UnaryMinus,
+  Minus,
   Variable,
   Vector,
   Approx,

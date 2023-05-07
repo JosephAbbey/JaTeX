@@ -1,0 +1,66 @@
+{
+  "folders": [{ "path": ".", "name": "JaTeX" }],
+  "extensions": {
+    "recommendations": [
+      "streetsidesoftware.code-spell-checker",
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript"
+    ]
+  },
+  "settings": {
+    "js/ts.implicitProjectConfig.checkJs": true,
+    "workbench.colorCustomizations": {
+      "activityBar.background": "#053336",
+      "titleBar.activeBackground": "#07474B",
+      "titleBar.activeForeground": "#EEFCFD"
+    },
+    "cSpell.words": [
+      "amsmath",
+      "amssymb",
+      "amsthm",
+      "Aniket",
+      "appspot",
+      "beforeinput",
+      "beforeinstallprompt",
+      "booktabs",
+      "cdom",
+      "Chauhan",
+      "contenteditable",
+      "counterclockwise",
+      "ctex",
+      "ddom",
+      "Deserialisable",
+      "deserialises",
+      "desmos",
+      "documentclass",
+      "dtex",
+      "esbuild",
+      "firebaseapp",
+      "frak",
+      "graphicx",
+      "jatex",
+      "lamda",
+      "maketitle",
+      "mathbb",
+      "mathbf",
+      "mathcal",
+      "mathfrak",
+      "mathit",
+      "mathnormal",
+      "mathrm",
+      "mathsf",
+      "mathtt",
+      "ndom",
+      "newpage",
+      "ntex",
+      "outfile",
+      "pagenumbering",
+      "precache",
+      "textbf",
+      "textit",
+      "textnormal",
+      "usepackage"
+    ]
+  }
+}
