@@ -3,7 +3,6 @@
  */
 
 import Element, { ElementError, ElementEvent } from './Element.js';
-import { focusEnd } from './Text.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
@@ -11,7 +10,7 @@ import { focusEnd } from './Text.js';
 
 export class MathsError extends ElementError {}
 
-/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | UnaryMinus | Fraction | Power , "edit">} */
+/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | UnaryMinus | Fraction | Power , "edit" | "editNumber">} */
 export class MathsEvent extends ElementEvent {}
 
 /**
@@ -236,7 +235,8 @@ export class Number extends Element {
     super(options);
 
     if (!options.num) throw new MathsError('A number must be provided.');
-    this.num = options.num;
+    this._num = options.num;
+    this._text = options.num.toString();
   }
 
   updateDom() {
@@ -249,12 +249,207 @@ export class Number extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.innerText = this.num.toString();
+    this._dom.innerText = this.text;
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      this._position = window.getSelection()?.getRangeAt(0).startOffset;
+      if (e.key == 'ArrowLeft') {
+        if (this._position == 0) this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (this._position == this._text.length) this.nextSibling?.focus();
+      }
+    });
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
     return this._dom;
+  }
+
+  /**
+   * @private
+   * @type {number | undefined}
+   */
+  _position;
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        if (e.data)
+          if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          }
+        if (
+          !(
+            e.data &&
+            e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
+          )
+        ) {
+          e.preventDefault();
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps) {
+              ps.delete();
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns) {
+              ns.delete();
+            }
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          this.delete();
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+        // don't need to update the dom
+        this._num = parseFloat(this.dom.innerText);
+        this._text = this.dom.innerText;
+        break;
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      case 'insertText':
+        // don't need to update the dom
+        this._num = parseFloat(this.dom.innerText);
+        this._text = this.dom.innerText;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 06/05/2023
+   * @type {string}
+   */
+  _text;
+  /**
+   * @author Joseph Abbey
+   * @date 06/05/2023
+   * @type {string}
+   */
+  get text() {
+    return this._text;
+  }
+  set text(s) {
+    if (this.article?.readonly) throw new MathsError('Article is readonly.');
+
+    this._num = parseFloat(s);
+    this._text = s;
+
+    this.updateDom();
+
+    this.dispatchEvent(
+      new MathsEvent('editNumber', this, {
+        content: this.num,
+      })
+    );
   }
 
   /**
@@ -262,7 +457,29 @@ export class Number extends Element {
    * @date 12/02/2023
    * @type {number}
    */
-  num;
+  _num;
+  /**
+   * @author Joseph Abbey
+   * @date 06/05/2023
+   * @type {number}
+   */
+  get num() {
+    return this._num;
+  }
+  set num(s) {
+    if (this.article?.readonly) throw new MathsError('Article is readonly.');
+
+    this._num = s;
+    this._text = s.toString();
+
+    this.updateDom();
+
+    this.dispatchEvent(
+      new MathsEvent('editNumber', this, {
+        content: this.num,
+      })
+    );
+  }
 
   get tex() {
     return this.num.toString();
@@ -339,10 +556,14 @@ export class Variable extends Element {
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
-    this._dom.addEventListener(
-      'keydown',
-      (e) => (this._position = window.getSelection()?.getRangeAt(0).startOffset)
-    );
+    this._dom.addEventListener('keydown', (e) => {
+      this._position = window.getSelection()?.getRangeAt(0).startOffset;
+      if (e.key == 'ArrowLeft') {
+        if (this._position == 0) this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (this._position == 1) this.nextSibling?.focus();
+      }
+    });
     this._dom.addEventListener(
       'beforeinput',
       this.handleBeforeInput.bind(this)
@@ -365,15 +586,43 @@ export class Variable extends Element {
     switch (e.inputType) {
       case 'insertText':
         e.preventDefault();
-        if (e.data && e.data.toLowerCase() != e.data.toUpperCase()) {
-          let v = new Variable({
-            id: Element.uuid(),
-            var: e.data,
-          });
-          if (this._position == 0) this.parent?.insertChildBefore(v, this);
-          else this.parent?.insertChildAfter(v, this);
-          focusEnd(v.dom);
-        }
+        if (e.data)
+          if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+          } else {
+            try {
+              let num = parseInt(e.data);
+              if (
+                this._position == 0 &&
+                this.previousSibling instanceof Number
+              ) {
+                console.log(this.previousSibling);
+                this.previousSibling.text += e.data;
+                this.previousSibling.focus(-1);
+              } else if (
+                this._position == 1 &&
+                this.nextSibling instanceof Number
+              ) {
+                this.nextSibling.text = e.data + this.nextSibling.text;
+                this.nextSibling.focus(1);
+              } else {
+                let v = new Number({
+                  id: Element.uuid(),
+                  num,
+                });
+                if (this._position == 0)
+                  this.parent?.insertChildBefore(v, this);
+                else this.parent?.insertChildAfter(v, this);
+                v.focus(-1);
+              }
+            } catch {}
+          }
         // console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'insertParagraph':
@@ -394,9 +643,9 @@ export class Variable extends Element {
       case 'deleteHardLineBackward':
       case 'deleteHardLineForward':
       case 'deleteByDrag':
-      // TEST: case 'formatBold':
-      // TEST: case 'formatItalic':
-      // TEST: case 'formatUnderline':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
       case 'formatStrikeThrough':
       case 'formatSuperscript':
       case 'formatSubscript':
@@ -459,9 +708,9 @@ export class Variable extends Element {
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
           ) {
-            this.nextSibling?.dom.focus();
+            this.nextSibling?.focus();
           } else {
-            focusEnd(this.previousSibling?.dom);
+            this.previousSibling?.focus(-1);
           }
           // console.log(e.inputType, '   After', '  Handled.');
           break;
@@ -498,9 +747,7 @@ export class Variable extends Element {
   set var(s) {
     if (this.article?.readonly) throw new MathsError('Article is readonly.');
 
-    this._text = s;
-    // Update the dom.
-    if (this._dom) this._dom.innerText = s;
+    this.updateDom();
     if (this.var == '') this.delete();
     else
       this.dispatchEvent(

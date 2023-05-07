@@ -11,10 +11,12 @@ import {
 } from './index.js';
 import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
 
-/***/
+/**
+ * @param {BeforeUnloadEvent | undefined} e
+ */
 function beforeunload(e) {
   e = e || window.event;
-  e.preventDefault();
+  e?.preventDefault();
 
   // For IE and Firefox prior to version 4
   if (e) {
@@ -260,5 +262,8 @@ export default async function sketch() {
   return () => {
     store.removeEventListener('delete', d);
     store.removeEventListener('edit', e);
+    try {
+      window.removeEventListener('beforeunload', beforeunload);
+    } catch {}
   };
 }

@@ -172,17 +172,17 @@ export default class Text extends Element {
             var ps = this.previousSibling;
             if (ps instanceof Text) {
               ps.text = ps.text.substring(0, ps.text.length - 1);
-              focusEnd(this.previousSibling?.dom);
+              this.previousSibling?.focus(-1);
             } else if (ps) {
               ps.delete();
-              focusEnd(this.previousSibling?.dom);
+              this.previousSibling?.focus(-1);
             } else if (this.parent instanceof Paragraph) {
               var ps1 = this.parent.previousSibling;
               if (ps1 instanceof Paragraph) {
                 var p = this.parent;
                 ps1.appendChild(...p.children);
                 p.delete();
-                focusEnd(this.previousSibling?.dom);
+                this.previousSibling?.focus(-1);
                 // console.log(e.inputType, 'Before', '  Handled.');
               }
             }
@@ -237,7 +237,7 @@ export default class Text extends Element {
           }),
           this.parent
         );
-        c[0].dom.focus();
+        c[0].focus();
         // console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'deleteWordBackward':
@@ -252,9 +252,9 @@ export default class Text extends Element {
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
           ) {
-            this.nextSibling?.dom.focus();
+            this.nextSibling?.focus();
           } else {
-            focusEnd(this.previousSibling?.dom);
+            this.previousSibling?.focus(-1);
           }
           // console.log(e.inputType, '   After', '  Handled.');
           break;
@@ -325,23 +325,3 @@ export default class Text extends Element {
 }
 
 Text.register();
-
-/**
- * Focuses the end of a text input.
- * @param {HTMLElement & ElementContentEditable=} node
- */
-export function focusEnd(node) {
-  if (!node) return;
-  node.focus();
-  const sel = document.getSelection();
-  if (!sel) return;
-  //@ts-expect-error
-  node = node.firstChild;
-
-  if (sel.rangeCount) {
-    //@ts-expect-error
-    sel.getRangeAt(0)['setStart'](node, node.length);
-    //@ts-expect-error
-    sel.getRangeAt(0)['setEnd'](node, node.length);
-  }
-}

@@ -569,6 +569,29 @@ export default class Element {
   }
 
   /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    this.dom.focus();
+    if (position != 0) {
+      const sel = document.getSelection();
+      if (!sel) return;
+      const node = this.dom.firstChild;
+
+      if (node && sel.rangeCount && node instanceof Text) {
+        if (position < 0) position += node.length + 1;
+        sel.getRangeAt(0).setStart(node, position);
+        sel.getRangeAt(0).setEnd(node, position);
+      }
+    }
+  }
+
+  /**
    * @author Joseph Abbey
    * @date 04/02/2023
    * @type {Object<string,Array<ElementEventListener>>}
