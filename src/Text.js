@@ -107,7 +107,9 @@ export default class Text extends Element {
         if (window.getSelection()?.getRangeAt(0).startOffset == 0)
           this.previousSibling?.focus(-1);
       } else if (e.key == 'ArrowRight') {
-        if (window.getSelection()?.getRangeAt(0).startOffset == 1)
+        if (
+          window.getSelection()?.getRangeAt(0).startOffset == this._text.length
+        )
           this.nextSibling?.focus();
       }
     });

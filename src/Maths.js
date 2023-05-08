@@ -1527,6 +1527,21 @@ export class Power extends Element {
   get tex() {
     return `^{${this.ctex}}`;
   }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (position == -1)
+      return this.children[this.children.length - 1].focus(-1);
+
+    this.children[0].focus(position);
+  }
 }
 
 Power.register();
