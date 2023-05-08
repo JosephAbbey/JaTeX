@@ -192,6 +192,206 @@ export class InlineMaths extends Element {
 InlineMaths.register();
 
 /**
+ * @constructor
+ * @extends {Element}
+ */
+export class SingleCharEditableElement extends Element {
+  createDom() {
+    this._dom = document.createElement('span');
+    this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      this._position = window.getSelection()?.getRangeAt(0).startOffset;
+      if (e.key == 'ArrowLeft') {
+        if (this._position == 0) this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (this._position == 1) this.nextSibling?.focus();
+      }
+    });
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
+    return this._dom;
+  }
+
+  /**
+   * @protected
+   * @type {number | undefined}
+   */
+  _position;
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        e.preventDefault();
+        if (e.data) {
+          if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (
+            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+          ) {
+            if (this._position == 0 && this.previousSibling instanceof Number) {
+              console.log(this.previousSibling);
+              this.previousSibling.text += e.data;
+              this.previousSibling.focus(-1);
+            } else if (
+              this._position == 1 &&
+              this.nextSibling instanceof Number
+            ) {
+              this.nextSibling.text = e.data + this.nextSibling.text;
+              this.nextSibling.focus(1);
+            } else {
+              let v = new Number({
+                id: Element.uuid(),
+                num: parseFloat(e.data),
+              });
+              if (this._position == 0) this.parent?.insertChildBefore(v, this);
+              else this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+            }
+            e.preventDefault();
+          }
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+        e.preventDefault();
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps) {
+              ps.delete();
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns) {
+              ns.delete();
+            }
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          this.delete();
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
+  }
+}
+
+/**
  * @typedef NumberOptions
  * @prop {number} num
  */
@@ -517,11 +717,11 @@ Number.register();
  * @author Joseph Abbey
  * @date 02/02/2023
  * @constructor
- * @extends {Element}
+ * @extends {SingleCharEditableElement}
  *
  * @description An element representing a variable in a LaTeX maths environment.
  */
-export class Variable extends Element {
+export class Variable extends SingleCharEditableElement {
   static type = 'Variable';
 
   /**
@@ -566,199 +766,6 @@ export class Variable extends Element {
       this._dom.contentEditable = 'true';
     } else {
       this._dom.contentEditable = 'false';
-    }
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    this._dom.addEventListener('keydown', (e) => {
-      this._position = window.getSelection()?.getRangeAt(0).startOffset;
-      if (e.key == 'ArrowLeft') {
-        if (this._position == 0) this.previousSibling?.focus(-1);
-      } else if (e.key == 'ArrowRight') {
-        if (this._position == 1) this.nextSibling?.focus();
-      }
-    });
-    this._dom.addEventListener(
-      'beforeinput',
-      this.handleBeforeInput.bind(this)
-    );
-    this._dom.addEventListener('input', this.handleInput.bind(this));
-    return this._dom;
-  }
-
-  /**
-   * @private
-   * @type {number | undefined}
-   */
-  _position;
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleBeforeInput(e) {
-    // console.log(e.inputType, 'Before', 'Fired:', e);
-    switch (e.inputType) {
-      case 'insertText':
-        e.preventDefault();
-        if (e.data) {
-          if (e.data == '=') {
-            let v = new Equals({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data == '-') {
-            let v = new Minus({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
-            let v = new Variable({
-              id: Element.uuid(),
-              var: e.data,
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (
-            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
-          ) {
-            if (this._position == 0 && this.previousSibling instanceof Number) {
-              console.log(this.previousSibling);
-              this.previousSibling.text += e.data;
-              this.previousSibling.focus(-1);
-            } else if (
-              this._position == 1 &&
-              this.nextSibling instanceof Number
-            ) {
-              this.nextSibling.text = e.data + this.nextSibling.text;
-              this.nextSibling.focus(1);
-            } else {
-              let v = new Number({
-                id: Element.uuid(),
-                num: parseFloat(e.data),
-              });
-              if (this._position == 0) this.parent?.insertChildBefore(v, this);
-              else this.parent?.insertChildAfter(v, this);
-              v.focus(-1);
-            }
-            e.preventDefault();
-          }
-        }
-        // console.log(e.inputType, '   After', '  Handled.');
-        break;
-      case 'insertParagraph':
-        e.preventDefault();
-      case 'historyUndo':
-      case 'historyRedo':
-      case 'insertLineBreak':
-      case 'insertOrderedList':
-      case 'insertUnorderedList':
-      case 'insertHorizontalRule':
-      case 'insertFromYank':
-      case 'insertFromDrop':
-      case 'insertFromPasteAsQuotation':
-      case 'insertLink':
-      case 'deleteSoftLineBackward':
-      case 'deleteSoftLineForward':
-      case 'deleteEntireSoftLine':
-      case 'deleteHardLineBackward':
-      case 'deleteHardLineForward':
-      case 'deleteByDrag':
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'formatStrikeThrough':
-      case 'formatSuperscript':
-      case 'formatSubscript':
-      case 'formatJustifyFull':
-      case 'formatJustifyCenter':
-      case 'formatJustifyRight':
-      case 'formatJustifyLeft':
-      case 'formatIndent':
-      case 'formatOutdent':
-      case 'formatRemove':
-      case 'formatSetBlockTextDirection':
-      case 'formatSetInlineTextDirection':
-      case 'formatBackColor':
-      case 'formatFontColor':
-      case 'formatFontName':
-        e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
-        break;
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (
-          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
-        ) {
-          e.preventDefault();
-          if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
-          } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
-          }
-          // console.log(e.inputType, 'Before', '  Handled.');
-        }
-        break;
-      default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
-    }
-  }
-
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleInput(e) {
-    // console.log(e.inputType, '   After', 'Fired:', e);
-    switch (e.inputType) {
-      case 'deleteWordBackward':
-      case 'deleteWordForward':
-      case 'deleteByCut':
-      case 'deleteContent':
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (this.dom.innerText == '') {
-          this.delete();
-          if (
-            e.inputType == 'deleteContentForward' ||
-            e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
-          // console.log(e.inputType, '   After', '  Handled.');
-          break;
-        }
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'insertReplacementText':
-      case 'insertFromPaste':
-      case 'insertTranspose':
-      case 'insertCompositionText':
-        e.preventDefault();
-        break;
-      default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
-        break;
     }
   }
 
@@ -1033,11 +1040,11 @@ Function.register();
  * @author Joseph Abbey
  * @date 02/02/2023
  * @constructor
- * @extends {Element}
+ * @extends {SingleCharEditableElement}
  *
  * @description An element representing a comma in a LaTeX maths environment.
  */
-export class Comma extends Element {
+export class Comma extends SingleCharEditableElement {
   static type = 'Comma';
 
   /**
@@ -1059,12 +1066,15 @@ export class Comma extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.innerText = ', ';
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    return this._dom;
+    this._dom.innerText = ',';
+    // can't use spaces due to text editing
+    this._dom.style.marginInlineEnd = '0.25em';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
 
   get tex() {
@@ -1078,11 +1088,11 @@ Comma.register();
  * @author Joseph Abbey
  * @date 12/02/2023
  * @constructor
- * @extends {Element}
+ * @extends {SingleCharEditableElement}
  *
  * @description An element representing a c-dot in a LaTeX maths environment.
  */
-export class CDot extends Element {
+export class CDot extends SingleCharEditableElement {
   static type = 'CDot';
 
   /**
@@ -1104,12 +1114,15 @@ export class CDot extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     this._dom.style.fontFamily = 'math';
-    this._dom.innerText = ' ● ';
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    return this._dom;
+    this._dom.innerText = '●';
+    // can't use spaces due to text editing
+    this._dom.style.marginInline = '0.25em';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
   }
 
   get tex() {
@@ -1123,11 +1136,11 @@ CDot.register();
  * @author Joseph Abbey
  * @date 12/02/2023
  * @constructor
- * @extends {Element}
+ * @extends {SingleCharEditableElement}
  *
  * @description An element representing a equals in a LaTeX maths environment.
  */
-export class Equals extends Element {
+export class Equals extends SingleCharEditableElement {
   static type = 'Equals';
 
   /**
@@ -1157,199 +1170,6 @@ export class Equals extends Element {
       this._dom.contentEditable = 'true';
     } else {
       this._dom.contentEditable = 'false';
-    }
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    this._dom.addEventListener('keydown', (e) => {
-      this._position = window.getSelection()?.getRangeAt(0).startOffset;
-      if (e.key == 'ArrowLeft') {
-        if (this._position == 0) this.previousSibling?.focus(-1);
-      } else if (e.key == 'ArrowRight') {
-        if (this._position == 1) this.nextSibling?.focus();
-      }
-    });
-    this._dom.addEventListener(
-      'beforeinput',
-      this.handleBeforeInput.bind(this)
-    );
-    this._dom.addEventListener('input', this.handleInput.bind(this));
-    return this._dom;
-  }
-
-  /**
-   * @private
-   * @type {number | undefined}
-   */
-  _position;
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleBeforeInput(e) {
-    // console.log(e.inputType, 'Before', 'Fired:', e);
-    switch (e.inputType) {
-      case 'insertText':
-        e.preventDefault();
-        if (e.data) {
-          if (e.data == '=') {
-            let v = new Equals({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data == '-') {
-            let v = new Minus({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
-            let v = new Variable({
-              id: Element.uuid(),
-              var: e.data,
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (
-            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
-          ) {
-            if (this._position == 0 && this.previousSibling instanceof Number) {
-              console.log(this.previousSibling);
-              this.previousSibling.text += e.data;
-              this.previousSibling.focus(-1);
-            } else if (
-              this._position == 1 &&
-              this.nextSibling instanceof Number
-            ) {
-              this.nextSibling.text = e.data + this.nextSibling.text;
-              this.nextSibling.focus(1);
-            } else {
-              let v = new Number({
-                id: Element.uuid(),
-                num: parseFloat(e.data),
-              });
-              if (this._position == 0) this.parent?.insertChildBefore(v, this);
-              else this.parent?.insertChildAfter(v, this);
-              v.focus(-1);
-            }
-            e.preventDefault();
-          }
-        }
-        // console.log(e.inputType, '   After', '  Handled.');
-        break;
-      case 'insertParagraph':
-        e.preventDefault();
-      case 'historyUndo':
-      case 'historyRedo':
-      case 'insertLineBreak':
-      case 'insertOrderedList':
-      case 'insertUnorderedList':
-      case 'insertHorizontalRule':
-      case 'insertFromYank':
-      case 'insertFromDrop':
-      case 'insertFromPasteAsQuotation':
-      case 'insertLink':
-      case 'deleteSoftLineBackward':
-      case 'deleteSoftLineForward':
-      case 'deleteEntireSoftLine':
-      case 'deleteHardLineBackward':
-      case 'deleteHardLineForward':
-      case 'deleteByDrag':
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'formatStrikeThrough':
-      case 'formatSuperscript':
-      case 'formatSubscript':
-      case 'formatJustifyFull':
-      case 'formatJustifyCenter':
-      case 'formatJustifyRight':
-      case 'formatJustifyLeft':
-      case 'formatIndent':
-      case 'formatOutdent':
-      case 'formatRemove':
-      case 'formatSetBlockTextDirection':
-      case 'formatSetInlineTextDirection':
-      case 'formatBackColor':
-      case 'formatFontColor':
-      case 'formatFontName':
-        e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
-        break;
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (
-          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
-        ) {
-          e.preventDefault();
-          if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
-          } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
-          }
-          // console.log(e.inputType, 'Before', '  Handled.');
-        }
-        break;
-      default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
-    }
-  }
-
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleInput(e) {
-    // console.log(e.inputType, '   After', 'Fired:', e);
-    switch (e.inputType) {
-      case 'deleteWordBackward':
-      case 'deleteWordForward':
-      case 'deleteByCut':
-      case 'deleteContent':
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (this.dom.innerText == '') {
-          this.delete();
-          if (
-            e.inputType == 'deleteContentForward' ||
-            e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
-          // console.log(e.inputType, '   After', '  Handled.');
-          break;
-        }
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'insertReplacementText':
-      case 'insertFromPaste':
-      case 'insertTranspose':
-      case 'insertCompositionText':
-        e.preventDefault();
-        break;
-      default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
-        break;
     }
   }
 
@@ -1403,11 +1223,11 @@ Approx.register();
  * @author Joseph Abbey
  * @date 07/05/2023
  * @constructor
- * @extends {Element}
+ * @extends {SingleCharEditableElement}
  *
  * @description An element representing a minus in a LaTeX maths environment.
  */
-export class Minus extends Element {
+export class Minus extends SingleCharEditableElement {
   static type = 'Minus';
 
   /**
@@ -1435,199 +1255,6 @@ export class Minus extends Element {
       this._dom.contentEditable = 'true';
     } else {
       this._dom.contentEditable = 'false';
-    }
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    this._dom.addEventListener('keydown', (e) => {
-      this._position = window.getSelection()?.getRangeAt(0).startOffset;
-      if (e.key == 'ArrowLeft') {
-        if (this._position == 0) this.previousSibling?.focus(-1);
-      } else if (e.key == 'ArrowRight') {
-        if (this._position == 1) this.nextSibling?.focus();
-      }
-    });
-    this._dom.addEventListener(
-      'beforeinput',
-      this.handleBeforeInput.bind(this)
-    );
-    this._dom.addEventListener('input', this.handleInput.bind(this));
-    return this._dom;
-  }
-
-  /**
-   * @private
-   * @type {number | undefined}
-   */
-  _position;
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleBeforeInput(e) {
-    // console.log(e.inputType, 'Before', 'Fired:', e);
-    switch (e.inputType) {
-      case 'insertText':
-        e.preventDefault();
-        if (e.data) {
-          if (e.data == '=') {
-            let v = new Equals({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data == '-') {
-            let v = new Minus({
-              id: Element.uuid(),
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
-            let v = new Variable({
-              id: Element.uuid(),
-              var: e.data,
-            });
-            if (this._position == 0) this.parent?.insertChildBefore(v, this);
-            else this.parent?.insertChildAfter(v, this);
-            v.focus(-1);
-            e.preventDefault();
-            break;
-          } else if (
-            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
-          ) {
-            if (this._position == 0 && this.previousSibling instanceof Number) {
-              console.log(this.previousSibling);
-              this.previousSibling.text += e.data;
-              this.previousSibling.focus(-1);
-            } else if (
-              this._position == 1 &&
-              this.nextSibling instanceof Number
-            ) {
-              this.nextSibling.text = e.data + this.nextSibling.text;
-              this.nextSibling.focus(1);
-            } else {
-              let v = new Number({
-                id: Element.uuid(),
-                num: parseFloat(e.data),
-              });
-              if (this._position == 0) this.parent?.insertChildBefore(v, this);
-              else this.parent?.insertChildAfter(v, this);
-              v.focus(-1);
-            }
-            e.preventDefault();
-          }
-        }
-        // console.log(e.inputType, '   After', '  Handled.');
-        break;
-      case 'insertParagraph':
-        e.preventDefault();
-      case 'historyUndo':
-      case 'historyRedo':
-      case 'insertLineBreak':
-      case 'insertOrderedList':
-      case 'insertUnorderedList':
-      case 'insertHorizontalRule':
-      case 'insertFromYank':
-      case 'insertFromDrop':
-      case 'insertFromPasteAsQuotation':
-      case 'insertLink':
-      case 'deleteSoftLineBackward':
-      case 'deleteSoftLineForward':
-      case 'deleteEntireSoftLine':
-      case 'deleteHardLineBackward':
-      case 'deleteHardLineForward':
-      case 'deleteByDrag':
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'formatStrikeThrough':
-      case 'formatSuperscript':
-      case 'formatSubscript':
-      case 'formatJustifyFull':
-      case 'formatJustifyCenter':
-      case 'formatJustifyRight':
-      case 'formatJustifyLeft':
-      case 'formatIndent':
-      case 'formatOutdent':
-      case 'formatRemove':
-      case 'formatSetBlockTextDirection':
-      case 'formatSetInlineTextDirection':
-      case 'formatBackColor':
-      case 'formatFontColor':
-      case 'formatFontName':
-        e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
-        break;
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (
-          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
-        ) {
-          e.preventDefault();
-          if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
-          } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
-          }
-          // console.log(e.inputType, 'Before', '  Handled.');
-        }
-        break;
-      default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
-    }
-  }
-
-  /**
-   * @param {InputEvent} e
-   * @returns {void}
-   */
-  handleInput(e) {
-    // console.log(e.inputType, '   After', 'Fired:', e);
-    switch (e.inputType) {
-      case 'deleteWordBackward':
-      case 'deleteWordForward':
-      case 'deleteByCut':
-      case 'deleteContent':
-      case 'deleteContentBackward':
-      case 'deleteContentForward':
-        if (this.dom.innerText == '') {
-          this.delete();
-          if (
-            e.inputType == 'deleteContentForward' ||
-            e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
-          // console.log(e.inputType, '   After', '  Handled.');
-          break;
-        }
-      case 'formatBold':
-      case 'formatItalic':
-      case 'formatUnderline':
-      case 'insertReplacementText':
-      case 'insertFromPaste':
-      case 'insertTranspose':
-      case 'insertCompositionText':
-        e.preventDefault();
-        break;
-      default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
-        break;
     }
   }
 

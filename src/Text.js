@@ -102,6 +102,15 @@ export default class Text extends Element {
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      if (e.key == 'ArrowLeft') {
+        if (window.getSelection()?.getRangeAt(0).startOffset == 0)
+          this.previousSibling?.focus(-1);
+      } else if (e.key == 'ArrowRight') {
+        if (window.getSelection()?.getRangeAt(0).startOffset == 1)
+          this.nextSibling?.focus();
+      }
+    });
     this._dom.addEventListener(
       'beforeinput',
       this.handleBeforeInput.bind(this)
