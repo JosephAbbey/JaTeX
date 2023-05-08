@@ -230,7 +230,22 @@ export class SingleCharEditableElement extends Element {
       case 'insertText':
         e.preventDefault();
         if (e.data) {
-          if (e.data == '=') {
+          if (e.data == '^') {
+            let v = new Power({
+              id: Element.uuid(),
+              children: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'x',
+                }),
+              ],
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '=') {
             let v = new Equals({
               id: Element.uuid(),
             });
@@ -489,7 +504,22 @@ export class Number extends Element {
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertText':
-        if (e.data == '=') {
+        if (e.data == '^') {
+          let v = new Power({
+            id: Element.uuid(),
+            children: [
+              new Variable({
+                id: Element.uuid(),
+                var: 'x',
+              }),
+            ],
+          });
+          if (this._position == 0) this.parent?.insertChildBefore(v, this);
+          else this.parent?.insertChildAfter(v, this);
+          v.focus(-1);
+          e.preventDefault();
+          break;
+        } else if (e.data == '=') {
           let v = new Equals({
             id: Element.uuid(),
           });
@@ -1516,6 +1546,14 @@ export class Power extends Element {
    */
   constructor(options) {
     super(options);
+    this.addEventListener(
+      'removeChild',
+      () => this.children.length == 0 && this.delete()
+    );
+    this.addEventListener(
+      'spliceChildren',
+      () => this.children.length == 0 && this.delete()
+    );
   }
 
   createDom() {
