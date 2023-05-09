@@ -245,6 +245,27 @@ export class SingleCharEditableElement extends Element {
             v.focus(-1);
             e.preventDefault();
             break;
+          } else if (e.data == '/') {
+            let v = new Fraction({
+              id: Element.uuid(),
+              numerator: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'x',
+                }),
+              ],
+              denominator: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'y',
+                }),
+              ],
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
           } else if (e.data == '=') {
             let v = new Equals({
               id: Element.uuid(),
@@ -263,6 +284,15 @@ export class SingleCharEditableElement extends Element {
             v.focus(-1);
             e.preventDefault();
             break;
+          } else if (e.data == '+') {
+            let v = new Plus({
+              id: Element.uuid(),
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
           } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
             let v = new Variable({
               id: Element.uuid(),
@@ -274,10 +304,9 @@ export class SingleCharEditableElement extends Element {
             e.preventDefault();
             break;
           } else if (
-            !(e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.'])
+            e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
           ) {
             if (this._position == 0 && this.previousSibling instanceof Number) {
-              console.log(this.previousSibling);
               this.previousSibling.text += e.data;
               this.previousSibling.focus(-1);
             } else if (
@@ -519,6 +548,27 @@ export class Number extends Element {
           v.focus(-1);
           e.preventDefault();
           break;
+        } else if (e.data == '/') {
+          let v = new Fraction({
+            id: Element.uuid(),
+            numerator: [
+              new Variable({
+                id: Element.uuid(),
+                var: 'x',
+              }),
+            ],
+            denominator: [
+              new Variable({
+                id: Element.uuid(),
+                var: 'y',
+              }),
+            ],
+          });
+          if (this._position == 0) this.parent?.insertChildBefore(v, this);
+          else this.parent?.insertChildAfter(v, this);
+          v.focus(-1);
+          e.preventDefault();
+          break;
         } else if (e.data == '=') {
           let v = new Equals({
             id: Element.uuid(),
@@ -530,6 +580,15 @@ export class Number extends Element {
           break;
         } else if (e.data == '-') {
           let v = new Minus({
+            id: Element.uuid(),
+          });
+          if (this._position == 0) this.parent?.insertChildBefore(v, this);
+          else this.parent?.insertChildAfter(v, this);
+          v.focus(-1);
+          e.preventDefault();
+          break;
+        } else if (e.data == '+') {
+          let v = new Plus({
             id: Element.uuid(),
           });
           if (this._position == 0) this.parent?.insertChildBefore(v, this);
@@ -1296,6 +1355,52 @@ export class Minus extends SingleCharEditableElement {
 Minus.register();
 
 /**
+ * @author Joseph Abbey
+ * @date 07/05/2023
+ * @constructor
+ * @extends {SingleCharEditableElement}
+ *
+ * @description An element representing a plus in a LaTeX maths environment.
+ */
+export class Plus extends SingleCharEditableElement {
+  static type = 'Plus';
+
+  /**
+   * @author Joseph Abbey
+   * @date 07/05/2023
+   * @param {ElementOptions} options - A configuration object.
+   */
+  constructor(options) {
+    super(options);
+  }
+
+  updateDom() {
+    if (!this._dom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateDom`.'
+      );
+    this._dom.innerHTML = '';
+    this._dom.id = this.id;
+    //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
+    this._dom.style.fontFamily = 'math';
+    this._dom.innerText = '+';
+
+    if (!this.article?.readonly) {
+      this._dom.contentEditable = 'true';
+    } else {
+      this._dom.contentEditable = 'false';
+    }
+  }
+
+  get tex() {
+    return ' + ';
+  }
+}
+
+Plus.register();
+
+/**
  * @typedef FractionOptions
  * @prop {Element[]} numerator
  * @prop {Element[]} denominator
@@ -1522,7 +1627,7 @@ export class Fraction extends Element {
   }
 
   get tex() {
-    return `\\frac{${this.ntex}}${this.dtex}}`;
+    return `\\frac{${this.ntex}}{${this.dtex}}`;
   }
 }
 
@@ -1548,18 +1653,262 @@ export class Power extends Element {
     super(options);
     this.addEventListener(
       'removeChild',
-      () => this.children.length == 0 && this.delete()
+      () => this.children.length == 0 && this.updateDom()
     );
     this.addEventListener(
       'spliceChildren',
-      () => this.children.length == 0 && this.delete()
+      () => this.children.length == 0 && this.updateDom()
     );
+    // this.addEventListener(
+    //   'removeChild',
+    //   () => this.children.length == 0 && this.delete()
+    // );
+    // this.addEventListener(
+    //   'spliceChildren',
+    //   () => this.children.length == 0 && this.delete()
+    // );
   }
 
+  updateDom() {
+    if (!this._dom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateDom`.'
+      );
+    this._dom.innerHTML = '';
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
+    var s = document.createElement('style');
+    s.innerHTML = `
+      #${this.id}.empty::before {
+        content: " ";
+        border: 1px dashed #bd00008f;
+        background-color: #bd000029;
+        display: inline-block;
+        width: .5em;
+        height: .5em;
+      }
+      
+      #${this.id}.empty:focus::before {
+        border: 1px dashed #bd0000c4;
+        background-color: #bd00004d;
+      }`;
+    this._dom.appendChild(s);
+    if (this.children.length == 0) {
+      this._dom.classList.add('empty');
+      if (!this.article?.readonly) {
+        this._dom.contentEditable = 'true';
+      } else {
+        this._dom.contentEditable = 'false';
+      }
+    } else {
+      this._dom.classList.remove('empty');
+    }
+    this._dom.append(...this.cdom);
+  }
   createDom() {
     this._dom = document.createElement('sup');
     this.updateDom();
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
     return this._dom;
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        e.preventDefault();
+        if (e.data) {
+          if (e.data == '^') {
+            let v = new Power({
+              id: Element.uuid(),
+              children: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'x',
+                }),
+              ],
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '/') {
+            let v = new Fraction({
+              id: Element.uuid(),
+              numerator: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'x',
+                }),
+              ],
+              denominator: [
+                new Variable({
+                  id: Element.uuid(),
+                  var: 'y',
+                }),
+              ],
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '+') {
+            let v = new Plus({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (
+            e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
+          ) {
+            let v = new Number({
+              id: Element.uuid(),
+              num: parseFloat(e.data),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+          }
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+        e.preventDefault();
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            var ps = this.previousSibling;
+            if (ps) {
+              ps.delete();
+            }
+          } else {
+            var ns = this.nextSibling;
+            if (ns) {
+              ns.delete();
+            }
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
   }
 
   get tex() {
