@@ -154,9 +154,10 @@ export class InlineMaths extends Element {
   }
 
   /**
+   * @protected
    * @author Joseph Abbey
    * @date 19/02/2023
-   * @param l - The link to open
+   * @param {string} l - The link to open
    *
    * @description Opens a popup window.
    */
@@ -171,7 +172,9 @@ export class InlineMaths extends Element {
    * @description Opens this expression in desmos in a popup window.
    */
   desmos() {
-    this.open('https://www.desmos.com/calculator?latex=' + this.ctex);
+    this.open(
+      'https://www.desmos.com/calculator?latex=' + encodeURIComponent(this.ctex)
+    );
   }
 
   /**
@@ -181,7 +184,10 @@ export class InlineMaths extends Element {
    * @description Opens this expression in WolframAlpha in a popup window.
    */
   wolfram_alpha() {
-    this.open('https://www.wolframalpha.com/input?i=' + this.ctex);
+    console.log(this.ctex);
+    this.open(
+      'https://www.wolframalpha.com/input?i=' + encodeURIComponent(this.ctex)
+    );
   }
 
   get tex() {
@@ -225,6 +231,7 @@ export class SingleCharEditableElement extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertText':
@@ -233,12 +240,7 @@ export class SingleCharEditableElement extends Element {
           if (e.data == '^') {
             let v = new Power({
               id: Element.uuid(),
-              children: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'x',
-                }),
-              ],
+              children: [],
             });
             if (this._position == 0) this.parent?.insertChildBefore(v, this);
             else this.parent?.insertChildAfter(v, this);
@@ -248,18 +250,11 @@ export class SingleCharEditableElement extends Element {
           } else if (e.data == '/') {
             let v = new Fraction({
               id: Element.uuid(),
-              numerator: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'x',
-                }),
-              ],
-              denominator: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'y',
-                }),
-              ],
+              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              denominator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+              }),
             });
             if (this._position == 0) this.parent?.insertChildBefore(v, this);
             else this.parent?.insertChildAfter(v, this);
@@ -375,15 +370,9 @@ export class SingleCharEditableElement extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
+            this.previousSibling?.delete();
           } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
+            this.nextSibling?.delete();
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -398,6 +387,7 @@ export class SingleCharEditableElement extends Element {
    * @returns {void}
    */
   handleInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':
@@ -530,18 +520,14 @@ export class Number extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertText':
         if (e.data == '^') {
           let v = new Power({
             id: Element.uuid(),
-            children: [
-              new Variable({
-                id: Element.uuid(),
-                var: 'x',
-              }),
-            ],
+            children: [],
           });
           if (this._position == 0) this.parent?.insertChildBefore(v, this);
           else this.parent?.insertChildAfter(v, this);
@@ -551,18 +537,8 @@ export class Number extends Element {
         } else if (e.data == '/') {
           let v = new Fraction({
             id: Element.uuid(),
-            numerator: [
-              new Variable({
-                id: Element.uuid(),
-                var: 'x',
-              }),
-            ],
-            denominator: [
-              new Variable({
-                id: Element.uuid(),
-                var: 'y',
-              }),
-            ],
+            numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+            denominator: new SubFraction({ id: Element.uuid(), children: [] }),
           });
           if (this._position == 0) this.parent?.insertChildBefore(v, this);
           else this.parent?.insertChildAfter(v, this);
@@ -660,15 +636,9 @@ export class Number extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
+            this.previousSibling?.delete();
           } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
+            this.nextSibling?.delete();
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -683,6 +653,7 @@ export class Number extends Element {
    * @returns {void}
    */
   handleInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':
@@ -1401,252 +1372,19 @@ export class Plus extends SingleCharEditableElement {
 Plus.register();
 
 /**
- * @typedef FractionOptions
- * @prop {Element[]} numerator
- * @prop {Element[]} denominator
- */
-
-/**
- * @typedef FractionSerialised
- * @prop {ElementSerialised[]} numerator
- * @prop {ElementSerialised[]} denominator
- */
-
-/**
  * @author Joseph Abbey
- * @date 02/02/2023
+ * @date 11/05/2023
  * @constructor
  * @extends {Element}
  *
- * @description An element representing a fraction in a LaTeX maths environment.
+ * @description An element representing a LaTeX numerator or denominator.
  */
-export class Fraction extends Element {
-  static type = 'Fraction';
+export class SubFraction extends Element {
+  static type = 'SubFraction';
 
   /**
    * @author Joseph Abbey
-   * @date 05/02/2023
-   * @type {ElementSerialised & FractionSerialised}
-   *
-   * @description This element as a serialised object.
-   */
-  get serialised() {
-    return {
-      ...super.serialised,
-      numerator: this.numerator.map((child) => child.serialised),
-      denominator: this.denominator.map((child) => child.serialised),
-    };
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 05/02/2023
-   * @param {ElementSerialised & FractionSerialised} s
-   * @returns {Fraction}
-   *
-   * @description This deserialises an element.
-   *
-   * @see {@link Fraction~serialised}
-   */
-  static deserialise(s) {
-    // @ts-expect-error
-    return super.deserialise({
-      ...s,
-      numerator: Element.deserialiseMany(s.numerator),
-      denominator: Element.deserialiseMany(s.denominator),
-    });
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 02/02/2023
-   * @param {ElementOptions & FractionOptions} options - A configuration object.
-   */
-  constructor(options) {
-    super(options);
-
-    this.numerator = options.numerator ?? [];
-    this.denominator = options.denominator ?? [];
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 29/01/2023
-   * @type {Element[]}
-   *
-   * @description The numerator of the fraction.
-   */
-  numerator;
-  /**
-   * @author Joseph Abbey
-   * @date 28/01/2023
-   * @type {HTMLElement[]}
-   *
-   * @description Gets or creates the HTMLElements linked with this instance's numerator.
-   */
-  get ndom() {
-    return this.numerator.map((c) => c.dom);
-  }
-  /**
-   * @author Joseph Abbey
-   * @date 29/01/2023
-   * @type {String}
-   *
-   * @description The LaTeX code that generates this instance's numerator.
-   */
-  get ntex() {
-    return this.numerator.map((c) => c.tex).join('');
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 29/01/2023
-   * @type {Element[]}
-   *
-   * @description The denominator of the fraction.
-   */
-  denominator;
-  /**
-   * @author Joseph Abbey
-   * @date 28/01/2023
-   * @type {HTMLElement[]}
-   *
-   * @description Gets or creates the HTMLElements linked with this instance's denominator.
-   */
-  get ddom() {
-    return this.denominator.map((c) => c.dom);
-  }
-  /**
-   * @author Joseph Abbey
-   * @date 29/01/2023
-   * @type {String}
-   *
-   * @description The LaTeX code that generates this instance's denominator.
-   */
-  get dtex() {
-    return this.denominator.map((c) => c.tex).join('');
-  }
-
-  update() {
-    super.update();
-    this.updateNDom();
-    this.updateDDom();
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 14/02/2023
-   * @type {HTMLDivElement}
-   * @see {@link NDom} instead.
-   *
-   * @description Internal dom cache, use `this.NDom` instead.
-   */
-  _NDom;
-  /**
-   * @protected
-   */
-  updateNDom() {
-    if (!this._NDom)
-      throw new ElementError(
-        'Please create a DOM node before you call `updateNDom`.'
-      );
-    this._NDom.append(...this.ndom);
-  }
-  /**
-   * @author Joseph Abbey
-   * @date 14/02/2023
-   * @type {HTMLDivElement}
-   *
-   * @description Gets or creates the HTMLDivElement linked with this instance's N.
-   */
-  get NDom() {
-    if (!this._NDom) {
-      this._NDom = document.createElement('div');
-      this.updateNDom();
-    }
-    return this._NDom;
-  }
-
-  /**
-   * @author Joseph Abbey
-   * @date 14/02/2023
-   * @type {HTMLDivElement}
-   * @see {@link DDom} instead.
-   *
-   * @description Internal dom cache, use `this.DDom` instead.
-   */
-  _DDom;
-  /**
-   * @protected
-   */
-  updateDDom() {
-    if (!this._DDom)
-      throw new ElementError(
-        'Please create a DOM node before you call `updateDDom`.'
-      );
-    this._DDom.append(...this.ddom);
-  }
-  /**
-   * @author Joseph Abbey
-   * @date 14/02/2023
-   * @type {HTMLDivElement}
-   *
-   * @description Gets or creates the HTMLDivElement linked with this instance's N.
-   */
-  get DDom() {
-    if (!this._DDom) {
-      this._DDom = document.createElement('div');
-      this.updateDDom();
-    }
-    return this._DDom;
-  }
-
-  updateDom() {
-    if (!this._dom)
-      throw new ElementError(
-        'Please create a DOM node before you call `updateDom`.'
-      );
-    this._dom.innerHTML = '';
-    this._dom.id = this.id;
-    //@ts-expect-error
-    this._dom.dataset.type = this.constructor.type;
-    this._dom.style.fontFamily = 'math';
-    this._dom.style.display = 'inline-block';
-    var hr = document.createElement('hr');
-    hr.style.margin = 'auto';
-    hr.style.marginInline = '4px';
-    hr.style.border = '1px solid #5e5e5e';
-    hr.style.paddingInline = '6px';
-    hr.style.paddingBlock = '0';
-    this._dom.append(this.NDom, hr, this.DDom);
-  }
-  createDom() {
-    this._dom = document.createElement('span');
-    this.updateDom();
-    return this._dom;
-  }
-
-  get tex() {
-    return `\\frac{${this.ntex}}{${this.dtex}}`;
-  }
-}
-
-Fraction.register();
-
-/**
- * @author Joseph Abbey
- * @date 12/02/2023
- * @constructor
- * @extends {Element}
- *
- * @description An element representing a LaTeX power.
- */
-export class Power extends Element {
-  static type = 'Power';
-
-  /**
-   * @author Joseph Abbey
-   * @date 12/02/2023
+   * @date 11/05/2023
    * @param {ElementOptions} options - A configuration object.
    */
   constructor(options) {
@@ -1677,6 +1415,8 @@ export class Power extends Element {
     this._dom.innerHTML = '';
     this._dom.id = this.id; //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    this._dom.style.textIndent = '0';
+    this._dom.style.marginInline = '0.25em';
     var s = document.createElement('style');
     s.innerHTML = `
       #${this.id}.empty::before {
@@ -1684,10 +1424,10 @@ export class Power extends Element {
         border: 1px dashed #bd00008f;
         background-color: #bd000029;
         display: inline-block;
-        width: .5em;
-        height: .5em;
+        width: 1em;
+        height: 1em;
       }
-      
+
       #${this.id}.empty:focus::before {
         border: 1px dashed #bd0000c4;
         background-color: #bd00004d;
@@ -1702,11 +1442,12 @@ export class Power extends Element {
       }
     } else {
       this._dom.classList.remove('empty');
+      this._dom.contentEditable = 'false';
     }
     this._dom.append(...this.cdom);
   }
   createDom() {
-    this._dom = document.createElement('sup');
+    this._dom = document.createElement('div');
     this.updateDom();
     this._dom.addEventListener(
       'beforeinput',
@@ -1721,6 +1462,7 @@ export class Power extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertText':
@@ -1729,12 +1471,7 @@ export class Power extends Element {
           if (e.data == '^') {
             let v = new Power({
               id: Element.uuid(),
-              children: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'x',
-                }),
-              ],
+              children: [],
             });
             this.appendChild(v);
             v.focus(-1);
@@ -1743,18 +1480,11 @@ export class Power extends Element {
           } else if (e.data == '/') {
             let v = new Fraction({
               id: Element.uuid(),
-              numerator: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'x',
-                }),
-              ],
-              denominator: [
-                new Variable({
-                  id: Element.uuid(),
-                  var: 'y',
-                }),
-              ],
+              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              denominator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+              }),
             });
             this.appendChild(v);
             v.focus(-1);
@@ -1853,15 +1583,9 @@ export class Power extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            var ps = this.previousSibling;
-            if (ps) {
-              ps.delete();
-            }
+            this.previousSibling?.delete();
           } else {
-            var ns = this.nextSibling;
-            if (ns) {
-              ns.delete();
-            }
+            this.nextSibling?.delete();
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -1876,6 +1600,412 @@ export class Power extends Element {
    * @returns {void}
    */
   handleInput(e) {
+    if (e.target != this.dom) return;
+    // console.log(e.inputType, '   After', 'Fired:', e);
+    switch (e.inputType) {
+      case 'deleteWordBackward':
+      case 'deleteWordForward':
+      case 'deleteByCut':
+      case 'deleteContent':
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (this.dom.innerText == '') {
+          if (
+            e.inputType == 'deleteContentForward' ||
+            e.inputType == 'deleteWordForward'
+          ) {
+            this.nextSibling?.focus();
+          } else {
+            this.previousSibling?.focus(-1);
+          }
+          // console.log(e.inputType, '   After', '  Handled.');
+          break;
+        }
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'insertReplacementText':
+      case 'insertFromPaste':
+      case 'insertTranspose':
+      case 'insertCompositionText':
+        e.preventDefault();
+        break;
+      default:
+        // console.log(e.inputType, '   After', '  Unhandled.');
+        break;
+    }
+  }
+
+  get tex() {
+    return `${this.ctex}`;
+  }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (this.children.length == 0) return this.dom.focus();
+
+    if (position == -1)
+      return this.children[this.children.length - 1].focus(-1);
+
+    this.children[0].focus(position);
+  }
+}
+
+SubFraction.register();
+
+/**
+ * @typedef FractionOptions
+ * @prop {SubFraction} numerator
+ * @prop {SubFraction} denominator
+ */
+
+/**
+ * @typedef FractionSerialised
+ * @prop {ElementSerialised} numerator
+ * @prop {ElementSerialised} denominator
+ */
+
+/**
+ * @author Joseph Abbey
+ * @date 11/05/2023
+ * @constructor
+ * @extends {Element}
+ *
+ * @description An element representing a fraction in a LaTeX maths environment.
+ */
+export class Fraction extends Element {
+  static type = 'Fraction';
+
+  /**
+   * @author Joseph Abbey
+   * @date 11/05/2023
+   * @type {ElementSerialised & FractionSerialised}
+   *
+   * @description This element as a serialised object.
+   */
+  get serialised() {
+    return {
+      ...super.serialised,
+      numerator: this.numerator.serialised,
+      denominator: this.denominator.serialised,
+    };
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 11/05/2023
+   * @param {ElementSerialised & FractionSerialised} s
+   * @returns {Fraction}
+   *
+   * @description This deserialises an element.
+   *
+   * @see {@link Fraction~serialised}
+   */
+  static deserialise(s) {
+    // @ts-expect-error
+    return super.deserialise({
+      ...s,
+      numerator: SubFraction.deserialise(s.numerator),
+      denominator: SubFraction.deserialise(s.denominator),
+    });
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 02/02/2023
+   * @param {ElementOptions & FractionOptions} options - A configuration object.
+   */
+  constructor(options) {
+    super(options);
+
+    this.numerator = options.numerator;
+    this.denominator = options.denominator;
+  }
+
+  /**
+   * @author Joseph Abbey
+   * @date 11/05/2023
+   * @type {SubFraction}
+   *
+   * @description The numerator of the fraction.
+   */
+  numerator;
+
+  /**
+   * @author Joseph Abbey
+   * @date 11/05/2023
+   * @type {SubFraction}
+   *
+   * @description The denominator of the fraction.
+   */
+  denominator;
+
+  updateDom() {
+    if (!this._dom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateDom`.'
+      );
+    this._dom.innerHTML = '';
+    this._dom.id = this.id;
+    //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
+    this._dom.style.display = 'inline-block';
+    var hr = document.createElement('hr');
+    hr.style.margin = 'auto';
+    hr.style.marginInline = '4px';
+    hr.style.border = '1px solid #5e5e5e';
+    hr.style.paddingInline = '6px';
+    hr.style.paddingBlock = '0';
+    this._dom.append(this.numerator.dom, hr, this.denominator.dom);
+  }
+  createDom() {
+    this._dom = document.createElement('span');
+    this.updateDom();
+    return this._dom;
+  }
+
+  get tex() {
+    return `\\frac{${this.numerator.tex}}{${this.denominator.tex}}`;
+  }
+}
+
+Fraction.register();
+
+/**
+ * @author Joseph Abbey
+ * @date 12/02/2023
+ * @constructor
+ * @extends {Element}
+ *
+ * @description An element representing a LaTeX power.
+ */
+export class Power extends Element {
+  static type = 'Power';
+
+  /**
+   * @author Joseph Abbey
+   * @date 12/02/2023
+   * @param {ElementOptions} options - A configuration object.
+   */
+  constructor(options) {
+    super(options);
+    this.addEventListener(
+      'removeChild',
+      () => this.children.length == 0 && this.updateDom()
+    );
+    this.addEventListener(
+      'spliceChildren',
+      () => this.children.length == 0 && this.updateDom()
+    );
+    // this.addEventListener(
+    //   'removeChild',
+    //   () => this.children.length == 0 && this.delete()
+    // );
+    // this.addEventListener(
+    //   'spliceChildren',
+    //   () => this.children.length == 0 && this.delete()
+    // );
+  }
+
+  updateDom() {
+    if (!this._dom)
+      throw new ElementError(
+        'Please create a DOM node before you call `updateDom`.'
+      );
+    this._dom.innerHTML = '';
+    this._dom.id = this.id; //@ts-expect-error
+    this._dom.dataset.type = this.constructor.type;
+    var s = document.createElement('style');
+    s.innerHTML = `
+      #${this.id}.empty::before {
+        content: " ";
+        border: 1px dashed #bd00008f;
+        background-color: #bd000029;
+        display: inline-block;
+        width: .5em;
+        height: .5em;
+      }
+
+      #${this.id}.empty:focus::before {
+        border: 1px dashed #bd0000c4;
+        background-color: #bd00004d;
+      }`;
+    this._dom.appendChild(s);
+    if (this.children.length == 0) {
+      this._dom.classList.add('empty');
+      if (!this.article?.readonly) {
+        this._dom.contentEditable = 'true';
+      } else {
+        this._dom.contentEditable = 'false';
+      }
+    } else {
+      this._dom.classList.remove('empty');
+      this._dom.contentEditable = 'false';
+    }
+    this._dom.append(...this.cdom);
+  }
+  createDom() {
+    this._dom = document.createElement('sup');
+    this.updateDom();
+    this._dom.addEventListener(
+      'beforeinput',
+      this.handleBeforeInput.bind(this)
+    );
+    this._dom.addEventListener('input', this.handleInput.bind(this));
+    return this._dom;
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleBeforeInput(e) {
+    if (e.target != this.dom) return;
+    // console.log(e.inputType, 'Before', 'Fired:', e);
+    switch (e.inputType) {
+      case 'insertText':
+        e.preventDefault();
+        if (e.data) {
+          if (e.data == '^') {
+            let v = new Power({
+              id: Element.uuid(),
+              children: [],
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '/') {
+            let v = new Fraction({
+              id: Element.uuid(),
+              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              denominator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+              }),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '=') {
+            let v = new Equals({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '-') {
+            let v = new Minus({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '+') {
+            let v = new Plus({
+              id: Element.uuid(),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
+            let v = new Variable({
+              id: Element.uuid(),
+              var: e.data,
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (
+            e.data in ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.']
+          ) {
+            let v = new Number({
+              id: Element.uuid(),
+              num: parseFloat(e.data),
+            });
+            this.appendChild(v);
+            v.focus(-1);
+            e.preventDefault();
+          }
+        }
+        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'insertParagraph':
+        e.preventDefault();
+      case 'historyUndo':
+      case 'historyRedo':
+      case 'insertLineBreak':
+      case 'insertOrderedList':
+      case 'insertUnorderedList':
+      case 'insertHorizontalRule':
+      case 'insertFromYank':
+      case 'insertFromDrop':
+      case 'insertFromPasteAsQuotation':
+      case 'insertLink':
+      case 'deleteSoftLineBackward':
+      case 'deleteSoftLineForward':
+      case 'deleteEntireSoftLine':
+      case 'deleteHardLineBackward':
+      case 'deleteHardLineForward':
+      case 'deleteByDrag':
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+      case 'formatStrikeThrough':
+      case 'formatSuperscript':
+      case 'formatSubscript':
+      case 'formatJustifyFull':
+      case 'formatJustifyCenter':
+      case 'formatJustifyRight':
+      case 'formatJustifyLeft':
+      case 'formatIndent':
+      case 'formatOutdent':
+      case 'formatRemove':
+      case 'formatSetBlockTextDirection':
+      case 'formatSetInlineTextDirection':
+      case 'formatBackColor':
+      case 'formatFontColor':
+      case 'formatFontName':
+        e.preventDefault();
+        // console.log(e.inputType, 'Before', '  Canceled.');
+        break;
+      case 'deleteContentBackward':
+      case 'deleteContentForward':
+        if (
+          e.getTargetRanges()[0].startOffset == e.getTargetRanges()[0].endOffset
+        ) {
+          e.preventDefault();
+          if (e.inputType == 'deleteContentBackward') {
+            this.previousSibling?.delete();
+          } else {
+            this.nextSibling?.delete();
+          }
+          // console.log(e.inputType, 'Before', '  Handled.');
+        }
+        break;
+      default:
+      // console.log(e.inputType, 'Before', '  Unhandled.');
+    }
+  }
+
+  /**
+   * @param {InputEvent} e
+   * @returns {void}
+   */
+  handleInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':
@@ -1924,6 +2054,8 @@ export class Power extends Element {
    * @example el.focus(-1); // end
    */
   focus(position = 0) {
+    if (this.children.length == 0) return this.dom.focus();
+
     if (position == -1)
       return this.children[this.children.length - 1].focus(-1);
 

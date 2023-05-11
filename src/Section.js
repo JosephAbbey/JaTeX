@@ -142,6 +142,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
@@ -192,6 +193,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':

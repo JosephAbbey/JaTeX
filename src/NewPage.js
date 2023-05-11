@@ -37,9 +37,27 @@ export default class NewPage extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.style.pageBreakAfter = 'always';
     this._dom.id = this.id; //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    this._dom.style.breakAfter = 'page';
+    // var s = document.createElement('style');
+    // s.innerHTML = `
+    // #${this.id} {
+    //   break-after: page;
+    //   width: calc(100% + 10rem - 1rem);
+    //   transform: translateX(-5rem);
+    //   border-color: var(--background-color);
+    //   margin-block: 4rem;
+    //   border-width: 0.5rem;
+    //   border-style: solid;
+    // }
+
+    // @media print {
+    //   #${this.id} {
+    //     visibility: hidden;
+    //   }
+    // }`;
+    // this._dom.appendChild(s);
   }
   createDom() {
     this._dom = document.createElement('hr');

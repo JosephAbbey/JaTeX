@@ -111,7 +111,7 @@ export class ElementEvent extends Event {
  * @typedef ElementSerialised
  * @prop {string} class - The constructor of the element.
  * @prop {string} id - The id of the element.
- * @prop {ElementSerialised[]} children - The children of the element.
+ * @prop {ElementSerialised[]=} children - The children of the element.
  */
 
 /**
@@ -232,7 +232,7 @@ export default class Element {
   static deserialise(s) {
     return new (Element.registry.get(s.class) ?? Element)({
       ...s,
-      children: Element.deserialiseMany(s.children),
+      children: Element.deserialiseMany(s.children ?? []),
     });
   }
 
