@@ -908,6 +908,11 @@ export class Number extends Element {
         // don't need to update the dom
         this._num = parseFloat(this.dom.innerText);
         this._text = this.dom.innerText;
+        this.dispatchEvent(
+          new MathsEvent('edit', this, {
+            content: this.num,
+          })
+        );
       default:
         // console.log(e.inputType, '   After', '  Unhandled.');
         break;
@@ -1379,8 +1384,15 @@ export class Function extends Element {
       }
       this._nameDom.addEventListener(
         'change',
-        //@ts-expect-error
-        () => (this._func = this._nameDom?.value)
+        () => (
+          //@ts-expect-error
+          (this._func = this._nameDom?.value),
+          this.dispatchEvent(
+            new MathsEvent('edit', this, {
+              content: this.func,
+            })
+          )
+        )
       );
     }
     this._nameDom.value = this.func;

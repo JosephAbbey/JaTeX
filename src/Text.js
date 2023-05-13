@@ -23,7 +23,7 @@ export class TextError extends ElementError {}
  * @author Joseph Abbey
  * @date 04/02/2023
  * @constructor
- * @extends {ElementEvent<Text,"edit">}
+ * @extends {ElementEvent<Text, "edit">}
  *
  * @description Used to trigger text element specific events.
  */

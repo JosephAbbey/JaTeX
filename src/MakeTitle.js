@@ -2,7 +2,6 @@
  * @module MakeTitle
  */
 
-import { ArticleEvent } from './Article.js';
 import Element, { ElementError, ElementEvent } from './Element.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
@@ -15,7 +14,7 @@ export class MakeTitleError extends ElementError {}
  * @author Joseph Abbey
  * @date 13/02/2023
  * @constructor
- * @extends {ElementEvent<MakeTitle,"editTitle">}
+ * @extends {ElementEvent<MakeTitle, "edit">}
  *
  * @description Used to trigger maketitle element specific events.
  */
@@ -157,7 +156,7 @@ export default class MakeTitle extends Element {
         if (this.article) {
           this.article.title = this.dom.innerText;
           this.dispatchEvent(
-            new MakeTitleEvent('editTitle', this, {
+            new MakeTitleEvent('edit', this, {
               content: this.dom.innerText,
             })
           );
