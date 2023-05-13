@@ -301,7 +301,16 @@ export default class Element {
     this.children.forEach((c) => (c.article = a));
   }
 
-  delete() {
+  /**
+   * Deletes the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.delete(); // whole
+   * @example el.delete(0);
+   * @example el.delete(1);
+   * @example el.delete(-1); // end
+   */
+  delete(position) {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
 
     this.parent?.removeChild(this);
@@ -589,6 +598,14 @@ export default class Element {
         sel.getRangeAt(0).setEnd(node, position);
       }
     }
+  }
+  focusBefore() {
+    if (this.previousSibling) return this.previousSibling.focus(-1);
+    this.parent?.focusBefore();
+  }
+  focusAfter() {
+    if (this.nextSibling) return this.nextSibling.focus();
+    this.parent?.focusAfter();
   }
 
   /**

@@ -98,6 +98,23 @@ export default class Maths extends Element {
       `\n\n\\end{${this.environment}${this.numbered ? '' : '*'}}`
     );
   }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (this.children.length == 0) return this.dom.focus();
+
+    if (position == -1)
+      return this.children[this.children.length - 1].focus(-1);
+
+    this.children[0].focus(position);
+  }
 }
 
 Maths.register();
@@ -193,9 +210,132 @@ export class InlineMaths extends Element {
   get tex() {
     return '$' + this.ctex + '$';
   }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (this.children.length == 0) return this.dom.focus();
+
+    if (position == -1)
+      return this.children[this.children.length - 1].focus(-1);
+
+    this.children[0].focus(position);
+  }
 }
 
 InlineMaths.register();
+
+/**
+ * @returns {Promise<string, void>} - The text the user entered.
+ * @description It creates a text input at the top of the screen.
+ */
+function backslash() {
+  /**
+   * @author Dziad Borowy
+   * @see {@link https://stackoverflow.com/questions/9206013/javascript-list-js-implement-a-fuzzy-search#answer-15252131}
+   * @param {string} hay - The string to search in.
+   * @param {string} needle - The string to search for.
+   * @returns {boolean}
+   * @description Fuzzy searches in the string and returns whether there is a match.
+   */
+  function fuzzy(hay, needle) {
+    var hay = hay.toLowerCase();
+    var n = -1;
+    needle = needle.toLowerCase();
+    for (var l of needle) if (!~(n = hay.indexOf(l, n + 1))) return false;
+    return true;
+  }
+
+  return new Promise((resolve, reject) => {
+    /** @type {HTMLDialogElement?} */
+    var dialog = document.createElement('dialog');
+    if (dialog) {
+      dialog.id = 'backslash';
+
+      let s = document.createElement('style');
+      s.innerHTML = `
+                  .container {
+                    border-radius: 0.25em;
+                    padding: 0.5em;
+                    border: solid 1px #fff5;
+                  }
+                  .container input {
+                    width: 20em;
+                  }
+                  .container:has(:focus-visible) {
+                    /* do something */
+                    border: solid 1px white;
+                  }
+                  .container :focus-visible {
+                    outline: none;
+                  }
+                  .container::before {
+                    content: "\\\\";
+                    font-weight: bolder;
+                    padding-inline-end: 0.25em;
+                  }
+                  .container ~ ul > li {
+                    cursor: pointer;
+                    list-style: '\\\\';
+                  }`;
+      dialog.appendChild(s);
+
+      let container = document.createElement('div');
+      container.className = 'container';
+      let input = document.createElement('input');
+      input.style.background = 'transparent';
+      input.style.border = 'transparent';
+      container.appendChild(input);
+      dialog.appendChild(container);
+      let options = document.createElement('ul');
+      let commands = ['approx', 'cdot'];
+      let options_els = commands.map((cmd) => {
+        var li = document.createElement('li');
+        li.innerText = cmd;
+        li.dataset.cmd = cmd;
+        options.appendChild(li);
+        li.addEventListener(
+          'click',
+          () => {
+            dialog?.close();
+            dialog?.remove();
+            resolve(cmd);
+          },
+          false
+        );
+        return li;
+      });
+      dialog.appendChild(options);
+
+      input.addEventListener('input', (e) => {
+        for (let el of options_els)
+          el.style.display = fuzzy(el.dataset.cmd ?? '', input.value ?? '')
+            ? 'list-item'
+            : 'none';
+      });
+      input.addEventListener('keypress', ({ key }) => {
+        if (key === 'Enter') {
+          options
+            .querySelector('li:not([style*="display: none"])')
+            //@ts-expect-error
+            ?.click();
+        }
+      });
+
+      dialog.addEventListener('close', (e) => {
+        reject();
+      });
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    }
+  });
+}
 
 /**
  * @constructor
@@ -208,9 +348,9 @@ export class SingleCharEditableElement extends Element {
     this._dom.addEventListener('keydown', (e) => {
       this._position = window.getSelection()?.getRangeAt(0).startOffset;
       if (e.key == 'ArrowLeft') {
-        if (this._position == 0) this.previousSibling?.focus(-1);
+        if (this._position == 0) this.focusBefore();
       } else if (e.key == 'ArrowRight') {
-        if (this._position == 1) this.nextSibling?.focus();
+        if (this._position == 1) this.focusAfter();
       }
     });
     this._dom.addEventListener(
@@ -237,7 +377,39 @@ export class SingleCharEditableElement extends Element {
       case 'insertText':
         e.preventDefault();
         if (e.data) {
-          if (e.data == '^') {
+          if (e.data == '\\') {
+            backslash().then(
+              (t) => {
+                let v;
+                switch (t) {
+                  case 'approx':
+                    v = new Approx({
+                      id: Element.uuid(),
+                    });
+                    if (this._position == 0)
+                      this.parent?.insertChildBefore(v, this);
+                    else this.parent?.insertChildAfter(v, this);
+                    v.focus(-1);
+                    break;
+                  case 'cdot':
+                    v = new CDot({
+                      id: Element.uuid(),
+                    });
+                    if (this._position == 0)
+                      this.parent?.insertChildBefore(v, this);
+                    else this.parent?.insertChildAfter(v, this);
+                    v.focus(-1);
+                    break;
+                  default:
+                    break;
+                }
+              },
+              () => {}
+            );
+
+            e.preventDefault();
+            break;
+          } else if (e.data == '^') {
             let v = new Power({
               id: Element.uuid(),
               children: [],
@@ -250,10 +422,15 @@ export class SingleCharEditableElement extends Element {
           } else if (e.data == '/') {
             let v = new Fraction({
               id: Element.uuid(),
-              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              numerator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+                isNumerator: true,
+              }),
               denominator: new SubFraction({
                 id: Element.uuid(),
                 children: [],
+                isNumerator: false,
               }),
             });
             if (this._position == 0) this.parent?.insertChildBefore(v, this);
@@ -370,9 +547,9 @@ export class SingleCharEditableElement extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            this.previousSibling?.delete();
+            this.previousSibling?.delete(-1);
           } else {
-            this.nextSibling?.delete();
+            this.nextSibling?.delete(1);
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -401,11 +578,10 @@ export class SingleCharEditableElement extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
+
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
@@ -497,9 +673,9 @@ export class Number extends Element {
     this._dom.addEventListener('keydown', (e) => {
       this._position = window.getSelection()?.getRangeAt(0).startOffset;
       if (e.key == 'ArrowLeft') {
-        if (this._position == 0) this.previousSibling?.focus(-1);
+        if (this._position == 0) this.focusBefore();
       } else if (e.key == 'ArrowRight') {
-        if (this._position == this._text.length) this.nextSibling?.focus();
+        if (this._position == this._text.length) this.focusAfter();
       }
     });
     this._dom.addEventListener(
@@ -537,8 +713,16 @@ export class Number extends Element {
         } else if (e.data == '/') {
           let v = new Fraction({
             id: Element.uuid(),
-            numerator: new SubFraction({ id: Element.uuid(), children: [] }),
-            denominator: new SubFraction({ id: Element.uuid(), children: [] }),
+            numerator: new SubFraction({
+              id: Element.uuid(),
+              children: [],
+              isNumerator: true,
+            }),
+            denominator: new SubFraction({
+              id: Element.uuid(),
+              children: [],
+              isNumerator: false,
+            }),
           });
           if (this._position == 0) this.parent?.insertChildBefore(v, this);
           else this.parent?.insertChildAfter(v, this);
@@ -667,11 +851,10 @@ export class Number extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
+
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
@@ -699,6 +882,32 @@ export class Number extends Element {
   }
 
   /**
+   * Deletes the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.delete(); // whole
+   * @example el.delete(0); // whole
+   * @example el.delete(1); // first char
+   * @example el.delete(2); // first 2 chars
+   * @example el.delete(-2); // last 2 chars
+   * @example el.delete(-1); // last char
+   */
+  delete(position) {
+    if (position == null || position == 0) {
+      if (this.article?.readonly)
+        throw new ElementError('Article is readonly.');
+
+      this.parent?.removeChild(this);
+      return this.dispatchEvent(new ElementEvent('delete', this, {}));
+    }
+    if (Math.sign(position) == -1) {
+      this.text = this.text.substring(0, position + this.text.length);
+    } else {
+      this.text = this.text.substring(position);
+    }
+  }
+
+  /**
    * @author Joseph Abbey
    * @date 06/05/2023
    * @type {string}
@@ -714,6 +923,7 @@ export class Number extends Element {
   }
   set text(s) {
     if (this.article?.readonly) throw new MathsError('Article is readonly.');
+    if (s.length == 0) this.delete();
 
     this._num = parseFloat(s);
     this._text = s;
@@ -1372,6 +1582,16 @@ export class Plus extends SingleCharEditableElement {
 Plus.register();
 
 /**
+ * @typedef SubFractionOptions
+ * @prop {boolean} isNumerator
+ */
+
+/**
+ * @typedef SubFractionSerialised
+ * @prop {boolean} isNumerator
+ */
+
+/**
  * @author Joseph Abbey
  * @date 11/05/2023
  * @constructor
@@ -1384,11 +1604,26 @@ export class SubFraction extends Element {
 
   /**
    * @author Joseph Abbey
+   * @date 12/05/2023
+   * @type {ElementSerialised & SubFractionSerialised}
+   *
+   * @description This element as a serialised object.
+   */
+  get serialised() {
+    return {
+      ...super.serialised,
+      isNumerator: this.isNumerator,
+    };
+  }
+
+  /**
+   * @author Joseph Abbey
    * @date 11/05/2023
-   * @param {ElementOptions} options - A configuration object.
+   * @param {ElementOptions & SubFractionOptions} options - A configuration object.
    */
   constructor(options) {
     super(options);
+    this.isNumerator = options.isNumerator;
     this.addEventListener(
       'removeChild',
       () => this.children.length == 0 && this.updateDom()
@@ -1406,6 +1641,12 @@ export class SubFraction extends Element {
     //   () => this.children.length == 0 && this.delete()
     // );
   }
+
+  /**
+   * @protected
+   * @type {boolean}
+   */
+  isNumerator;
 
   updateDom() {
     if (!this._dom)
@@ -1480,10 +1721,15 @@ export class SubFraction extends Element {
           } else if (e.data == '/') {
             let v = new Fraction({
               id: Element.uuid(),
-              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              numerator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+                isNumerator: true,
+              }),
               denominator: new SubFraction({
                 id: Element.uuid(),
                 children: [],
+                isNumerator: false,
               }),
             });
             this.appendChild(v);
@@ -1583,9 +1829,9 @@ export class SubFraction extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            this.previousSibling?.delete();
+            this.previousSibling?.delete(-1);
           } else {
-            this.nextSibling?.delete();
+            this.nextSibling?.delete(1);
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -1613,11 +1859,9 @@ export class SubFraction extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
@@ -1655,6 +1899,16 @@ export class SubFraction extends Element {
       return this.children[this.children.length - 1].focus(-1);
 
     this.children[0].focus(position);
+  }
+  focusBefore() {
+    if (!this.isNumerator && this.parent instanceof Fraction)
+      return this.parent.numerator.focus(-1);
+    this.parent?.focusBefore();
+  }
+  focusAfter() {
+    if (this.isNumerator && this.parent instanceof Fraction)
+      return this.parent.denominator.focus();
+    this.parent?.focusAfter();
   }
 }
 
@@ -1726,7 +1980,9 @@ export class Fraction extends Element {
     super(options);
 
     this.numerator = options.numerator;
+    this.numerator.parent = this;
     this.denominator = options.denominator;
+    this.denominator.parent = this;
   }
 
   /**
@@ -1773,6 +2029,19 @@ export class Fraction extends Element {
 
   get tex() {
     return `\\frac{${this.numerator.tex}}{${this.denominator.tex}}`;
+  }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (position == -1) return this.denominator.focus(-1);
+    this.numerator.focus(position);
   }
 }
 
@@ -1885,10 +2154,15 @@ export class Power extends Element {
           } else if (e.data == '/') {
             let v = new Fraction({
               id: Element.uuid(),
-              numerator: new SubFraction({ id: Element.uuid(), children: [] }),
+              numerator: new SubFraction({
+                id: Element.uuid(),
+                children: [],
+                isNumerator: true,
+              }),
               denominator: new SubFraction({
                 id: Element.uuid(),
                 children: [],
+                isNumerator: false,
               }),
             });
             this.appendChild(v);
@@ -1988,9 +2262,9 @@ export class Power extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            this.previousSibling?.delete();
+            this.previousSibling?.delete(-1);
           } else {
-            this.nextSibling?.delete();
+            this.nextSibling?.delete(1);
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -2018,11 +2292,9 @@ export class Power extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }

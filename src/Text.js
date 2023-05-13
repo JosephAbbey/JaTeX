@@ -105,12 +105,12 @@ export default class Text extends Element {
     this._dom.addEventListener('keydown', (e) => {
       if (e.key == 'ArrowLeft') {
         if (window.getSelection()?.getRangeAt(0).startOffset == 0)
-          this.previousSibling?.focus(-1);
+          this.focusBefore();
       } else if (e.key == 'ArrowRight') {
         if (
           window.getSelection()?.getRangeAt(0).startOffset == this._text.length
         )
-          this.nextSibling?.focus();
+          this.focusAfter();
       }
     });
     this._dom.addEventListener(
@@ -184,17 +184,17 @@ export default class Text extends Element {
             var ps = this.previousSibling;
             if (ps instanceof Text) {
               ps.text = ps.text.substring(0, ps.text.length - 1);
-              this.previousSibling?.focus(-1);
+              this.focusBefore();
             } else if (ps) {
               ps.delete();
-              this.previousSibling?.focus(-1);
+              this.focusBefore();
             } else if (this.parent instanceof Paragraph) {
               var ps1 = this.parent.previousSibling;
               if (ps1 instanceof Paragraph) {
                 var p = this.parent;
                 ps1.appendChild(...p.children);
                 p.delete();
-                this.previousSibling?.focus(-1);
+                this.focusBefore();
                 // console.log(e.inputType, 'Before', '  Handled.');
               }
             }
@@ -264,11 +264,9 @@ export default class Text extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.focus();
-          } else {
-            this.previousSibling?.focus(-1);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
