@@ -9,7 +9,16 @@ import {
   store,
   url,
 } from './index.js';
-import { Article, Element, ElementEvent, parse, AST } from './src/index.js';
+import {
+  Article,
+  Element,
+  ElementEvent,
+  parse,
+  AST,
+  MakeTitle,
+  SubSection,
+  Section,
+} from './src/index.js';
 
 /**
  * @param {BeforeUnloadEvent | undefined} e
@@ -119,6 +128,38 @@ function addEditControl(id, click, ariaLabel, title, icon) {
   return btn;
 }
 
+/**
+ * @param {Article} article
+ * @param {HTMLDivElement} table_of_contents
+ */
+function make_toc(article, table_of_contents) {
+  /** @param {Element} e */
+  function traverse(e) {
+    if (e instanceof MakeTitle) {
+      let d = document.createElement('div');
+      d.addEventListener('click', () => e.dom.scrollIntoView());
+      d.className = 'title';
+      d.innerText = article.title;
+      table_of_contents.appendChild(d);
+    } else if (e instanceof SubSection) {
+      let d = document.createElement('div');
+      d.addEventListener('click', () => e.dom.scrollIntoView());
+      d.className = 'subsection';
+      d.innerText = e.title;
+      table_of_contents.appendChild(d);
+    } else if (e instanceof Section) {
+      let d = document.createElement('div');
+      d.addEventListener('click', () => e.dom.scrollIntoView());
+      d.className = 'section';
+      d.innerText = e.title;
+      table_of_contents.appendChild(d);
+    }
+    e.children.forEach(traverse);
+  }
+
+  traverse(article);
+}
+
 /** */
 export default async function sketch() {
   Element.map.clear();
@@ -128,6 +169,9 @@ export default async function sketch() {
   if (!s) return recent();
   var article = Article.deserialise(s);
 
+  var table_of_contents = document.createElement('div');
+  table_of_contents.id = 'table_of_contents';
+  make_toc(article, table_of_contents);
   var root = document.createElement('div');
   root.id = 'root';
   root.appendChild(article.dom);
@@ -138,6 +182,7 @@ export default async function sketch() {
   edit_controls.appendChild(edit_controls_div);
   var main = document.querySelector('main');
   if (main) {
+    main.appendChild(table_of_contents);
     main.appendChild(root);
     main.appendChild(edit_controls);
   }
@@ -165,6 +210,8 @@ export default async function sketch() {
       document.title = '● ' + document.title;
       window.addEventListener('beforeunload', beforeunload);
     }
+
+    make_toc(article, table_of_contents);
   });
 
   addButton('recent_btn', recent, 'Recent', 'Recent', 'update');
