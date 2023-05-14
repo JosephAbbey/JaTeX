@@ -15,6 +15,7 @@
 
   color-scheme: var(--color-scheme);
   accent-color: var(--background-color);
+  scroll-behavior: smooth;
 }
 
 @media (prefers-color-scheme: light) {
