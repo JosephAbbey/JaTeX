@@ -580,9 +580,11 @@ export class SingleCharEditableElement extends Element {
         ) {
           e.preventDefault();
           if (e.inputType == 'deleteContentBackward') {
-            this.previousSibling?.delete(-1);
+            if (this.previousSibling) this.previousSibling.delete(-1);
+            else if (this.parent instanceof Brackets) this.parent.remove();
           } else {
-            this.nextSibling?.delete(1);
+            if (this.nextSibling) this.nextSibling.delete(1);
+            else if (this.parent instanceof Brackets) this.parent.remove();
           }
           // console.log(e.inputType, 'Before', '  Handled.');
         }
@@ -931,13 +933,8 @@ export class Number extends Element {
    * @example el.delete(-1); // last char
    */
   delete(position) {
-    if (position == null || position == 0) {
-      if (this.article?.readonly)
-        throw new ElementError('Article is readonly.');
+    if (position == null || position == 0) return super.delete();
 
-      this.parent?.removeChild(this);
-      return this.dispatchEvent(new ElementEvent('delete', this, {}));
-    }
     if (Math.sign(position) == -1) {
       this.text = this.text.substring(0, position + this.text.length);
     } else {
@@ -1257,6 +1254,25 @@ export class Brackets extends Element {
     this._dom = document.createElement('span');
     this.updateDom();
     return this._dom;
+  }
+
+  /** Removes the brackets. */
+  remove() {
+    while (this.children.length > 0) {
+      let c = this.children[0];
+      this.removeChild(c);
+      this.parent?.insertChildBefore(c, this);
+    }
+    this.delete();
+  }
+
+  /**
+   * Deletes the element in the position specified.
+   * @param {number=} position
+   */
+  delete(position) {
+    if (position == null || position == 0) return super.delete();
+    this.remove();
   }
 
   get tex() {

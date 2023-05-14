@@ -313,6 +313,7 @@ export default class Element {
   delete(position) {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
 
+    Element.map.delete(this.id);
     this.parent?.removeChild(this);
     this.dispatchEvent(new ElementEvent('delete', this, {}));
   }
@@ -457,6 +458,8 @@ export default class Element {
    */
   spliceChildren(start, deleteCount, ...items) {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
+    items.forEach((c) => ((c.parent = this), (c.article = this.article)));
 
     var r = deleteCount
       ? this.children.splice(start, deleteCount, ...items)
