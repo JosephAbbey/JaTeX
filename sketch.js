@@ -133,6 +133,8 @@ function addEditControl(id, click, ariaLabel, title, icon) {
  * @param {HTMLDivElement} table_of_contents
  */
 function make_toc(article, table_of_contents) {
+  table_of_contents.innerHTML = '';
+
   /** @param {Element} e */
   function traverse(e) {
     if (e instanceof MakeTitle) {
