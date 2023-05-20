@@ -35,8 +35,8 @@ export default class Power extends Element {
    */
   constructor(options) {
     super(options);
-    this.addEventListener('removeChild', this.updateDom);
-    this.addEventListener('spliceChildren', this.updateDom);
+    this.addEventListener('removeChild', this.updateDom.bind(this));
+    this.addEventListener('spliceChildren', this.updateDom.bind(this));
     // this.addEventListener(
     //   'removeChild',
     //   () => this.children.length == 0 && this.delete()
@@ -58,22 +58,6 @@ export default class Power extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    var s = document.createElement('style');
-    s.innerHTML = `
-      #${this.id}.empty::before {
-        content: " ";
-        border: 1px dashed #bd00008f;
-        background-color: #bd000029;
-        display: inline-block;
-        width: .5em;
-        height: .5em;
-      }
-
-      #${this.id}.empty:focus::before {
-        border: 1px dashed #bd0000c4;
-        background-color: #bd00004d;
-      }`;
-    this._dom.appendChild(s);
     if (this.children.length == 0) {
       this._dom.classList.add('empty');
       if (!this.article?.readonly) {

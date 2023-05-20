@@ -460,6 +460,27 @@ export default class SingleCharEditableElement extends Element {
             v.focus(-1);
             e.preventDefault();
             break;
+          } else if (e.data == '(') {
+            let v = new Brackets({
+              id: Element.uuid(),
+              children: [],
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
+          } else if (e.data == '[') {
+            let v = new Brackets({
+              id: Element.uuid(),
+              square: true,
+              children: [],
+            });
+            if (this._position == 0) this.parent?.insertChildBefore(v, this);
+            else this.parent?.insertChildAfter(v, this);
+            v.focus(-1);
+            e.preventDefault();
+            break;
           } else if (e.data.toLowerCase() != e.data.toUpperCase()) {
             let v = new Variable({
               id: Element.uuid(),

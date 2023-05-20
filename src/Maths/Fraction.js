@@ -59,8 +59,8 @@ export class SubFraction extends Element {
   constructor(options) {
     super(options);
     this.isNumerator = options.isNumerator;
-    this.addEventListener('removeChild', this.updateDom);
-    this.addEventListener('spliceChildren', this.updateDom);
+    this.addEventListener('removeChild', this.updateDom.bind(this));
+    this.addEventListener('spliceChildren', this.updateDom.bind(this));
     // this.addEventListener(
     //   'removeChild',
     //   () => this.children.length == 0 && this.delete()

@@ -11,4 +11,18 @@
     text-align: center;
     vertical-align: middle;
   }
+
+  &.empty::before {
+    content: ' ';
+    border: 1px dashed #bd00008f;
+    background-color: #bd000029;
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+  }
+
+  &.empty:focus::before {
+    border: 1px dashed #bd0000c4;
+    background-color: #bd00004d;
+  }
 }

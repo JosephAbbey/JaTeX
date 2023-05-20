@@ -66,8 +66,8 @@ export default class Function extends Element {
       throw new MathsError('A function name must be provided.');
     this.func = options.func;
 
-    this.addEventListener('removeChild', this.updateDom);
-    this.addEventListener('spliceChildren', this.updateDom);
+    this.addEventListener('removeChild', this.updateDom.bind(this));
+    this.addEventListener('spliceChildren', this.updateDom.bind(this));
     // this.addEventListener(
     //   'removeChild',
     //   () => this.children.length == 0 && this.delete()
