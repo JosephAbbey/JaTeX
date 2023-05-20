@@ -27,7 +27,7 @@ export default class TextNormal extends Text {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
-    this._dom.classList.add(this.constructor.type);
+    this._dom.className = this.constructor.classes;
     this._dom.innerText = this.text;
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';

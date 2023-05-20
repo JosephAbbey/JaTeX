@@ -57,7 +57,7 @@ export default class Power extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
-    this._dom.classList.add(this.constructor.type);
+    this._dom.className = this.constructor.classes;
     var s = document.createElement('style');
     s.innerHTML = `
       #${this.id}.empty::before {

@@ -42,25 +42,7 @@ export default class NewPage extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
-    this._dom.classList.add(this.constructor.type);
-    // var s = document.createElement('style');
-    // s.innerHTML = `
-    // #${this.id} {
-    //   break-after: page;
-    //   width: calc(100% + 10rem - 1rem);
-    //   transform: translateX(-5rem);
-    //   border-color: var(--background-color);
-    //   margin-block: 4rem;
-    //   border-width: 0.5rem;
-    //   border-style: solid;
-    // }
-
-    // @media print {
-    //   #${this.id} {
-    //     visibility: hidden;
-    //   }
-    // }`;
-    // this._dom.appendChild(s);
+    this._dom.className = this.constructor.classes;
   }
   createDom() {
     this._dom = document.createElement('hr');

@@ -1,0 +1,15 @@
+.InlineMaths {
+  font-family: math;
+  text-indent: 0;
+
+  display: inline-flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+  :not(sup, sub) {
+    text-align: center;
+    vertical-align: middle;
+  }
+}

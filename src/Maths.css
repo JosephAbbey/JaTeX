@@ -1,4 +1,9 @@
-@import './Maths/Comma.css';
+@import './Maths/Brackets.css';
+@import './Maths/Fraction.css';
+@import './Maths/Function.css';
+@import './Maths/InlineMaths.css';
+@import './Maths/Power.css';
 @import './Maths/SingleCharEditableElement.css';
+@import './Maths/Comma.css';
 @import './Maths/Variable.css';
 @import './Maths/Vector.css';

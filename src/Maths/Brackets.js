@@ -62,14 +62,10 @@ export default class Brackets extends Element {
 
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    this._dom.dataset.square = this.square ? 'true' : 'false';
     //@ts-expect-error
-    this._dom.classList.add(this.constructor.type);
-    this._dom.style.fontFamily = 'math';
-    this._dom.append(
-      document.createTextNode(this.square ? '[' : '('),
-      ...this.cdom,
-      document.createTextNode(this.square ? ']' : ')')
-    );
+    this._dom.className = this.constructor.classes;
+    this._dom.append(...this.cdom);
   }
   createDom() {
     this._dom = document.createElement('span');

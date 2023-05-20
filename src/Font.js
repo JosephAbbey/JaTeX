@@ -79,7 +79,7 @@ export default class Font extends Element {
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
-    this._dom.classList.add(this.constructor.type);
+    this._dom.className = this.constructor.classes;
     this._dom.style.fontFamily = {
       mathrm: 'roman',
       mathsf: 'sans serif',
