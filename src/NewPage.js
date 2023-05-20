@@ -21,6 +21,7 @@ export class NewPageEvent extends ElementEvent {}
  */
 export default class NewPage extends Element {
   static type = 'NewPage';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -37,9 +38,11 @@ export default class NewPage extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
-    this._dom.style.breakAfter = 'page';
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
     // var s = document.createElement('style');
     // s.innerHTML = `
     // #${this.id} {

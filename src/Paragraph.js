@@ -21,6 +21,7 @@ export class ParagraphEvent extends ElementEvent {}
  */
 export default class Paragraph extends Element {
   static type = 'Paragraph';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -33,9 +34,6 @@ export default class Paragraph extends Element {
 
   createDom() {
     this._dom = document.createElement('p');
-    this._dom.style.textAlign = 'justify';
-    this._dom.style.textIndent = '2em';
-    this._dom.style.margin = '0';
     this.updateDom();
     return this._dom;
   }

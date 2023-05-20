@@ -15,6 +15,7 @@ import Text from './Text.js';
  */
 export default class TextNormal extends Text {
   static type = 'TextNormal';
+  static classes = super.classes + ' ' + this.type;
 
   updateDom() {
     if (!this._dom)
@@ -22,9 +23,11 @@ export default class TextNormal extends Text {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
-    this._dom.style.fontFamily = 'initial';
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
     this._dom.innerText = this.text;
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';

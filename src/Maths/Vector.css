@@ -1,0 +1,6 @@
+.Vector:before {
+  content: '→';
+  position: absolute;
+  font-size: 0.65em;
+  transform: translate(-2.85em, -0.5em);
+}

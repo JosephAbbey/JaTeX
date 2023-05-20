@@ -30,6 +30,7 @@ export class MakeTitleEvent extends ElementEvent {}
  */
 export default class MakeTitle extends Element {
   static type = 'MakeTitle';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -59,8 +60,11 @@ export default class MakeTitle extends Element {
       throw new ElementError(
         'Please create a DOM node before you call `updateDom`.'
       );
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
     this._dom.innerText = this.article?.title ?? 'Unknown';
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';

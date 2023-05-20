@@ -124,6 +124,7 @@ export class ElementEvent extends Event {
  */
 export default class Element {
   static type = 'Element';
+  static classes = this.type;
 
   static uuid() {
     // Public Domain/MIT
@@ -538,8 +539,11 @@ export default class Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
     this._dom.append(...this.cdom);
   }
   /**

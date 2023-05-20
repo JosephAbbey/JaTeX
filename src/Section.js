@@ -40,6 +40,7 @@ export class SectionEvent extends ElementEvent {}
  */
 export default class Section extends Element {
   static type = 'Section';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -126,8 +127,11 @@ export default class Section extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
 
     this._dom.append(this.titleDom, ...this.cdom);
   }

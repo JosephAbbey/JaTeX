@@ -1,3 +1,5 @@
+@import './src/index.css';
+
 main:has(#root) {
   display: grid;
   grid-template-columns: 1fr 50rem 1fr;
@@ -17,6 +19,7 @@ main:has(#root) {
   grid-area: ⚫;
   font-family: sans-serif;
   margin: 0.5em;
+  user-select: none;
 }
 
 #table_of_contents .title {

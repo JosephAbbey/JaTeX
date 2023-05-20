@@ -49,6 +49,7 @@ export class TextEvent extends ElementEvent {}
  */
 export default class Text extends Element {
   static type = 'Text';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -86,8 +87,11 @@ export default class Text extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
     this._dom.innerHTML = this.text;
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';

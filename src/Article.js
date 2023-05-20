@@ -57,6 +57,7 @@ export class ArticleEvent extends ElementEvent {}
  */
 export default class Article extends Element {
   static type = 'Article';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey

@@ -21,6 +21,7 @@ export class DocumentEvent extends ElementEvent {}
  */
 export default class Document extends Element {
   static type = 'Document';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -38,43 +39,12 @@ export default class Document extends Element {
       );
     this._dom.innerHTML = '';
     this._dom.id = this.id;
+
     //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
-    var style = document.createElement('style');
-    style.innerHTML = `
-    #${this.id} [contenteditable] {
-      outline: 0px solid transparent;
-    }
-
-    #${this.id} {
-      background-color: white;
-      counter-reset: sectionCount subsectionCount;
-    }
-
-    @media not print {
-      #${this.id} {
-        padding-block: 3em;
-        padding-inline: 5em;
-      }
-    }
-
-    #${this.id} [data-type='Section'] > h2 {
-      counter-increment: sectionCount 1;
-      counter-reset: subsectionCount;
-    }
-
-    #${this.id} [data-type='Section'] > h2:before {
-      content: counter(sectionCount) ' ';
-    }
-
-    #${this.id} [data-type='SubSection'] > h3 {
-      counter-increment: subsectionCount 1;
-    }
-
-    #${this.id} [data-type='SubSection'] > h3:before {
-      content: counter(sectionCount) '.' counter(subsectionCount) ' ';
-    }`;
-    this._dom.append(style, ...this.cdom);
+    //@ts-expect-error
+    this._dom.classList.add(this.constructor.type);
+    this._dom.append(...this.cdom);
   }
 
   get tex() {

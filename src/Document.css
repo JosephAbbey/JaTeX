@@ -1,0 +1,30 @@
+.Document {
+  background-color: white;
+  counter-reset: sectionCount subsectionCount;
+
+  @media not print {
+    padding-block: 3em;
+    padding-inline: 5em;
+  }
+
+  [contenteditable] {
+    outline: 0px solid transparent;
+  }
+
+  .Section > h2 {
+    counter-increment: sectionCount 1;
+    counter-reset: subsectionCount;
+
+    &::before {
+      content: counter(sectionCount) ' ';
+    }
+  }
+
+  .SubSection > h3 {
+    counter-increment: subsectionCount 1;
+
+    &::before {
+      content: counter(sectionCount) '.' counter(subsectionCount) ' ';
+    }
+  }
+}
