@@ -123,26 +123,24 @@ export default class Function extends Element {
         this.handleBeforeInput.bind(this)
       );
       this._innerDom.addEventListener('input', this.handleInput.bind(this));
+    } else {
+      this._innerDom.innerHTML = '';
     }
-    this._innerDom.className = 'inner';
-    this._innerDom.append(...this.cdom);
     if (this.children.length == 0) {
-      this._innerDom.classList.add('empty');
+      this._dom.classList.add('empty');
       if (!this.article?.readonly) {
         this._innerDom.contentEditable = 'true';
       } else {
         this._innerDom.contentEditable = 'false';
       }
     } else {
-      this._innerDom.classList.remove('empty');
+      this._dom.classList.remove('empty');
       this._innerDom.contentEditable = 'false';
     }
-    this._dom.append(
-      this._nameDom,
-      document.createTextNode('['),
-      this._innerDom,
-      document.createTextNode(']')
-    );
+    let i = document.createElement('span');
+    i.append(...this.cdom);
+    this._innerDom.appendChild(i);
+    this._dom.append(this._nameDom, this._innerDom);
   }
   createDom() {
     this._dom = document.createElement('span');

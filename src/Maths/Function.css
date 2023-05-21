@@ -1,21 +1,74 @@
 .Function {
   font-family: math;
-
-  display: inline-flex;
-  align-items: stretch;
-  flex-wrap: nowrap;
-  white-space: nowrap;
-  text-align: center;
-  vertical-align: middle;
-  :not(sup, sub) {
-    text-align: center;
-    vertical-align: middle;
-  }
-
-  font-family: math;
   /* margin-left: 0.2em; */
 
-  & > select {
+  > span {
+    font-family: math;
+
+    display: inline-flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    :not(sup, sub) {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    > span {
+      font-family: math;
+
+      display: inline-flex;
+      align-items: stretch;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+      text-align: center;
+      vertical-align: middle;
+      :not(sup, sub) {
+        text-align: center;
+        vertical-align: middle;
+      }
+    }
+
+    &::before {
+      content: '';
+      cursor: text;
+      display: inline-block;
+      width: 7px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-image: url('./OpenSquareBracket.svg');
+    }
+
+    &::after {
+      content: '';
+      cursor: text;
+      display: inline-block;
+      width: 7px;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-image: url('./CloseSquareBracket.svg');
+    }
+  }
+
+  &.empty > span {
+    > span::before {
+      content: ' ';
+      border: 1px dashed #bd00008f;
+      background-color: #bd000029;
+      display: inline-block;
+      width: 0.5em;
+      height: 0.5em;
+    }
+
+    :focus > span::before {
+      border: 1px dashed #bd0000c4;
+      background-color: #bd00004d;
+    }
+  }
+
+  > select {
     background-color: transparent;
     border: none;
     -moz-appearance: none;
@@ -24,21 +77,7 @@
     display: inline;
   }
 
-  & > select::ms-expand {
+  > select::ms-expand {
     display: none;
-  }
-
-  & > .inner.empty::before {
-    content: ' ';
-    border: 1px dashed #bd00008f;
-    background-color: #bd000029;
-    display: inline-block;
-    width: 0.5em;
-    height: 0.5em;
-  }
-
-  & > .inner.empty:focus::before {
-    border: 1px dashed #bd0000c4;
-    background-color: #bd00004d;
   }
 }

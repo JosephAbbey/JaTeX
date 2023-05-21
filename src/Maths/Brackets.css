@@ -11,9 +11,9 @@
     text-align: center;
     vertical-align: middle;
   }
-  & span {
-    font-family: math;
 
+  > span {
+    font-family: math;
     display: inline-flex;
     align-items: center;
     flex-wrap: nowrap;
