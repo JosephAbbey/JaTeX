@@ -9,7 +9,7 @@ import {
   Power,
   Variable,
 } from '../Maths.js';
-import SingleCharEditableElement from './SingleCharEditableElement.js';
+import { SingleCharEditableElement } from '../Maths.js';
 /**
  * @typedef {import("../Element.js").ElementOptions} ElementOptions
  * @typedef {import("../Element.js").ElementSerialised} ElementSerialised

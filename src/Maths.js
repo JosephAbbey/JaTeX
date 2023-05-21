@@ -9,25 +9,27 @@ import Element, { ElementError, ElementEvent } from './Element.js';
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
  */
 
+import SingleCharEditableElement, {
+  Approx,
+  CDot,
+  Comma,
+  Equals,
+  Minus,
+  Plus,
+  Variable,
+  Vector,
+} from './Maths/SingleCharEditableElement.js';
 import InlineMaths from './Maths/InlineMaths.js';
 import Maths from './Maths/Maths.js';
 import Number from './Maths/Number.js';
-import Variable from './Maths/Variable.js';
-import Vector from './Maths/Vector.js';
 import Brackets from './Maths/Brackets.js';
-import CDot from './Maths/CDot.js';
-import Comma from './Maths/Comma.js';
-import Equals from './Maths/Equals.js';
 import Fraction, { SubFraction } from './Maths/Fraction.js';
 import Function from './Maths/Function.js';
-import Minus from './Maths/Minus.js';
-import Plus from './Maths/Plus.js';
 import Power from './Maths/Power.js';
-import Approx from './Maths/Approx.js';
 
 export class MathsError extends ElementError {}
 
-/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | Minus | Fraction | Power , "edit">} */
+/** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | Minus | Plus | Fraction | Power , "edit">} */
 export class MathsEvent extends ElementEvent {}
 
 const commands = [
@@ -183,4 +185,5 @@ export {
   Power,
   SubFraction,
   Approx,
+  SingleCharEditableElement,
 };

@@ -30,5 +30,10 @@
     "parcel-config-precache-manifest": "^0.0.4",
     "serve": "^14.2.0",
     "tidy-jsdoc": "^1.4.1"
+  },
+  "@parcel/transformer-css": {
+    "drafts": {
+      "nesting": true
+    }
   }
 }
