@@ -32,6 +32,7 @@ export class PageNumberingEvent extends ElementEvent {}
  */
 export default class PageNumbering extends Element {
   static type = 'PageNumbering';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey

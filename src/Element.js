@@ -111,7 +111,7 @@ export class ElementEvent extends Event {
  * @typedef ElementSerialised
  * @prop {string} class - The constructor of the element.
  * @prop {string} id - The id of the element.
- * @prop {ElementSerialised[]} children - The children of the element.
+ * @prop {ElementSerialised[]=} children - The children of the element.
  */
 
 /**
@@ -124,6 +124,7 @@ export class ElementEvent extends Event {
  */
 export default class Element {
   static type = 'Element';
+  static classes = this.type;
 
   static uuid() {
     // Public Domain/MIT
@@ -232,7 +233,7 @@ export default class Element {
   static deserialise(s) {
     return new (Element.registry.get(s.class) ?? Element)({
       ...s,
-      children: Element.deserialiseMany(s.children),
+      children: Element.deserialiseMany(s.children ?? []),
     });
   }
 
@@ -301,9 +302,19 @@ export default class Element {
     this.children.forEach((c) => (c.article = a));
   }
 
-  delete() {
+  /**
+   * Deletes the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.delete(); // whole
+   * @example el.delete(0);
+   * @example el.delete(1);
+   * @example el.delete(-1); // end
+   */
+  delete(position) {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
 
+    Element.map.delete(this.id);
     this.parent?.removeChild(this);
     this.dispatchEvent(new ElementEvent('delete', this, {}));
   }
@@ -389,6 +400,30 @@ export default class Element {
   }
   /**
    * @author Joseph Abbey
+   * @date 05/05/2023
+   * @param {Element} c
+   * @param {Element} o - Other element.
+   * @returns {void}
+   *
+   * @description Function to add a child element to the element before another element.
+   */
+  insertChildBefore(c, o) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
+    const index = this.children.findIndex((e) => e.id == o.id);
+    if (index > -1) this.children.splice(index, 0, c);
+    c.parent = this;
+    c.article = this.article;
+    this.updateDom();
+    this.dispatchEvent(
+      new ElementEvent('insertChildBefore', this, {
+        child: c,
+        other: o,
+      })
+    );
+  }
+  /**
+   * @author Joseph Abbey
    * @date 05/02/2023
    * @param {Element} c
    * @returns {void}
@@ -424,6 +459,8 @@ export default class Element {
    */
   spliceChildren(start, deleteCount, ...items) {
     if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
+    items.forEach((c) => ((c.parent = this), (c.article = this.article)));
 
     var r = deleteCount
       ? this.children.splice(start, deleteCount, ...items)
@@ -502,8 +539,11 @@ export default class Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.className = this.constructor.classes;
     this._dom.append(...this.cdom);
   }
   /**
@@ -542,6 +582,37 @@ export default class Element {
    */
   get tex() {
     return '';
+  }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    this.dom.focus();
+    if (position != 0) {
+      const sel = document.getSelection();
+      if (!sel) return;
+      const node = this.dom.firstChild;
+
+      if (node && sel.rangeCount && node instanceof Text) {
+        if (position < 0) position += node.length + 1;
+        sel.getRangeAt(0).setStart(node, position);
+        sel.getRangeAt(0).setEnd(node, position);
+      }
+    }
+  }
+  focusBefore() {
+    if (this.previousSibling) return this.previousSibling.focus(-1);
+    this.parent?.focusBefore();
+  }
+  focusAfter() {
+    if (this.nextSibling) return this.nextSibling.focus();
+    this.parent?.focusAfter();
   }
 
   /**

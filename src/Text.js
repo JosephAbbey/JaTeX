@@ -3,6 +3,7 @@
  */
 
 import Element, { ElementError, ElementEvent } from './Element.js';
+import { InlineMaths } from './Maths.js';
 import Paragraph from './Paragraph.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
@@ -23,7 +24,7 @@ export class TextError extends ElementError {}
  * @author Joseph Abbey
  * @date 04/02/2023
  * @constructor
- * @extends {ElementEvent<Text,"edit">}
+ * @extends {ElementEvent<Text, "edit">}
  *
  * @description Used to trigger text element specific events.
  */
@@ -49,6 +50,7 @@ export class TextEvent extends ElementEvent {}
  */
 export default class Text extends Element {
   static type = 'Text';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -86,8 +88,11 @@ export default class Text extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.className = this.constructor.classes;
     this._dom.innerHTML = this.text;
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';
@@ -102,6 +107,17 @@ export default class Text extends Element {
   createDom() {
     this._dom = document.createElement('span');
     this.updateDom();
+    this._dom.addEventListener('keydown', (e) => {
+      if (e.key == 'ArrowLeft') {
+        if (window.getSelection()?.getRangeAt(0).startOffset == 0)
+          this.focusBefore();
+      } else if (e.key == 'ArrowRight') {
+        if (
+          window.getSelection()?.getRangeAt(0).startOffset == this._text.length
+        )
+          this.focusAfter();
+      }
+    });
     this._dom.addEventListener(
       'beforeinput',
       this.handleBeforeInput.bind(this)
@@ -115,6 +131,7 @@ export default class Text extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
@@ -172,17 +189,17 @@ export default class Text extends Element {
             var ps = this.previousSibling;
             if (ps instanceof Text) {
               ps.text = ps.text.substring(0, ps.text.length - 1);
-              focusEnd(this.previousSibling?.dom);
+              this.focusBefore();
             } else if (ps) {
               ps.delete();
-              focusEnd(this.previousSibling?.dom);
+              this.focusBefore();
             } else if (this.parent instanceof Paragraph) {
               var ps1 = this.parent.previousSibling;
               if (ps1 instanceof Paragraph) {
                 var p = this.parent;
                 ps1.appendChild(...p.children);
                 p.delete();
-                focusEnd(this.previousSibling?.dom);
+                this.focusBefore();
                 // console.log(e.inputType, 'Before', '  Handled.');
               }
             }
@@ -208,7 +225,8 @@ export default class Text extends Element {
         }
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
+        // console.log(e.inputType, 'Before', '  Unhandled.');
+        break;
     }
   }
 
@@ -217,6 +235,7 @@ export default class Text extends Element {
    * @returns {void}
    */
   handleInput(e) {
+    if (e.target != this.dom) return;
     // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
@@ -237,7 +256,7 @@ export default class Text extends Element {
           }),
           this.parent
         );
-        c[0].dom.focus();
+        c[0].focus();
         // console.log(e.inputType, '   After', '  Handled.');
         break;
       case 'deleteWordBackward':
@@ -251,11 +270,9 @@ export default class Text extends Element {
           if (
             e.inputType == 'deleteContentForward' ||
             e.inputType == 'deleteWordForward'
-          ) {
-            this.nextSibling?.dom.focus();
-          } else {
-            focusEnd(this.previousSibling?.dom);
-          }
+          )
+            this.focusAfter();
+          else this.focusBefore();
           // console.log(e.inputType, '   After', '  Handled.');
           break;
         }
@@ -267,6 +284,19 @@ export default class Text extends Element {
       case 'insertTranspose':
       case 'insertCompositionText':
       case 'insertText':
+        if (this.dom.innerHTML.includes('$')) {
+          var [t1, t2] = this.dom.innerHTML.split('$');
+          this.parent?.insertChildAfter(
+            new Text({ id: Element.uuid(), text: t2 }),
+            this
+          );
+          this.parent?.insertChildAfter(
+            new InlineMaths({ id: Element.uuid(), children: [] }),
+            this
+          );
+          this.text = t1;
+          break;
+        }
         this._text = this.dom.innerHTML;
         this.dispatchEvent(
           new TextEvent('edit', this, {
@@ -325,23 +355,3 @@ export default class Text extends Element {
 }
 
 Text.register();
-
-/**
- * Opens the article.
- * @param {HTMLElement & ElementContentEditable=} node
- */
-function focusEnd(node) {
-  if (!node) return;
-  node.focus();
-  const sel = document.getSelection();
-  if (!sel) return;
-  //@ts-expect-error
-  node = node.firstChild;
-
-  if (sel.rangeCount) {
-    //@ts-expect-error
-    sel.getRangeAt(0)['setStart'](node, node.length);
-    //@ts-expect-error
-    sel.getRangeAt(0)['setEnd'](node, node.length);
-  }
-}

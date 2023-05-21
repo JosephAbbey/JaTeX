@@ -40,6 +40,7 @@ export class SectionEvent extends ElementEvent {}
  */
 export default class Section extends Element {
   static type = 'Section';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -75,7 +76,7 @@ export default class Section extends Element {
   /**
    * @author Joseph Abbey
    * @date 11/02/2023
-   * @type {HTMLHeadingElement}
+   * @type {HTMLHeadingElement?}
    * @see {@link titleDom} instead.
    *
    * @description Internal dom cache, use `this.titleDom` instead.
@@ -126,8 +127,11 @@ export default class Section extends Element {
         'Please create a DOM node before you call `updateDom`.'
       );
     this._dom.innerHTML = '';
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.className = this.constructor.classes;
 
     this._dom.append(this.titleDom, ...this.cdom);
   }
@@ -142,7 +146,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
-    // console.log(e.inputType, 'Before', 'Fired:', e);
+    if (e.target != this.titleDom) return;
     switch (e.inputType) {
       case 'insertParagraph':
       case 'historyUndo':
@@ -180,10 +184,8 @@ export default class Section extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
     }
   }
 
@@ -192,7 +194,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleInput(e) {
-    // console.log(e.inputType, '   After', 'Fired:', e);
+    if (e.target != this.titleDom) return;
     switch (e.inputType) {
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -211,10 +213,13 @@ export default class Section extends Element {
             content: this.titleDom.innerText,
           })
         );
-        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+        this.updateTitleDom();
         break;
       default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

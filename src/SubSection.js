@@ -14,6 +14,7 @@ import Section from './Section.js';
  */
 export default class SubSection extends Section {
   static type = 'SubSection';
+  static classes = super.classes + ' ' + this.type;
 
   get titleDom() {
     if (!this._titleDom) {

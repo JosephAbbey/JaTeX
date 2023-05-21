@@ -2,7 +2,6 @@
  * @module MakeTitle
  */
 
-import { ArticleEvent } from './Article.js';
 import Element, { ElementError, ElementEvent } from './Element.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
@@ -15,7 +14,7 @@ export class MakeTitleError extends ElementError {}
  * @author Joseph Abbey
  * @date 13/02/2023
  * @constructor
- * @extends {ElementEvent<MakeTitle,"editTitle">}
+ * @extends {ElementEvent<MakeTitle, "edit">}
  *
  * @description Used to trigger maketitle element specific events.
  */
@@ -31,6 +30,7 @@ export class MakeTitleEvent extends ElementEvent {}
  */
 export default class MakeTitle extends Element {
   static type = 'MakeTitle';
+  static classes = super.classes + ' ' + this.type;
 
   /**
    * @author Joseph Abbey
@@ -60,8 +60,11 @@ export default class MakeTitle extends Element {
       throw new ElementError(
         'Please create a DOM node before you call `updateDom`.'
       );
-    this._dom.id = this.id; //@ts-expect-error
+    this._dom.id = this.id;
+    //@ts-expect-error
     this._dom.dataset.type = this.constructor.type;
+    //@ts-expect-error
+    this._dom.className = this.constructor.classes;
     this._dom.innerText = this.article?.title ?? 'Unknown';
     if (!this.article?.readonly) {
       this._dom.contentEditable = 'true';
@@ -89,7 +92,7 @@ export default class MakeTitle extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
-    // console.log(e.inputType, 'Before', 'Fired:', e);
+    if (e.target != this.dom) return;
     switch (e.inputType) {
       case 'insertParagraph':
       case 'historyUndo':
@@ -127,10 +130,9 @@ export default class MakeTitle extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
+        break;
     }
   }
 
@@ -139,7 +141,7 @@ export default class MakeTitle extends Element {
    * @returns {void}
    */
   handleInput(e) {
-    // console.log(e.inputType, '   After', 'Fired:', e);
+    if (e.target != this.dom) return;
     switch (e.inputType) {
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -155,17 +157,20 @@ export default class MakeTitle extends Element {
         if (this.article) {
           this.article.title = this.dom.innerText;
           this.dispatchEvent(
-            new MakeTitleEvent('editTitle', this, {
+            new MakeTitleEvent('edit', this, {
               content: this.dom.innerText,
             })
           );
         } else {
           this.dom.innerText = 'Unknown';
         }
-        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+        this.updateDom();
         break;
       default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

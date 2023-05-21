@@ -1,0 +1,40 @@
+.SubFraction {
+  font-family: math;
+
+  display: inline-flex;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  text-align: center;
+  vertical-align: middle;
+  :not(sup, sub) {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  text-indent: 0;
+  margin-inline: 0.25em;
+  display: inline-block;
+
+  > hr {
+    margin: auto;
+    margin-inline: 4px;
+    border: 1px solid #5e5e5e;
+    padding-inline: 6px;
+    padding-block: 0;
+  }
+
+  &.empty::before {
+    content: ' ';
+    border: 1px dashed #bd00008f;
+    background-color: #bd000029;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+  }
+
+  &.empty:focus::before {
+    border: 1px dashed #bd0000c4;
+    background-color: #bd00004d;
+  }
+}
