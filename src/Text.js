@@ -3,6 +3,7 @@
  */
 
 import Element, { ElementError, ElementEvent } from './Element.js';
+import { InlineMaths } from './Maths.js';
 import Paragraph from './Paragraph.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
@@ -224,7 +225,8 @@ export default class Text extends Element {
         }
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
+        // console.log(e.inputType, 'Before', '  Unhandled.');
+        break;
     }
   }
 
@@ -282,6 +284,19 @@ export default class Text extends Element {
       case 'insertTranspose':
       case 'insertCompositionText':
       case 'insertText':
+        if (this.dom.innerHTML.includes('$')) {
+          var [t1, t2] = this.dom.innerHTML.split('$');
+          this.parent?.insertChildAfter(
+            new Text({ id: Element.uuid(), text: t2 }),
+            this
+          );
+          this.parent?.insertChildAfter(
+            new InlineMaths({ id: Element.uuid(), children: [] }),
+            this
+          );
+          this.text = t1;
+          break;
+        }
         this._text = this.dom.innerHTML;
         this.dispatchEvent(
           new TextEvent('edit', this, {

@@ -88,24 +88,6 @@ export class SubFraction extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    this._dom.style.textIndent = '0';
-    this._dom.style.marginInline = '0.25em';
-    var s = document.createElement('style');
-    s.innerHTML = `
-      #${this.id}.empty::before {
-        content: " ";
-        border: 1px dashed #bd00008f;
-        background-color: #bd000029;
-        display: inline-block;
-        width: 1em;
-        height: 1em;
-      }
-
-      #${this.id}.empty:focus::before {
-        border: 1px dashed #bd0000c4;
-        background-color: #bd00004d;
-      }`;
-    this._dom.appendChild(s);
     if (this.children.length == 0) {
       this._dom.classList.add('empty');
       if (!this.article?.readonly) {
@@ -448,13 +430,7 @@ export default class Fraction extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    this._dom.style.display = 'inline-block';
     var hr = document.createElement('hr');
-    hr.style.margin = 'auto';
-    hr.style.marginInline = '4px';
-    hr.style.border = '1px solid #5e5e5e';
-    hr.style.paddingInline = '6px';
-    hr.style.paddingBlock = '0';
     this._dom.append(this.numerator.dom, hr, this.denominator.dom);
   }
   createDom() {

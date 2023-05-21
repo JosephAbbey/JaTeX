@@ -93,7 +93,6 @@ export default class MakeTitle extends Element {
    */
   handleBeforeInput(e) {
     if (e.target != this.dom) return;
-    // console.log(e.inputType, 'Before', 'Fired:', e);
     switch (e.inputType) {
       case 'insertParagraph':
       case 'historyUndo':
@@ -131,10 +130,9 @@ export default class MakeTitle extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
+        break;
     }
   }
 
@@ -144,7 +142,6 @@ export default class MakeTitle extends Element {
    */
   handleInput(e) {
     if (e.target != this.dom) return;
-    // console.log(e.inputType, '   After', 'Fired:', e);
     switch (e.inputType) {
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -167,10 +164,13 @@ export default class MakeTitle extends Element {
         } else {
           this.dom.innerText = 'Unknown';
         }
-        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+        this.updateDom();
         break;
       default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }

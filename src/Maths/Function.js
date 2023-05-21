@@ -94,40 +94,6 @@ export default class Function extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    var s = document.createElement('style');
-    s.innerHTML = `
-      #${this.id} {
-        font-family: math;
-        margin-left: 0.2em;
-      }
-
-      #${this.id} > select {
-        background-color: transparent;
-        border: none;
-        -moz-appearance: none;
-        -webkit-appearance: none;
-        appearance: none;
-        display: inline;
-      }
-
-      #${this.id} > select::ms-expand {
-        display: none;
-      }
-
-      #${this.id} > .inner.empty::before {
-        content: " ";
-        border: 1px dashed #bd00008f;
-        background-color: #bd000029;
-        display: inline-block;
-        width: .5em;
-        height: .5em;
-      }
-
-      #${this.id} > .inner.empty:focus::before {
-        border: 1px dashed #bd0000c4;
-        background-color: #bd00004d;
-      }`;
-    this._dom.appendChild(s);
     if (!this._nameDom) {
       this._nameDom = document.createElement('select');
       for (let f of functions) {

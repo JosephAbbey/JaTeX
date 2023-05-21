@@ -71,15 +71,7 @@ export default class Maths extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    this._dom.style.fontFamily = 'math';
-    this._dom.style.overflowWrap = 'none';
-    var s = document.createElement('style');
-    s.innerHTML = `
-    #${this.id}, #${this.id} :not(sup, sub) {
-      text-align: center;
-      vertical-align: middle;
-    }`;
-    this._dom.append(s, ...this.cdom);
+    this._dom.append(...this.cdom);
   }
   createDom() {
     this._dom = document.createElement('div');

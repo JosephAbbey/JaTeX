@@ -76,7 +76,6 @@ export default class Number extends Element {
     this._dom.dataset.type = this.constructor.type;
     //@ts-expect-error
     this._dom.className = this.constructor.classes;
-    this._dom.style.fontFamily = 'math';
     this._dom.innerText = this.text;
 
     if (!this.article?.readonly) {

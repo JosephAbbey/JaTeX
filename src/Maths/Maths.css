@@ -1,0 +1,11 @@
+.Maths {
+  font-family: math;
+  overflow-wrap: none;
+  text-align: center;
+  vertical-align: middle;
+
+  :not(sup, sub) {
+    text-align: center;
+    vertical-align: middle;
+  }
+}

@@ -11,4 +11,34 @@
     text-align: center;
     vertical-align: middle;
   }
+
+  font-family: math;
+  /* margin-left: 0.2em; */
+
+  & > select {
+    background-color: transparent;
+    border: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline;
+  }
+
+  & > select::ms-expand {
+    display: none;
+  }
+
+  & > .inner.empty::before {
+    content: ' ';
+    border: 1px dashed #bd00008f;
+    background-color: #bd000029;
+    display: inline-block;
+    width: 0.5em;
+    height: 0.5em;
+  }
+
+  & > .inner.empty:focus::before {
+    border: 1px dashed #bd0000c4;
+    background-color: #bd00004d;
+  }
 }

@@ -76,7 +76,7 @@ export default class Section extends Element {
   /**
    * @author Joseph Abbey
    * @date 11/02/2023
-   * @type {HTMLHeadingElement}
+   * @type {HTMLHeadingElement?}
    * @see {@link titleDom} instead.
    *
    * @description Internal dom cache, use `this.titleDom` instead.
@@ -146,8 +146,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleBeforeInput(e) {
-    if (e.target != this.dom) return;
-    // console.log(e.inputType, 'Before', 'Fired:', e);
+    if (e.target != this.titleDom) return;
     switch (e.inputType) {
       case 'insertParagraph':
       case 'historyUndo':
@@ -185,10 +184,8 @@ export default class Section extends Element {
       case 'formatFontColor':
       case 'formatFontName':
         e.preventDefault();
-        // console.log(e.inputType, 'Before', '  Canceled.');
         break;
       default:
-      // console.log(e.inputType, 'Before', '  Unhandled.');
     }
   }
 
@@ -197,8 +194,7 @@ export default class Section extends Element {
    * @returns {void}
    */
   handleInput(e) {
-    if (e.target != this.dom) return;
-    // console.log(e.inputType, '   After', 'Fired:', e);
+    if (e.target != this.titleDom) return;
     switch (e.inputType) {
       case 'deleteWordBackward':
       case 'deleteWordForward':
@@ -217,10 +213,13 @@ export default class Section extends Element {
             content: this.titleDom.innerText,
           })
         );
-        // console.log(e.inputType, '   After', '  Handled.');
+        break;
+      case 'formatBold':
+      case 'formatItalic':
+      case 'formatUnderline':
+        this.updateTitleDom();
         break;
       default:
-        // console.log(e.inputType, '   After', '  Unhandled.');
         break;
     }
   }
