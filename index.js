@@ -500,6 +500,7 @@ const registerServiceWorker = async () => {
 };
 
 addButton('new_btn', new_btn, 'New Article', 'New Article ctrl+n', 'add', true);
+addButton('reload_btn', () => reload(), 'Refresh', 'Refresh', 'refresh', true);
 
 addCtrlKey('n', new_btn, true);
 

@@ -8,6 +8,9 @@ import Element, { ElementError, ElementEvent } from './Element.js';
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
  */
 
+import Paragraph from './Paragraph.js';
+import { NewPage, Section, SubSection, backslash } from './index.js';
+
 export class MakeTitleError extends ElementError {}
 
 /**
@@ -84,6 +87,34 @@ export default class MakeTitle extends Element {
       'beforeinput',
       this.handleBeforeInput.bind(this)
     );
+    this._dom.addEventListener('click', (e) => {
+      if (e.offsetX > (this._dom?.offsetWidth ?? 0)) {
+        backslash(['section', 'newpage']).then((t) => {
+          let v;
+          switch (t) {
+            case 'section':
+              v = new Section({
+                id: Element.uuid(),
+                title: 'New section',
+                children: [],
+              });
+              this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+              break;
+            case 'newpage':
+              v = new NewPage({
+                id: Element.uuid(),
+                children: [],
+              });
+              this.parent?.insertChildAfter(v, this);
+              v.focus(-1);
+              break;
+            default:
+              break;
+          }
+        });
+      }
+    });
     return this._dom;
   }
 

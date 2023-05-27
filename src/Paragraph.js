@@ -30,6 +30,15 @@ export default class Paragraph extends Element {
    */
   constructor(options) {
     super(options);
+
+    this.addEventListener(
+      'removeChild',
+      () => this.children.length == 0 && this.delete()
+    );
+    this.addEventListener(
+      'spliceChildren',
+      () => this.children.length == 0 && this.delete()
+    );
   }
 
   createDom() {
@@ -40,6 +49,23 @@ export default class Paragraph extends Element {
 
   get tex() {
     return '\n' + this.ctex + '\n';
+  }
+
+  /**
+   * Focuses the element in the position specified.
+   * @param {number=} position
+   *
+   * @example el.focus(); // beginning
+   * @example el.focus(1);
+   * @example el.focus(-1); // end
+   */
+  focus(position = 0) {
+    if (this.children.length == 0) return this.dom.focus();
+
+    if (position == -1)
+      return this.children[this.children.length - 1].focus(-1);
+
+    this.children[0].focus(position);
   }
 }
 

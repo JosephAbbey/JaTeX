@@ -3,12 +3,36 @@
   counter-reset: sectionCount subsectionCount;
 
   @media not print {
-    padding-block: 3em;
+    padding-block-start: 3em;
+    padding-block-end: 5em;
     padding-inline: 5em;
   }
 
   [contenteditable] {
     outline: 0px solid transparent;
+  }
+
+  .NewPage {
+    counter-increment: pageCount 1;
+
+    &::before {
+      content: counter(pageCount);
+      position: absolute;
+      left: -0.5rem;
+      right: 0.5rem;
+      text-align: center;
+      transform: translateY(-3rem);
+    }
+  }
+
+  &::after {
+    counter-increment: pageCount 1;
+    content: counter(pageCount);
+    position: absolute;
+    left: -0.5rem;
+    right: 0.5rem;
+    text-align: center;
+    transform: translateY(2rem);
   }
 
   .Section > h2 {

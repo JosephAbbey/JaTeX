@@ -1,0 +1,35 @@
+.Section {
+  & h2 {
+    --block: 0.83em;
+  }
+  & h3 {
+    --block: 1em;
+  }
+
+  > :is(h2, h3):first-child {
+    padding-block: var(--block);
+    margin: 0;
+
+    &:hover {
+      position: relative;
+
+      &::after {
+        color: #000a;
+        font-size: 0.75em;
+        width: 1em;
+        height: 1em;
+        position: absolute;
+        top: calc(100% - var(--block));
+        left: 100%;
+        border: 1px solid currentColor;
+        border-radius: 20%;
+        font-family: 'Material Symbols Outlined';
+        content: 'add';
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: nowrap;
+      }
+    }
+  }
+}

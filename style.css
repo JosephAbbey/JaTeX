@@ -15,6 +15,12 @@ main:has(#root) {
   }
 }
 
+@media print {
+  #table_of_contents {
+    display: none;
+  }
+}
+
 #table_of_contents {
   grid-area: ⚫;
   font-family: sans-serif;

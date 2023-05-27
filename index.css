@@ -130,7 +130,7 @@ input[type='checkbox']:not(:checked) {
   float: left;
   font-size: 1.25em;
   font-family: 'Material Symbols Outlined';
-  content: '\e8b6';
+  content: 'search';
   margin-left: 0.1em;
 }
 

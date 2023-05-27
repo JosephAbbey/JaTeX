@@ -35,7 +35,7 @@ export class ElementMap extends Map {}
 export class ElementError extends Error {}
 
 /**
- * @typedef {"removeChild" | "appendChild" | "insertChildAfter" | "spliceChildren" | "childEvent"} GenericElementEventTypes
+ * @typedef {"removeChild" | "appendChild" | "prependChild" | "insertChildAfter" | "spliceChildren" | "childEvent"} GenericElementEventTypes
  */
 
 /**
@@ -369,6 +369,29 @@ export default class Element {
       this.updateDom();
       this.dispatchEvent(
         new ElementEvent('appendChild', this, {
+          child: c,
+        })
+      );
+    });
+  }
+  /**
+   * @author Joseph Abbey
+   * @date 05/02/2023
+   * @param {Element[]} cs
+   * @returns {void}
+   *
+   * @description Function to add a child element to the element.
+   */
+  prependChild(...cs) {
+    if (this.article?.readonly) throw new ElementError('Article is readonly.');
+
+    cs.forEach((c) => {
+      this.children.unshift(c);
+      c.parent = this;
+      c.article = this.article;
+      this.updateDom();
+      this.dispatchEvent(
+        new ElementEvent('prependChild', this, {
           child: c,
         })
       );

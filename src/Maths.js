@@ -9,6 +9,7 @@ import Element, { ElementError, ElementEvent } from './Element.js';
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
  */
 
+import { backslash as _backslash } from './index.js';
 import SingleCharEditableElement, {
   Approx,
   CDot,
@@ -32,7 +33,7 @@ export class MathsError extends ElementError {}
 /** @extends {ElementEvent<Maths | InlineMaths | import("./Maths.js").Number | Variable | Vector | Brackets | import("./Maths.js").Function | Comma | CDot | Equals | Approx | Minus | Plus | Fraction | Power , "edit">} */
 export class MathsEvent extends ElementEvent {}
 
-const commands = [
+const commands = /** @type {const} */ ([
   'alpha',
   'beta',
   'gamma',
@@ -61,114 +62,26 @@ const commands = [
   'cos',
   'sin',
   'tan',
-].sort();
-/**
- * @returns {Promise<string, void>} - The text the user entered.
- * @description It creates a text input at the top of the screen.
- */
-export function backslash() {
-  /**
-   * @author Dziad Borowy
-   * @see {@link https://stackoverflow.com/questions/9206013/javascript-list-js-implement-a-fuzzy-search#answer-15252131}
-   * @param {string} hay - The string to search in.
-   * @param {string} needle - The string to search for.
-   * @returns {boolean}
-   * @description Fuzzy searches in the string and returns whether there is a match.
-   */
-  function fuzzy(hay, needle) {
-    var hay = hay.toLowerCase();
-    var n = -1;
-    needle = needle.toLowerCase();
-    for (var l of needle) if (!~(n = hay.indexOf(l, n + 1))) return false;
-    return true;
-  }
-
-  return new Promise((resolve, reject) => {
-    /** @type {HTMLDialogElement?} */
-    var dialog = document.createElement('dialog');
-    if (dialog) {
-      dialog.id = 'backslash';
-
-      let s = document.createElement('style');
-      s.innerHTML = `
-                  .container {
-                    border-radius: 0.25em;
-                    padding: 0.5em;
-                    border: solid 1px #fff5;
-                  }
-                  .container input {
-                    width: 20em;
-                  }
-                  .container:has(:focus-visible) {
-                    /* do something */
-                    border: solid 1px white;
-                  }
-                  .container :focus-visible {
-                    outline: none;
-                  }
-                  .container::before {
-                    content: "\\\\";
-                    font-weight: bolder;
-                    padding-inline-end: 0.25em;
-                  }
-                  .container ~ ul > li {
-                    cursor: pointer;
-                    list-style: '\\\\';
-                  }`;
-      dialog.appendChild(s);
-
-      let container = document.createElement('div');
-      container.className = 'container';
-      let input = document.createElement('input');
-      input.style.background = 'transparent';
-      input.style.border = 'transparent';
-      container.appendChild(input);
-      dialog.appendChild(container);
-      let options = document.createElement('ul');
-      let options_els = commands.map((cmd) => {
-        var li = document.createElement('li');
-        li.innerText = cmd;
-        li.dataset.cmd = cmd;
-        options.appendChild(li);
-        li.addEventListener(
-          'click',
-          () => {
-            dialog?.close();
-            dialog?.remove();
-            resolve(cmd);
-          },
-          false
-        );
-        return li;
-      });
-      dialog.appendChild(options);
-
-      input.addEventListener('input', (e) => {
-        for (let el of options_els)
-          el.style.display = fuzzy(el.dataset.cmd ?? '', input.value ?? '')
-            ? 'list-item'
-            : 'none';
-      });
-      input.addEventListener('keypress', ({ key }) => {
-        if (key === 'Enter') {
-          options
-            .querySelector('li:not([style*="display: none"])')
-            //@ts-expect-error
-            ?.click();
-        }
-      });
-
-      dialog.addEventListener('close', (e) => {
-        reject();
-      });
-      document.body.appendChild(dialog);
-      dialog.showModal();
-    }
-  });
-}
+]);
+/** @type {() => Promise<typeof commands[number], void>} */
+export const backslash = _backslash.bind(null, commands);
 
 export default Maths;
 
+/**
+ * @typedef {import("./Maths/Brackets.js").BracketsOptions} BracketsOptions
+ * @typedef {import("./Maths/Brackets.js").BracketsSerialised} BracketsSerialised
+ * @typedef {import("./Maths/Fraction.js").FractionOptions} FractionOptions
+ * @typedef {import("./Maths/Fraction.js").FractionSerialised} FractionSerialised
+ * @typedef {import("./Maths/Function.js").FunctionOptions} FunctionOptions
+ * @typedef {import("./Maths/Function.js").FunctionSerialised} FunctionSerialised
+ * @typedef {import("./Maths/Maths.js").MathsOptions} MathsOptions
+ * @typedef {import("./Maths/Maths.js").MathsSerialised} MathsSerialised
+ * @typedef {import("./Maths/Number.js").NumberOptions} NumberOptions
+ * @typedef {import("./Maths/Number.js").NumberSerialised} NumberSerialised
+ * @typedef {import("./Maths/SingleCharEditableElement.js").VariableOptions} VariableOptions
+ * @typedef {import("./Maths/SingleCharEditableElement.js").VariableSerialised} VariableSerialised
+ */
 export {
   InlineMaths,
   Number,

@@ -1,5 +1,7 @@
 @import './Document.css';
+@import './MakeTitle.css';
 @import './Maths.css';
 @import './NewPage.css';
 @import './Paragraph.css';
+@import './Section.css';
 @import './TextNormal.css';

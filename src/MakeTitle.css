@@ -1,24 +1,14 @@
-.NewPage {
-  --block: 0.5em;
+.MakeTitle {
+  --block: 0.67em;
 
-  overflow: visible;
-  break-after: page;
-  width: calc(100% + 10rem);
-  transform: translateX(-5rem);
-  border-color: var(--background-color);
-  margin-block: 4rem;
-  border-width: var(--block);
-  border-style: solid;
-
-  @media print {
-    visibility: hidden;
-  }
+  padding-block: var(--block);
+  margin: 0;
 
   &:hover {
     position: relative;
 
     &::after {
-      color: var(--color);
+      color: #000a;
       font-size: 0.75em;
       width: 1em;
       height: 1em;

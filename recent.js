@@ -7,8 +7,6 @@ export default async function recent() {
   articles.id = 'articles';
   document.querySelector('main')?.appendChild(articles);
 
-  addButton('reload_btn', () => reload(), 'Refresh', 'Refresh', 'refresh');
-
   if (articles)
     for await (let article of store.keys()) {
       var articleData = await store.get(article);

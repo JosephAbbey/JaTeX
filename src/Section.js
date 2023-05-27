@@ -3,6 +3,9 @@
  */
 
 import Element, { ElementError, ElementEvent } from './Element.js';
+import Paragraph from './Paragraph.js';
+import Text from './Text.js';
+import { backslash } from './index.js';
 /**
  * @typedef {import("./Element.js").ElementOptions} ElementOptions
  * @typedef {import("./Element.js").ElementSerialised} ElementSerialised
@@ -73,6 +76,9 @@ export default class Section extends Element {
     this.updateTitleDom();
   }
 
+  /** @type {"h1" | "h2" | "h3" | "h4" | "h5" | "h6"} */
+  titleElement = 'h2';
+
   /**
    * @author Joseph Abbey
    * @date 11/02/2023
@@ -110,13 +116,50 @@ export default class Section extends Element {
    */
   get titleDom() {
     if (!this._titleDom) {
-      this._titleDom = document.createElement('h2');
+      this._titleDom = document.createElement(this.titleElement);
       this.updateTitleDom();
       this._titleDom.addEventListener('input', this.handleInput.bind(this));
       this._titleDom.addEventListener(
         'beforeinput',
         this.handleBeforeInput.bind(this)
       );
+      this._titleDom.addEventListener('click', (e) => {
+        if (e.offsetX > (this._titleDom?.offsetWidth ?? 0)) {
+          backslash(['section', 'subsection']).then((t) => {
+            let v;
+            switch (t) {
+              case 'section':
+                v = new Section({
+                  id: Element.uuid(),
+                  title: 'New section',
+                  children: [],
+                });
+                if (this instanceof SubSection) {
+                  this.parent?.parent?.insertChildAfter(v, this.parent);
+                } else {
+                  this.parent?.insertChildAfter(v, this);
+                }
+                v.focus(-1);
+                break;
+              case 'subsection':
+                v = new SubSection({
+                  id: Element.uuid(),
+                  title: 'New subsection',
+                  children: [],
+                });
+                if (this instanceof SubSection) {
+                  this.parent?.insertChildAfter(v, this);
+                } else {
+                  this.prependChild(v);
+                }
+                v.focus(-1);
+                break;
+              default:
+                break;
+            }
+          });
+        }
+      });
     }
     return this._titleDom;
   }
@@ -149,6 +192,18 @@ export default class Section extends Element {
     if (e.target != this.titleDom) return;
     switch (e.inputType) {
       case 'insertParagraph':
+        let v = new Paragraph({
+          id: Element.uuid(),
+          children: [
+            new Text({
+              id: Element.uuid(),
+              text: '',
+              children: [],
+            }),
+          ],
+        });
+        this.prependChild(v);
+        v.focus();
       case 'historyUndo':
       case 'historyRedo':
       case 'insertLineBreak':
@@ -264,3 +319,24 @@ export default class Section extends Element {
 }
 
 Section.register();
+
+/**
+ * @author Joseph Abbey
+ * @date 05/02/2023
+ * @constructor
+ * @extends {Section}
+ *
+ * @description An element representing a LaTeX subsection.
+ */
+export class SubSection extends Section {
+  static type = 'SubSection';
+  static classes = super.classes + ' ' + this.type;
+
+  titleElement = /** @type {const} */ ('h3');
+
+  get tex() {
+    return `\n\\subsection{${this.title}}\n` + this.ctex;
+  }
+}
+
+SubSection.register();

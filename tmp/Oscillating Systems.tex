@@ -1,0 +1,332 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage[margin=1.5in]{geometry}
+
+\title{Oscillating Systems}
+\author{Benjamin Jones}
+\date{\today}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\maketitle
+\newpage
+
+\pagenumbering{arabic}
+
+\section{Pendulums}
+
+Put simply, a pendulum is a mass connected to a rigid arm which is allowed only to pivot about a fixed point. We shall find that, depending on whether or not we deem the contributions of air resistance to be negligible, they produce oscillatory or decaying oscillatory motion as they evolve over time.
+
+We shall begin by establishing our parameters as well as our target function. We define a two dimensional Cartesian coordinate system with the pivot of our pendulum placed at the origin and the pair of orthogonal unit vectors $\hat{i} = [1, 0]$ and $\hat{j} = [0, 1]$. The arm of our pendulum is defined to have length $r$ and the mass will have mass $m$. Our target is to find an expression for the counterclockwise angle between $-\hat{j}$ and the arm of our pendulum at any time $t$, a function which we will refer to as $\theta(t)$ or simply $\theta$. We will do this by combining Newton's Second Law of Motion ($F=ma$) with observations about angular mechanics to obtain a second order ordinary differential equation for our target $\theta(t)$.
+
+Before we begin attempting either of these things, we shall find it easier later on if we take the time now to derive a number of important vectors relating to key positions and distances.
+
+\subsection{Utility Vectors} \label{subsec:utilVectors}
+
+We begin with the most obvious vector to derive, the position vector of the mass. We may construct a right-angled triangle with one side being in the direction of $-\hat{j}$, another in the direction $\hat{i}$, and with the hypotenuse being the arm of the pendulum itself. The vectors $-\hat{j}$ and $\hat{i}$ are obviously perpendicular as they are orthogonal unit vectors, meaning that the angle between them is $\frac{\pi}{2}\text{rad}$. As one of the angles in this triangle is our angle of interest $\theta$, we may use the simple trigonometric formula for a right-angled triangle to draw the conclusion that the position vector to our mass at any time, $\vec{p}$ is given by
+\begin{equation} \label{eq:posVector}
+	\vec{p} = r\sin(\theta)\hat{i} - r\cos(\theta)\hat{j} = r
+	\begin{bmatrix}
+		\sin(\theta) \\
+		-\cos(\theta)
+	\end{bmatrix}
+	.
+\end{equation}
+
+We know that, by definition of a pendulum, the mass must always be at a distance $r$ from the pivot which we chose to place at the origin. As such, the magnitude of the position vector is always $r$ and so we may easily find the unit vector in the direction of the mass by dividing our position vector by $r$.
+\begin{equation} \label{eq:unitPosVector}
+	\hat{p} =\frac{\vec{p}}{r} =
+	\begin{bmatrix}
+		\sin(\theta) \\
+		-\cos(\theta)
+	\end{bmatrix}
+\end{equation}
+
+The final utility vector we shall find is the unit vector tangential to the path of the mass, $\hat{n}$. As the length of the pendulum's arm is constant the mass must trace a circle of radius $r$. This means that the unit vector tangential to the path is simply the unit normal vector to the position vector of the mass at any angle $\theta$. We may find this vector via the dot product as we know that two vectors are perpendicular if their dot product is zero (assuming that neither of them is the zero vector).
+
+\begin{align*}
+	\hat{n} \cdot \hat{p} &= 0 &&& (\text{Vectors are perpendicular}) \\
+	n_1\cos(\theta) - n_2\sin(\theta) &= 0 \\
+	n_2 &= n_1\tan(\theta) \\
+	n_1^2 + n_2^2 &= 1 &&& (\hat{n}\text{ is a unit vector}) \\
+	n_1^2 + (n_1\tan(\theta))^2 &= 1 \\
+	n_1^2(\tan^2(\theta) + 1) &= 1 \\
+	n_1^2 &= \cos^2(\theta) \\
+	n_1 &= \pm \cos(\theta) := \cos(\theta) \\
+	n_2 &= \pm \sin(\theta) := \sin(\theta)
+\end{align*}
+
+Hence, we find that
+\begin{equation} \label{eq:unitNormVector}
+	\hat{n} =
+	\begin{bmatrix}
+		\cos(\theta) \\
+		\sin(\theta)
+	\end{bmatrix}
+	.
+\end{equation}
+
+We may now begin our work on forces, considering which will act on our mass and how this may depend on the angle of the pendulum, $\theta$.
+
+\subsection{Forces on the Pendulum}
+
+We shall consider the contributions of three main forces in our model of a pendulum; gravity, tension, and air resistance. Gravity, the simplest of these forces, is both constant in direction and in magnitude whereas the forces of tension and air resistance both vary in direction and in magnitude with the latter being more troublesome as it is also dependent on velocity. In some situations we may deem the contributions of air resistance to be negligible, however instead of working through the maths for cases with and without air resistance separately, we may simply discount air resistance at a later stage by taking the coefficient of air resistance to be $0$ in our solution.
+
+We begin by briefly looking at the force of gravity, $\vec{G}$; as mentioned above, this is easily the simplest of our main forces and it is constant both in magnitude and in direction. The force of gravity acts in the $-\hat{j}$ direction (downwards) with a magnitude proportional to the mass $m$ on the pendulum where the constant of proportionality (assuming that our pendulum is placed on the surface of Earth) is $g \cong 9.81ms^{-2}$. Hence, we may write that
+\begin{equation} \label{eq:gravity}
+	\vec{G} = -mg\hat{j}.
+\end{equation}
+
+We now move on to the slightly more complex force of tension, $\vec{T}$. Tension is a centripetal force which acts to hold the mass at the constant length $r$ enforced by the arm of the pendulum. It arises due to Newton's Third Law of Motion which states that every action has an equal and opposite reaction; this allows us to determine the magnitude of the tension force as the component of the force of gravity in the direction of the position vector, \eqref{eq:unitPosVector}\footnote{We shall find when we look at the force of air resistance that it acts perpendicularly to the position vector of the mass meaning that it has no effect on tension.}. The direction of this force is opposite to that of the position vector. Hence, using the dot product, we may find that
+
+\begin{align} 
+	\vec{T} &= -(\vec{G} \cdot \hat{p})\hat{p} \notag \\
+	&= -\left([-mg\hat{j}] \cdot [\sin(\theta)\hat{i} - \cos(\theta)\hat{j}]\right)\hat{p} \notag \\
+	&= -mg\cos(\theta)\hat{p} \notag \\
+	&= -mg
+	\begin{bmatrix}
+		\sin(\theta)\cos(\theta) \\
+		-\cos^2(\theta)
+	\end{bmatrix}
+	. \label{eq:tension}
+\end{align}
+
+We finally examine the contact force of air resistance, $\vec{A}$. Air resistance, like tension, isn't a constant force, it varies with time in relation with $\theta$. Unlike tension though, air resistance cares about the velocity of our mass as opposed to simply its angle with the vertical. We do not currently know how to relate the angle $\theta$ to the velocity of the mass (a relationship we shall cover in the following subsection) so we shall simply leave this for the time being as $\vec{v}(t)$. As velocity must act tangentially to the path of the mass, we may break up this velocity vector into two parts, a scalar function $v(t)$ and the unit normal vector $\hat{n}$, such that $\vec{v}(t) = v(t)\hat{n}$. Air resistance acts against the current motion of the pendulum and is proportional usually to the square of the velocity, however (for reasons we shall cover nearer the end of this chapter) we shall instead take air resistance proportional simply to velocity itself. The constant of proportionality here, commonly referred to as the coefficient of air resistance, shall be denoted $\mu$. We now have sufficient knowledge about the air resistance contact force to create an expression for it given any velocity,
+\begin{equation} \label{eq:drag}
+	\vec{A} = -\mu\vec{v}(t) = -\mu v(t) \hat{n}
+\end{equation}
+
+Bringing the work of this subsection together, we may find the resultant $\vec{F}$ of forces \eqref{eq:gravity}, \eqref{eq:tension}, and \eqref{eq:drag} simply by taking their sum as follows.
+\begin{align}
+	\vec{F} &= \vec{G} + \vec{T} + \vec{A} \notag \\
+	&= -mg\left(\hat{j} +
+	\begin{bmatrix}
+		\sin(\theta)\cos(\theta) \\
+		-\cos^2(\theta)
+	\end{bmatrix}
+	\right) - \mu v(t) \hat{n} \notag \\
+	&= -mg
+	\begin{bmatrix}
+		\sin(\theta)\cos(\theta) \\
+		1 - \cos^2(\theta)
+	\end{bmatrix}
+	-\mu v(t) \hat{n} \notag \\
+	&= -mg\sin(\theta)
+	\begin{bmatrix}
+		\cos(\theta) \\
+		\sin(\theta)
+	\end{bmatrix}
+	-\mu v(t) \hat{n} \notag \\
+	&= -\left(mg\sin(\theta) + \mu v(t)\right)\hat{n}. \label{eq:resVector}
+\end{align}
+
+To simplify this, we may examine simply the force in the direction of motion of the pendulum. As the mass is constrained to a length of $r$ from the origin, we know that it must trace a circular path and hence this force must act tangentially to said path (as implied by the factor of $\hat{n}$ in the resultant). Taking the dot product of the resultant force vector \eqref{eq:resVector} and the unit vector tangential to the path \eqref{eq:unitNormVector} yields the resultant force in the direction of motion, F, to be
+\begin{align}
+	F &= \vec{F} \cdot \hat{n} \notag \\
+	&= -\left(mg\sin(\theta) + \mu v(t)\right)(\hat{n} \cdot \hat{n}) \notag \\
+	&= -\left(mg\sin(\theta) + \mu v(t)\right). \label{eq:resWithVel}
+\end{align}
+
+We now have a resultant force which shall act on our mass at any angle; however, we need to find some different yet equivalent expression via which we can determine the angle function itself. We also have the issue that this force doesn't just depend on $\theta$ but also on the velocity of the mass at any time and so to make use of this force expression we must find a way to relate this to the angle function. To do this, we shall take a brief detour into angular mechanics in order to uncover two important relations between the angle function and the motion of the mass.
+
+\subsection{Observations about Angular Mechanics}
+
+If we change the angle $\theta$ by some small amount $\Delta\theta$, then we expect some related change in the position of the mass $\Delta s$. We may approximate this distance as the arc length of the circular path covered during the change in angle, $r\Delta\theta$, meaning that $\Delta s \approx r\Delta\theta$. As we consider smaller and smaller changes in the angle $\theta$, this relationship becomes more accurate such that in the limit we may say $ds = rd\theta$ as $d\theta \to 0$. Rearranging this and multiplying both sides by the rate of change of our angle of interest $\theta$ yields the first of two important relations,
+\begin{align}
+	\frac{ds}{d\theta}\frac{d\theta}{dt} &= r\frac{d\theta}{dt} \notag \\
+	\frac{ds}{dt} &= r\frac{d\theta}{dt} \notag \\
+	v &= r\dot{\theta}. \label{eq:velRelation}
+\end{align}
+
+This relationship allows us to relate the rate at which our angle $\theta$ is changing to the velocity of the mass. Differentiating each side with respect to time yields the second important relation,
+\begin{align}
+	\frac{d^2s}{dt^2} &= r\frac{d^2\theta}{dt^2} \notag \\
+	a &= r\ddot{\theta}. \label{eq:accelRelation}
+\end{align}
+
+With these relationships allowing us to translate the motion of the mass into equivalent changes in the angle $\theta$, we may now apply Newton's Second Law of Motion.
+
+\subsection{Producing and Solving the Differential Equation}
+
+Returning briefly to the resultant force in the direction of motion $F$ which we determined at the end of 1.2, we may now eliminate $v(t)$ from the expression using the first of our relationships from the previous section \eqref{eq:velRelation}.
+\begin{equation} \label{eq:resultant}
+	F = -\left(mg\sin(\theta) + \mu r\dot{\theta}\right)
+\end{equation}
+
+We may now apply Newton's Second Law of Motion, $F = ma$, to relate the overall force on the mass with the second derivative of the angle $\theta$ using the second of our relationships from the previous section \eqref{eq:accelRelation}.
+\begin{align}
+	F &= ma \notag \\
+	-\left(mg\sin(\theta) + \mu r\dot{\theta}\right) &= mr\ddot{\theta} \notag \\
+	mr\ddot{\theta} + \mu r\dot{\theta} + mg\sin(\theta) &= 0 \label{eq:pendMainODE}
+\end{align}
+
+This equation in its current form would be incredibly difficult to solve and so we make a simplification using the small angle approximation for the sine function, $\sin(\phi) \approx \phi$ for small values of $\phi$. This produces a second order homogeneous linear ordinary differential equation with constant coefficients and as such we may solve it fairly simply through the construction of a quadratic auxilliary equation. If we assume that, as is true with first order ODEs of the same form, the solutions\footnote{As our ODE is of the second order, we shall find two linearly independant solutions which we may use to generate the general solution as laid out in appendix \ref{app:ODEs}.} will take the form $\theta(t) = e^{\lambda t}$, then we may insert this into our ODE and solve for the value of $\lambda$ as follows.
+\begin{align*}
+	mr\ddot{\theta} + \mu r\dot{\theta} + mg\theta &= 0 \\
+	mr[e^{\lambda t}]'' + \mu r [e^{\lambda t}]' + mg [e^{\lambda t}] &= 0 \\
+	mr \lambda^2 e^{\lambda t} + \mu r \lambda e^{\lambda t} + mg e^{\lambda t} &= 0 \\
+	e^{\lambda t}\left(mr \lambda ^2 + \mu r \lambda + mg\right) &= 0 \\
+	mr \lambda ^2 + \mu r \lambda + mg &= 0 &&& (\forall t \in \mathbb{C}, e^{\lambda t} \neq 0)
+\end{align*}
+
+We may find the two roots of this equation by employing the quadratic formula, revealing the values for $\lambda$ to be
+\begin{equation*}
+	\lambda_1, \lambda_2 = -\frac{\mu}{2m} \pm \frac{\sqrt{\mu^2 r^2 - 4m^2g}}{2mr},
+\end{equation*}
+which yield the linearly independent solutions
+\begin{align}
+	\begin{array}{l l}
+		\theta_1(t) = \exp(-\sigma t)\exp(\epsilon t), \\
+		\theta_2(t) = \exp(-\sigma t)\exp(-\epsilon t).
+	\end{array} &&& \left(\sigma := \frac{\mu}{2m}, \epsilon := \frac{\sqrt{\mu^2 r^2 - 4m^2g}}{2mr}\right) \label{eq:pendIndepSols}
+\end{align}
+
+We may then take a linear combination of these solutions as per Appendix \ref{app:ODEs} and solve for a set of boundary conditions to find the general solution for $\theta(t)$.
+\begin{align*}
+	\theta(t) &= A\exp(-\sigma t)\exp(\epsilon t) + B\exp(-\sigma t)\exp(-\epsilon t) \\
+	&= \exp(-\sigma t)\left[A\exp(\epsilon t) + B\exp(-\epsilon t)\right] \\
+	\dot{\theta}(t) &= -\sigma\exp(-\sigma t)\left[A\exp(\epsilon t) + B\exp(-\epsilon t)\right] + \exp(-\sigma t)\left[A\epsilon\exp(\epsilon t) - B\epsilon\exp(-\epsilon t)\right] \\
+	&= \exp(-\sigma t)\left[A(\epsilon - \sigma)\exp(\epsilon t) - B(\epsilon + \sigma)\exp(-\epsilon t)\right]
+\end{align*}
+\begin{align*}
+	\left\{
+	\begin{array}{l l}
+		\theta(0) = \theta_0 \\
+		\dot{\theta}(0) = \dot{\theta}_0
+	\end{array} \right.
+	&=>
+	\left\{
+	\begin{array}{l l}
+		\exp(0)\left[A\exp(0) + B\exp(0)\right] = \theta_0 \\
+		\exp(0)\left[A(\epsilon - \sigma)\exp(0) - B(\epsilon + \sigma)\exp(0)\right] = \dot{\theta}_0
+	\end{array} \right. \\
+	& =>
+	\left\{
+	\begin{array}{l l}
+		A + B = \theta_0 \\
+		A(\epsilon - \sigma) - B(\epsilon + \sigma) = \dot{\theta}_0
+	\end{array} \right.
+\end{align*}
+\begin{align*}
+	\begin{bmatrix}
+		1 & 1 \\
+		\epsilon - \sigma & -(\epsilon + \sigma)
+	\end{bmatrix}
+	\begin{bmatrix}
+		A \\
+		B
+	\end{bmatrix}
+	&=
+	\begin{bmatrix}
+		\theta_0 \\
+		\dot{\theta}_0
+	\end{bmatrix} \\
+	\begin{bmatrix}
+		1 & 1 \\
+		\epsilon - \sigma & -(\epsilon + \sigma)
+	\end{bmatrix}^{-1}
+	\begin{bmatrix}
+		1 & 1 \\
+		\epsilon - \sigma & -(\epsilon + \sigma)
+	\end{bmatrix}
+	\begin{bmatrix}
+		A \\
+		B
+	\end{bmatrix}
+	&=
+	\begin{bmatrix}
+		1 & 1 \\
+		\epsilon - \sigma & -(\epsilon + \sigma)
+	\end{bmatrix}^{-1}
+	\begin{bmatrix}
+		\theta_0 \\
+		\dot{\theta}_0
+	\end{bmatrix} \\
+	I
+	\begin{bmatrix}
+		A \\
+		B
+	\end{bmatrix}
+	&=
+	-\frac{1}{2\epsilon}
+	\begin{bmatrix}
+		-(\epsilon + \sigma) & -1 \\
+		-(\epsilon - \sigma) & 1
+	\end{bmatrix}
+	\begin{bmatrix}
+		\theta_0 \\
+		\dot{\theta}_0
+	\end{bmatrix} \\
+	\begin{bmatrix}
+		A \\
+		B
+	\end{bmatrix}
+	&=
+	-\frac{1}{2\epsilon}
+	\left(
+	- \theta_0
+	\begin{bmatrix}
+		\epsilon + \sigma \\
+		\epsilon - \sigma
+	\end{bmatrix}
+	+ \dot{\theta}_0
+	\begin{bmatrix}
+		-1 \\
+		1
+	\end{bmatrix}
+	\right) \\
+	&=
+	\frac{1}{2\epsilon}
+	\left(
+	\theta_0
+	\begin{bmatrix}
+		\epsilon + \sigma \\
+		\epsilon - \sigma
+	\end{bmatrix}
+	+ \dot{\theta}_0
+	\begin{bmatrix}
+		1 \\
+		-1
+	\end{bmatrix}
+	\right) \\
+	&=
+	\frac{1}{2\epsilon}
+	\begin{bmatrix}
+		\theta_0(\epsilon + \sigma) + \dot{\theta}_0 \\
+		\theta_0(\epsilon - \sigma) - \dot{\theta}_0
+	\end{bmatrix}
+\end{align*}
+\begin{equation*}
+	A = \frac{\theta_0(\epsilon + \sigma) + \dot{\theta}_0}{2\epsilon}, \quad B = \frac{\theta_0(\epsilon - \sigma) - \dot{\theta}_0}{2\epsilon}
+\end{equation*}
+
+This yields the general solution
+\begin{align*}
+	\theta(t) &= \exp(-\sigma t)\left[A\exp(\epsilon t) + B\exp(-\epsilon t)\right] \\
+	&= \exp(-\sigma t)\left[\frac{\theta_0(\epsilon + \sigma) + \dot{\theta}_0}{2\epsilon}\exp(\epsilon t) + \frac{\theta_0(\epsilon - \sigma) - \dot{\theta}_0}{2\epsilon}\exp(-\epsilon t)\right] \\
+	&= \frac{\exp(-\sigma t)}{2\epsilon}\left[\left(\theta_0(\epsilon + \sigma) + \dot{\theta}_0\right)\exp(\epsilon t) + \left(\theta_0(\epsilon - \sigma) - \dot{\theta}_0\right)\exp(-\epsilon t)\right] \\
+	&= \frac{\exp(-\sigma t)}{2\epsilon}\left[\theta_0(\epsilon + \sigma)\left(\exp(\epsilon t) + \exp(-\epsilon t)\right) + \dot{\theta}_0\left(\exp(\epsilon t) - \exp(-\epsilon t)\right)\right] \\
+	&= \frac{\exp(-\sigma t)}{\epsilon}\left[\theta_0(\epsilon + \sigma)\cosh(\epsilon t) + \dot{\theta}_0\sinh(\epsilon t)\right].
+\end{align*}
+
+We are not done here however, returning to the expression for $\epsilon$ we realise that it's square root may contain a negative, making the value of $\epsilon$ imaginary. In such a case, we may write $\epsilon = -iE$ where $E \in \mathbb{R}_{\ge0}$. Using the formulae for hyperbolics with imaginary inputs, $\cosh(ix) \equiv \cos(x)$ and $\sinh(ix) \equiv i\sin(ix)$, we find that
+
+\newpage
+
+\section{Springs}
+
+\section{Orbits}
+
+\newpage
+
+\appendix
+
+\section{Second Order Linear Homogeneous ODEs} \label{app:ODEs}
+
+\end{document}
