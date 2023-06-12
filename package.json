@@ -22,7 +22,7 @@
   "devDependencies": {
     "@parcel/packager-raw-url": "^2.8.3",
     "@parcel/transformer-webmanifest": "^2.8.3",
-    "@parcel/config-default": "^2.8.3",
+    "@parcel/config-default": "^2.9.2",
     "eslint": "^8.39.0",
     "jsdoc": "^4.0.2",
     "jsdoc-plugin-intersection": "^1.0.4",
